@@ -1,0 +1,23 @@
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .centered-button {
+    background-color: #0077cc;
+    color: #fff;
+    padding: 6px 12px; /* Reduce padding to make button smaller */
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .centered-button:hover {
+    background-color: #005fa3;
+  }
+  
+  .centered-button:hover {
+    background-color: #005fa3;
+  }
