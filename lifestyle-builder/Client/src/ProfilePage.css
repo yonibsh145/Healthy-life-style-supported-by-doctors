@@ -1,0 +1,53 @@
+.profile-container {
+    display: flex;
+    justify-content: space-between;
+    width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .left-box {
+    flex: 1;
+    background-color: #f2f9f2;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .right-box {
+    flex: 1;
+    background-color: #e2eaf5;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .tabs-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  .tab {
+    padding: 10px 20px;
+    background-color: #53c8a8;
+    color: #fff;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .tab.active {
+    border-bottom-color: #007bff;
+    font-weight: bold;
+  }
+  
+  .tab:hover {
+    background-color: #429f82;
+  }
+  
+  .stats-content {
+    padding: 20px;
+    color: #333;
+  }
