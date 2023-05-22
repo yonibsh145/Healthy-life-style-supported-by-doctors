@@ -14,13 +14,21 @@ const HomePage = () => {
     navigate('/Profile'); // Navigate to the register page
   }
 
+  function handleLibrary() {
+    navigate('/Library'); // Navigate to the register page
+  }
+
+  function handleProgram() {
+    navigate('/ProgramPage'); // Navigate to the register page
+  }
+
 
   return (
     <div className="container">
       <div className="menu">
         <div className="logo">Logo</div>
-        <button className="menu-item">Our Products</button>
-        <button className="menu-item">Our Expert</button>
+        <button className="menu-item" onClick={handleProgram}>Our Products</button>
+        <button className="menu-item" onClick={handleLibrary}>Our Expert</button>
         <button className="menu-item" onClick={handleProfle}>Change Language</button>
         <button className="menu-item" onClick={handleSignIn}>Sign In</button>
       </div>
