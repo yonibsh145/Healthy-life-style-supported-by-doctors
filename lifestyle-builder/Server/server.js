@@ -9,6 +9,9 @@ const port = process.env.PORT || 3001;
 const userRoutes = require("./routes/userRoutes");
 const specialistRoutes = require("./routes/specialistsRoutes");
 const programRoutes = require("./routes/programRoutes");
+const ProgramModel = require("./models/programModel");
+
+
 
 
 
@@ -30,4 +33,7 @@ mongoose.connection.once("open", () => {
         console.log(`Server is running on port: ${port}`);
     });
 });
+
+
+
 
