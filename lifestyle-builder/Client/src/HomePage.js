@@ -19,7 +19,7 @@ const HomePage = () => {
   }
 
   function handleProgram() {
-    navigate('/ProgramPage'); // Navigate to the register page
+    navigate('/BuilderHomePage'); // Navigate to the register page
   }
 
 

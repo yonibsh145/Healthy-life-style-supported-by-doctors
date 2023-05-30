@@ -5,18 +5,34 @@ import './LoginPage.css';
 function LoginPage() {
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
+  const userType = '';
+  
 
   function handleRegister() {
     navigate('/RegisterPage'); // Navigate to the register page
   }
 
+  function handleLogin() {
+    if(userType==='Builder'){
+      navigate('/BuilderHomePage'); // Navigate to the register page
+      return;
+    }
+    if(userType==='User'){
+      navigate('/UserHomePage'); // Navigate to the register page
+      return;
+    }
+    if(userType===''){
+      navigate('/'); // Navigate to the register page
+      return;
+    }
+  }
   function handleRememberMe() {
     setRememberMe(!rememberMe);
   }
 
   return (
     <div className="Auth-form-container">
-      <form className="Auth-form">
+      <form className="Auth-form" onClick={handleLogin}>
         <div className="Auth-form-content">
           <h3 className="Auth-form-title">Sign In</h3>
           <div className="text-center">
