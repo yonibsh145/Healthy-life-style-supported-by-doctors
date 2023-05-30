@@ -9,8 +9,6 @@ import Profile from './Profile';
 import Library from './Library';
 import ProgramLibrary from './ProgramLibrary';
 import ProgramPage from './ProgramPage';
-import UserHomePage from './UserHomePage';
-import BuilderHomePage from './BuilderHomePage';
 import "bootstrap/dist/css/bootstrap.min.css"
 
 
@@ -27,8 +25,6 @@ function App() {
         <Route path="/Library" element={<Library />} />
         <Route path="/ProgramLibrary" element={<ProgramLibrary />} />
         <Route path="/ProgramPage" element={<ProgramPage />} />
-        <Route path="/UserHomePage" element={<UserHomePage />} />
-        <Route path="/BuilderHomePage" element={<BuilderHomePage />} />
       </Routes>
     </Router>
   );
