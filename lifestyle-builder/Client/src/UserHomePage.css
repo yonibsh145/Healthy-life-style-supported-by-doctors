@@ -1,0 +1,60 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .user-info {
+    margin-top: 20px;
+  }
+  
+  .user-info a {
+    text-decoration: none;
+    color: #333;
+    background-color: #ffc107;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .user-info a:hover {
+    background-color: #ffa000;
+  }
+  
+  .medical-card {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .program-history {
+    margin-top: 20px;
+  }
+  
+  .daily-goals {
+    margin-top: 20px;
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .daily-goals h2 {
+    margin-bottom: 10px;
+  }
+  
+  .daily-goals ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .daily-goals li {
+    margin-bottom: 10px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
