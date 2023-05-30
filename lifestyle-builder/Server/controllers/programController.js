@@ -6,17 +6,16 @@ const asyncHandler = require('express-async-handler');
 //@route    POST /api/program
 //@access   Private
 const createProgram = asyncHandler(async (req, res) => {
-    const {name, description, duration, price, image} = req.body;
-    const program = new Program({
-        name,
-        description,
-        duration,
-        price,
-        image,
-        specialist: req.specialist._id
-    });
-    const createdProgram = await program.save();
-    res.status(201).json(createdProgram);
+    const {name, startDate, specailist,activities,kindOfProgram,description} = req.body;
+    if(!name || !startDate || !specailist || !activities || !kindOfProgram || !description){
+        res.status(400).json({message: "Please fill all fields"});
+    }
+    const program = await Program.create({name, startDate, specailist,activities,kindOfProgram,description});
+    if(program){
+        res.status(200).json({message: "Program created successfully"});
+    }else{
+        res.status(400).json({message: "Invalid program data"});
+    }
 });
 
 //@desc     get all programs
@@ -172,4 +171,4 @@ const getProgramUrl = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = {createProgram, getAllPrograms, getProgramById, updateActivity, getSpecialistPrograms, addReview, getProgramUrl};
+module.exports = {createProgram, getAllPrograms, getProgramById, updateActivity, getSpecialistPrograms, addReview, getProgramUrl}

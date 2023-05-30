@@ -1,3 +1,4 @@
+const { time } = require("console");
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
 const { URL } = require('url');
@@ -27,7 +28,7 @@ const activitySchema = new Schema({
         required: true
     },
     duration: {
-        type: Number,
+        type: String,
         required: true
     },
     createBy: { 
@@ -107,12 +108,12 @@ const programSchema = new Schema({
     reviews: [reviewSchema],
     numOfReviews: {
         type: Number,
-        required: false,
+        required: true,
         default: 0
     },
     rating: {
         type: Number,
-        required: false,
+        required: true,
         default: 0
     }
 });
