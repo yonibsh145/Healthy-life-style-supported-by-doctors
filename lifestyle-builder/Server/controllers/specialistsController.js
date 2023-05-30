@@ -4,30 +4,30 @@ const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
 
 //@desc     register a new specialist
-//@route    POST /api/specialist/register
+//@route    POST /api/specialists/register
 //@access  Public
 const registerSpecialist = asyncHandler(async (req, res) => {
     const {name, username, email, password} = req.body;
     if(!name || !username || !email || !password){
         res.status(400).json({message: "Please fill all fields"});
     }
-    const userExist = await User.findOne({email}).lean().exec();
+    const userExist = await Specialist.findOne({email}).lean().exec();
     if(userExist){
         res.status(409).json({message: "User already exist"});
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     //create user object and save to db
-    const user = await User.create({name, username, email, password: hashedPassword, medicalHistory});
-    if(user){
-        res.status(201).json({message: "User created successfully"});
+    const specailist = await Specialist.create({name, username, email, password: hashedPassword});
+    if(specailist){
+        res.status(200).json({message: "Specialist created successfully"});
     }else{
-        res.status(400).json({message: "Invalid user data"});
+        res.status(400).json({message: "Invalid Specialist data"});
     } 
 });
 
 //@desc    authenticate specialist and get token
-//@route   POST /api/specialist/login
+//@route   POST /api/specialists/login
 //@access  Public
 const authSpecialist = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -48,7 +48,7 @@ const authSpecialist = asyncHandler(async (req, res) => {
     });
 
 //@desc   get specialist profile
-//@route  GET /api/specialist/profile
+//@route  GET /api/specialists/profile
 //@access Private
 const getSpecialistProfile = asyncHandler(async (req, res) => {
     const specialist = await Specialist.findById(req.specialist._id);
@@ -66,7 +66,7 @@ const getSpecialistProfile = asyncHandler(async (req, res) => {
 });
 
 //@desc   update specialist profile
-//@route  PUT /api/specialist/profile
+//@route  PUT /api/specialists/profile
 //@access Private
 const updateSpecialistProfile = asyncHandler(async (req, res) => {
     const specialist = await Specialist.findById(req.specialist._id);
@@ -91,6 +91,6 @@ const updateSpecialistProfile = asyncHandler(async (req, res) => {
 });
     
 
-module.exports = {registerSpecialist, authSpecialist, getSpecialistProfile, updateSpecialistProfile};
+module.exports = {registerSpecialist, authSpecialist, getSpecialistProfile, updateSpecialistProfile}
 
 
