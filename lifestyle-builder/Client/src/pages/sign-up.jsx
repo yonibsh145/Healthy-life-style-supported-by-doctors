@@ -29,8 +29,8 @@ export function SignUp() {
     username: fullName,
     email: email,
     password: password,
-    selected: selectedValue
   };
+
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -40,14 +40,14 @@ export function SignUp() {
       alert("Please fill in all fields.");
       return;
     }
-  
+
     // Email format validation using regular expression
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       alert("Please enter a valid email address.");
       return;
     }
-  
+
     // Password length validation
     if (password.length < 6) {
       alert("Password should be at least 6 characters long.");
@@ -55,15 +55,29 @@ export function SignUp() {
     }
 
     //Select type
-    if(selectedValue==""){
+    if (selectedValue == "") {
       alert("Please select a user type");
       return;
     }
-    
 
-    console.log(selectedValue)
-    console.log(userData.selected)
-    axios.post('http://localhost:3001/api/users/register', userData)
+    //Select type
+    if (selectedValue == "User") {
+      axios.post('http://localhost:3001/api/users/register', userData)
+        .then(response => {
+          // Handle success.
+          console.log('User profile', response.data.user);
+          console.log('User token', response.data.token);
+          window.location.href = '/sign-in';
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('An error occurred:', error.response);
+        });
+    }
+
+    //Select type
+    if (selectedValue == "Trainer") {
+      axios.post('http://localhost:3001/api/specialists/register', userData)
       .then(response => {
         // Handle success.
         console.log('User profile', response.data.user);
@@ -75,7 +89,8 @@ export function SignUp() {
         console.log('An error occurred:', error.response);
       });
 
-
+    }
+    
   }
 
   return (

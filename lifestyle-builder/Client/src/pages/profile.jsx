@@ -13,9 +13,11 @@ import {
 import { Footer } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 
-
+const storedUserProfile = localStorage.getItem('userProfile');
 
 export function Profile() {
+
+
 
   const data = [
     {

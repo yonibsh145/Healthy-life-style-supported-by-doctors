@@ -16,6 +16,7 @@ import { featuresData, teamData, contactData } from "@/data";
 
 const userType= "";
 
+
 export function Home() {
   if(userType==""){
     return (
