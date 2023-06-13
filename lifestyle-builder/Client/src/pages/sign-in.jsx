@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import React, { useState } from 'react';
-import axios from 'axios';
 import {
   Card,
   CardHeader,
@@ -14,35 +12,6 @@ import {
 import { SimpleFooter } from "@/widgets/layout";
 
 export function SignIn() {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const userData = {
-    email: email,
-    password: password
-  };
-
-  function handleLogin(event) {
-    event.preventDefault();
-    console.log(userData.email)
-    /*
-    axios.post('http://localhost:3001/api/users/login', userData)
-      .then(response => {
-        // Handle success.
-        console.log('User profile', response.data.user);
-        console.log('User token', response.data.token);
-        navigate('/sign-in'); // Navigate to the login page
-      })
-      .catch(error => {
-        // Handle error.
-        console.log('Login Error:', error.response);
-      });
-      */
-  
-  
-  }
-
   return (
     <>
       <img
@@ -62,13 +31,11 @@ export function SignIn() {
             </Typography>
           </CardHeader>
           <CardBody className="flex flex-col gap-4">
-            <Input variant="standard" type="email" label="Email" size="lg" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input variant="standard" type="email" label="Email" size="lg" />
             <Input
               variant="standard"
               type="password"
               label="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               size="lg"
             />
             <div className="-ml-2.5">
@@ -76,7 +43,7 @@ export function SignIn() {
             </div>
           </CardBody>
           <CardFooter className="pt-0">
-            <Button variant="gradient" fullWidth onClick={handleLogin}>
+            <Button variant="gradient" fullWidth>
               Sign In
             </Button>
             <Typography variant="small" className="mt-6 flex justify-center">
