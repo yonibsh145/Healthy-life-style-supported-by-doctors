@@ -1,9 +1,31 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require('bcryptjs');
+
+const messageSchema = new Schema({
+  sender: {
+    type: Schema.Types.ObjectId,
+    ref: "specailists",
+    required: true,
+  },
+  receiver: {
+    type: Schema.Types.ObjectId,
+    ref: "users",
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+});
 const userSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: false,
     },
     username: {
         type: String,
@@ -34,15 +56,13 @@ const userSchema = new Schema({
         required: true,
         default: "patient",
     },
-    program:{
-        type: Schema.Types.ObjectId,
-        ref: "programs",
-        required:false,
+    programs : [{ type: Schema.Types.ObjectId, ref: "programs" }],
+    messages: [messageSchema],
+    numOfMessages: {
+        type: Number,
+        required: true,
+        default: 0
     },
-    programStatus:{
-        type: String,
-        required: false,
-    }
 });
     
 userSchema.methods.matchPassword = async function (enteredPassword) {

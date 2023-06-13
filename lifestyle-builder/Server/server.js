@@ -9,7 +9,7 @@ const port = process.env.PORT || 3001;
 const userRoutes = require("./routes/userRoutes");
 const specialistRoutes = require("./routes/specialistsRoutes");
 const programRoutes = require("./routes/programRoutes");
-const ProgramModel = require("./models/programModel");
+
 
 
 
@@ -20,11 +20,11 @@ console.log("NODE_ENV: ", process.env.NODE_ENV);
 app.use(express.json());
 
 app.use("/",express.static(path.join(__dirname, "../public")));
-
+app.use(cors());
 app.use("/api/users", userRoutes);
 app.use("/api/specialists", specialistRoutes);
-app.use("/api/programs", programRoutes);
-app.use(cors());
+app.use("/api/program", programRoutes);
+
 
 
 mongoose.connection.once("open", () => {
