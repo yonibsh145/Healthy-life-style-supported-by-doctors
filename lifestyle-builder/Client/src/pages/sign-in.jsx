@@ -18,6 +18,8 @@ export function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+
+
   const userData = {
     email: email,
     password: password
@@ -26,21 +28,24 @@ export function SignIn() {
   function handleLogin(event) {
     event.preventDefault();
     console.log(userData.email)
-    /*
+
     axios.post('http://localhost:3001/api/users/login', userData)
       .then(response => {
         // Handle success.
-        console.log('User profile', response.data.user);
-        console.log('User token', response.data.token);
-        navigate('/sign-in'); // Navigate to the login page
+        const userProfile = response.data;
+        console.log('User profile', userProfile);
+        console.log('User token', userProfile.token);
+
+        // Save the user data and token in local storage
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        // Redirect to the home page
+        window.location.href = '/home';
       })
       .catch(error => {
         // Handle error.
         console.log('Login Error:', error.response);
       });
-      */
-  
-  
   }
 
   return (
@@ -96,7 +101,7 @@ export function SignIn() {
         </Card>
       </div>
       <div className="container absolute bottom-6 left-2/4 z-10 mx-auto -translate-x-2/4 text-white">
-       <SimpleFooter />
+        <SimpleFooter />
       </div>
     </>
   );

@@ -21,6 +21,12 @@ app.use(express.json());
 
 app.use("/",express.static(path.join(__dirname, "../public")));
 
+app.use(cors({
+    origin: 'http://localhost:5173', // Replace with the appropriate origin URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the allowed HTTP methods
+    allowedHeaders: ['Content-Type'], // Specify the allowed request headers
+  }));
+
 app.use("/api/users", userRoutes);
 app.use("/api/specialists", specialistRoutes);
 app.use("/api/programs", programRoutes);
