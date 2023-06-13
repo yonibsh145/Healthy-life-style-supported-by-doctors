@@ -1,30 +1,75 @@
 const { Schema, model } = require("mongoose");
+const Program = require("./programModel");
 const bcrypt = require('bcryptjs');
-const specialistSchema = new Schema({
+const messageSchema = new Schema({
+    sender: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
+    receiver: {
+      type: Schema.Types.ObjectId,
+      ref: "specialists",
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
+  });
+  const specialistSchema = new Schema({
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     username: {
-        type: String,
-        required:true,
+      type: String,
+      required: true,
     },
     password: {
-        type: String,
-        required:true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required:true,
+      type: String,
+      required: true,
     },
-    // i want to that speicailt is a user but his role is speicailst not patient
     role: {
-        type: String,
-        required: true,
-        default: "specialist",
-    }
-   
-});
+      type: String,
+      required: true,
+      default: "specialist",
+    },
+    messages: [messageSchema],
+    patients: [{ type: Schema.Types.ObjectId, ref: "users" }],
+    programs: [{ type: Schema.Types.ObjectId, ref: "programs" }],
+    rating: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    requests: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "users",
+          required: true,
+        },
+        program: {
+          type: Schema.Types.ObjectId,
+          ref: "programs",
+          required: true,
+        },
+      },
+    ],
+  }, {
+    timestamps: true,
+  });
+  
     
 specialistSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
@@ -37,5 +82,6 @@ specialistSchema.methods.matchPassword = async function (enteredPassword) {
     this.password = await bcrypt.hash(this.password, salt);
   });
 
-const specialisttModel = model("specialists",specialistSchema);
-module.exports = specialisttModel;
+  const specialistModel = model("specialists", specialistSchema);
+  module.exports = specialistModel;
+  

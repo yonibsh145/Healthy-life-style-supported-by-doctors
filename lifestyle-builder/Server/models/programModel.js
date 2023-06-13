@@ -1,7 +1,5 @@
-const { time } = require("console");
 const { Schema, model } = require("mongoose");
 const mongoose = require("mongoose");
-const { URL } = require('url');
 const reviewSchema = new Schema({
     review: {
         type: String,
@@ -33,7 +31,7 @@ const activitySchema = new Schema({
     },
     createBy: { 
         type: Schema.Types.ObjectId, 
-        ref: 'specialist',
+        ref: 'specialists',
         required: true 
     },
     //check if activity has previous activity that must be completed before starting this activity
@@ -52,7 +50,24 @@ const activitySchema = new Schema({
         type: Boolean,
         required: false
     },
-    
+    day: {
+        type: Number,
+        required: true,
+        default: 1
+    },
+    feedback: {
+        type: String,
+        required: false
+    },
+    result: { 
+        type: String,
+        required: false
+    },
+    date: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
 
 }); 
 const programSchema = new Schema({
@@ -90,21 +105,6 @@ const programSchema = new Schema({
         type: String,
         required: true,
     },
-    //check if the program been completed
-    completed: {
-        type: Boolean,
-        required: false
-    },
-    //check if the program been activated
-    activated: {
-        type: Boolean,
-        required: false
-    },
-    //check if the program been deactivated
-    deactivated: {
-        type: Boolean,
-        required: false
-    },
     reviews: [reviewSchema],
     numOfReviews: {
         type: Number,
@@ -115,11 +115,47 @@ const programSchema = new Schema({
         type: Number,
         required: true,
         default: 0
-    }
+    },
+
+    //for each day in the program, there is a list of activities for each day with date
+    dailyActivities: [{
+        date: {
+            type: Date,
+            required: true
+        },
+        activities: [{
+            type: Schema.Types.ObjectId,
+            ref: 'activity',
+            required: true
+        }]
+    }],
+    programStatus: {
+        type: String,
+        required: true,
+
+    },
+
 });
 
+// Pre middleware to populate the dailyActivities field
+programSchema.pre('save', function (next) {
+    const activitiesByDate = {};
+    this.activities.forEach((activity) => {
+      const date = activity.date.toDateString(); // Convert date to a string for grouping
+      if (!activitiesByDate[date]) {
+        activitiesByDate[date] = [];
+      }
+      activitiesByDate[date].push(activity._id);
+    });
+  
+    this.dailyActivities = Object.entries(activitiesByDate).map(([date, activities]) => ({
+      date: new Date(date),
+      activities,
+    }));
+  
+    next();
+  });
 
 
 const ProgramModel = model("programs",programSchema);
 module.exports = ProgramModel;
-
