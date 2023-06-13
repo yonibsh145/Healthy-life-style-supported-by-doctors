@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+
 import {
   Card,
   CardHeader,
@@ -8,10 +10,74 @@ import {
   Checkbox,
   Button,
   Typography,
+  Select,
+  Option,
 } from "@material-tailwind/react";
 import { SimpleFooter } from "@/widgets/layout";
+import axios from 'axios';
 
 export function SignUp() {
+
+  const navigate = useNavigate();
+
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
+
+  const userData = {
+    username: fullName,
+    email: email,
+    password: password,
+    selected: selectedValue
+  };
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    // Field validation
+    if (!fullName || !email || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+  
+    // Email format validation using regular expression
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+  
+    // Password length validation
+    if (password.length < 6) {
+      alert("Password should be at least 6 characters long.");
+      return;
+    }
+
+    //Select type
+    if(selectedValue==""){
+      alert("Please select a user type");
+      return;
+    }
+    
+
+    console.log(selectedValue)
+    console.log(userData.selected)
+    axios.post('http://localhost:3001/api/users/register', userData)
+      .then(response => {
+        // Handle success.
+        console.log('User profile', response.data.user);
+        console.log('User token', response.data.token);
+        window.location.href = '/sign-in';
+      })
+      .catch(error => {
+        // Handle error.
+        console.log('An error occurred:', error.response);
+      });
+
+
+  }
+
   return (
     <>
       <img
@@ -31,20 +97,27 @@ export function SignUp() {
             </Typography>
           </CardHeader>
           <CardBody className="flex flex-col gap-4">
-            <Input variant="standard" label="Name" size="lg" />
-            <Input variant="standard" type="email" label="Email" size="lg" />
+            <Input variant="standard" label="Name" size="lg" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            <Input variant="standard" type="email" label="Email" size="lg" value={email} onChange={(e) => setEmail(e.target.value)} />
             <Input
               variant="standard"
               type="password"
               label="Password"
               size="lg"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+            <select value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}>
+              <option value="">Select a user type</option>
+              <option value="User">User</option>
+              <option value="Trainer">Trainer</option>
+            </select>
             <div className="-ml-2.5">
               <Checkbox label="I agree the Terms and Conditions" />
             </div>
           </CardBody>
           <CardFooter className="pt-0">
-            <Button variant="gradient" fullWidth>
+            <Button variant="gradient" fullWidth onClick={handleSubmit}>
               Sign Up
             </Button>
             <Typography variant="small" className="mt-6 flex justify-center">

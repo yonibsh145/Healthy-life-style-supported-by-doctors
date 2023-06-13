@@ -150,6 +150,7 @@ export function Profile() {
                     University of Computer Science
                   </Typography>
                 </div>
+                
               </div>
               <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
                 <div className="mt-2 flex flex-wrap justify-center">
