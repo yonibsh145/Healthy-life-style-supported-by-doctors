@@ -7,46 +7,54 @@ const asyncHandler = require('express-async-handler');
 //@route    POST /api/program
 //@access   Public
 const createProgram = asyncHandler(async (req, res) => {
-    const { name, startDate, specialist, activities, kindOfProgram, description } = req.body;
-  
-    if (!name || !startDate || !specialist || !activities || !kindOfProgram || !description) {
-      res.status(400).json({ message: "Please fill all fields" });
+  const { name, duration, specialist, activities, kindOfProgram, description } = req.body;
+
+  if (!name || !duration || !specialist || !activities || !kindOfProgram || !description) {
+    res.status(400).json({ message: "Please fill all fields" });
+    return;
+  }
+
+  try {
+    // Check if the specialist exists
+    const existingSpecialist = await Specialist.findById(specialist);
+    if (!existingSpecialist) {
+      res.status(404).json({ message: "Specialist not found" });
       return;
     }
-  
-    try {
-      // Check if the specialist exists
-      const existingSpecialist = await Specialist.findById(specialist);
-      if (!existingSpecialist) {
-        res.status(404).json({ message: "Specialist not found" });
-        return;
-      }
-  
-      // Create the program
-      const program = await Program.create({
-        name,
-        startDate,
-        specialist,
-        activities,
-        kindOfProgram,
-        description,
-      });
-  
-      if (program) {
-        // Update the specialist's programs array
-        existingSpecialist.programs.push(program._id);
-        await existingSpecialist.save();
-  
-        res.status(200).json({ message: "Program created successfully", program });
-      } else {
-        res.status(400).json({ message: "Invalid program data" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
+
+    // Create the program without setting the startDate field
+    const program = await Program.create({
+      name,
+      duration,
+      specialist,
+      activities,
+      kindOfProgram,
+      description,
+    });
+
+    if (program) {
+      // Update the specialist's programs array
+      existingSpecialist.programs.push(program._id);
+      await existingSpecialist.save();
+
+      res.status(200).json({ message: "Program created successfully", program });
+    } else {
+      res.status(400).json({ message: "Invalid program data" });
     }
-  });
-  
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+/*//@desc     create activity to program by specialist
+//@route    POST /api/program/addActivity
+//@access   Private
+const addActivity = asyncHandler(async (req, res) => {
+    const { name, description, duration, type, intensity } = req.body;
+    const programId = req.body.programId;
+*/
+
 
 //@desc     get all programs
 //@route    GET /api/program
@@ -122,46 +130,51 @@ const getProgramUrl = asyncHandler(async (req, res) => {
 //@route    GET /api/program/program-daily-activities/:id
 //@access   Private
 const getDailyActivities = async (req, res) => {
-    const userId = req.user._id;
-  
-    try {
-      // Find the user
-      const user = await User.findById(userId);
-  
-      if (!user) {
-        res.status(404).json({ message: 'User not found' });
-        return;
-      }
-  
-      // Find the active programs for the user
-      const activePrograms = await Program.find({
-        _id: { $in: user.programs },
-        programStatus: 'Active',
+  const userId = req.user._id;
+  const programId = req.params.id;
+
+  try {
+    // Find the user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the active program for the user
+    const activeProgram = await Program.findOne({
+      _id: programId,
+      specialist: req.user._id,
+      programStatus: 'Active',
+    })
+      .populate({
+        path: 'activities',
+        model: 'activity',
       })
-        .populate({
-          path: 'dailyActivities.activities',
-          model: 'activity',
-        })
-        .exec();
-  
-      if (!activePrograms || activePrograms.length === 0) {
-        res.status(404).json({ message: 'No active programs found for the user' });
-        return;
-      }
-  
-      const dailyActivitiesByProgram = [];
-  
-      // Retrieve the daily activities for each active program
-      for (const program of activePrograms) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set the time to midnight for accurate comparison
-  
-        const dailyActivities = program.dailyActivities.find(
-          (dailyActivity) => dailyActivity.date.getTime() === today.getTime()
-        );
-  
-        if (dailyActivities) {
-          dailyActivitiesByProgram.push({
+      .exec();
+
+    if (!activeProgram) {
+      return res.status(404).json({ message: 'Active program not found' });
+    }
+
+    const currentDay = Math.floor((Date.now() - activeProgram.startDate) / (24 * 60 * 60 * 1000)) + 1;
+
+    if (currentDay > activeProgram.duration) {
+      // Program duration exceeded, change program status to 'Done'
+      activeProgram.programStatus = 'Done';
+      await activeProgram.save();
+      return res.status(200).json({ message: 'Program duration exceeded', programStatus: 'Done' });
+    }
+
+    const dailyActivities = [];
+
+    // Retrieve the activities for the current day from each active program
+    for (const program of user.programs) {
+      if (program.programStatus === 'Active') {
+        const dailyActivity = program.dailyActivities.find(da => da.day === currentDay);
+
+        if (dailyActivity) {
+          dailyActivities.push({
             program: {
               _id: program._id,
               name: program.name,
@@ -171,22 +184,20 @@ const getDailyActivities = async (req, res) => {
               description: program.description,
               // Include other program fields as needed
             },
-            dailyActivities,
+            activities: dailyActivity.activities,
           });
         }
       }
-  
-      if (dailyActivitiesByProgram.length === 0) {
-        res.status(404).json({ message: 'No daily activities found for active programs' });
-        return;
-      }
-  
-      res.status(200).json({ dailyActivitiesByProgram });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server Error' });
     }
-  };
+
+    res.status(200).json({ dailyActivities });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
 //@desc     edit program details by program id
 //@route    PUT /api/program/edit-program/:id
 //@access   Private
@@ -213,6 +224,21 @@ const editProgram = asyncHandler(async (req, res) => {
     }
 });
 
+//@desc     update program details by program id
+//@route    PUT /api/program/update-program/:id
+//@access   Private
+const updateProgram = asyncHandler(async (req, res) => {
+    const program = await Program.findById(req.params.id);
+    if(program){
+        program.name = req.body.name || program.name;
+        program.description = req.body.description || program.description;
+        program.activities = req.body.activities || program.activities;
+        const updatedProgram = await program.save();
+        res.json(updatedProgram);
+    }else{
+        res.status(404).json({message: "Program not found"});
+    }
+});
 
   
 

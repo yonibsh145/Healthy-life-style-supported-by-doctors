@@ -273,9 +273,201 @@ const updateActivityResult = asyncHandler(async (req, res) => {
   });
 
 
+//desc     get my history of programs that user has done
+//@route    GET /api/users/myPrograms//donePrograms
+//@access   Private
+const getDoneMyPrograms = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    // Find the user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the programs that have been marked as 'Done' for the user
+    const donePrograms = await Program.find({
+      _id: { $in: user.programs },
+      programStatus: 'Done',
+    }).populate('specialist', 'name').exec();
+
+    res.status(200).json({ donePrograms });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+// @desc     Get my active programs
+// @route    GET /api/users/myPrograms/activePrograms
+// @access   Private
+const getActiveMyPrograms = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    // Find the user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the programs that are marked as 'Active' for the user
+    const activePrograms = await Program.find({
+      _id: { $in: user.programs },
+      programStatus: 'Active',
+    }).populate('specialist', 'name').exec();
+
+    res.status(200).json({ activePrograms });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+//dsesc    send message to specialist
+//@route    POST /api/users/sendMessage
+//@access   Private
+const sendMessage = async (req, res) => {
+  const { senderId, receiverId, message } = req.body;
+
+  // Check if the sender is a user
+  if (req.user.role !== 'user') {
+    return res.status(400).json({ message: 'Invalid sender role' });
+  }
+
+  try {
+    // Find the sender and receiver
+    const sender = await UserModel.findById(senderId);
+    const receiver = await SpecialistModel.findById(receiverId);
+
+    // Check if sender and receiver exist and if the receiver is in the sender's programs array
+    if (!sender || !receiver || !sender.programs.includes(receiverId)) {
+      return res.status(404).json({ message: 'Sender or receiver not found' });
+    }
+
+    // Create a new message
+    const newMessage = {
+      sender: sender._id,
+      receiver: receiver._id,
+      senderRole: 'user',
+      receiverRole: 'specialist',
+      message,
+    };
+
+    // Add the message to the sender's messages array
+    sender.messages.push(newMessage);
+
+    // Save the changes
+    await sender.save();
+
+    res.status(200).json({ message: 'Message sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+//desc     get user program by id for program array in user model
+//@route    GET /api/users/myPrograms/:id
+//@access   Private
+const getUserProgramById = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const programId = req.params.id;
   
+  try {
+    // Find the user by ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the program in the user's programs array by ID
+    const program = user.programs.find((p) => p.toString() === programId);
+
+    if (!program) {
+      return res.status(404).json({ message: "Program not found" });
+    }
+
+    // Return the program object
+    res.status(200).json(program);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+//desc get user programs
+//@route    GET /api/users/myPrograms
+//@access   Private
+const getUserPrograms = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    // Find the user by their ID
+    const user = await UserModel.findById(userId).populate("programs");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the user has any programs
+    if (user.programs.length === 0) {
+      return res.status(200).json({ message: "User has no programs" });
+    }
+
+    // Get the user's programs
+    const programs = user.programs;
+
+    res.status(200).json({ programs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+//desc   get messages
+//@route  GET /api/users/messages
+//@access Private
+const getMessages = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    // Find the user by their ID
+    const user = await UserModel.findById(userId).populate("messages sender", "-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Get the user's messages
+    const messages = user.messages;
+
+    res.status(200).json({ messages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 
 
 
+module.exports = {
+  updateUserProfile, 
+  getUserProfile, 
+  registerUser, 
+  authUser,
+  activateProgram,
+  pauseProgram,
+  useProgram,
+  updateActivityResult,
+  getDoneMyPrograms,
+  getActiveMyPrograms,
+  sendMessage,
+  getUserProgramById,
+  getUserPrograms,
+  getMessages
 
-module.exports = {updateUserProfile, getUserProfile, registerUser, authUser,activateProgram, pauseProgram,useProgram, updateActivityResult};
+
+};
