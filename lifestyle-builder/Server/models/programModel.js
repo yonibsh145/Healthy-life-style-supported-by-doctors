@@ -63,11 +63,6 @@ const activitySchema = new Schema({
         type: String,
         required: false
     },
-    date: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    },
 
 }); 
 const programSchema = new Schema({
@@ -75,13 +70,9 @@ const programSchema = new Schema({
         type: String,
         required: true,
     },
-    startDate: {
-        type: Date,
+    duration: {
+        type: Number,
         required:true,
-    },
-    endDate: {
-        type: Date,
-        required:false,
     },
     limtedDuration: {
         type: Number,
@@ -119,8 +110,8 @@ const programSchema = new Schema({
 
     //for each day in the program, there is a list of activities for each day with date
     dailyActivities: [{
-        date: {
-            type: Date,
+        day: {
+            type: Number,
             required: true
         },
         activities: [{
@@ -134,27 +125,15 @@ const programSchema = new Schema({
         required: true,
 
     },
+    startDate: {
+        type: Date,
+        required: true,
+        default: Date.now,
+      },
 
 });
 
 // Pre middleware to populate the dailyActivities field
-programSchema.pre('save', function (next) {
-    const activitiesByDate = {};
-    this.activities.forEach((activity) => {
-      const date = activity.date.toDateString(); // Convert date to a string for grouping
-      if (!activitiesByDate[date]) {
-        activitiesByDate[date] = [];
-      }
-      activitiesByDate[date].push(activity._id);
-    });
-  
-    this.dailyActivities = Object.entries(activitiesByDate).map(([date, activities]) => ({
-      date: new Date(date),
-      activities,
-    }));
-  
-    next();
-  });
 
 
 const ProgramModel = model("programs",programSchema);
