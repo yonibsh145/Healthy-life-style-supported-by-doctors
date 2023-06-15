@@ -3,15 +3,29 @@ import {
   TabsHeader,
   TabsBody,
   Tab,
+  Dialog,
+  CardHeader,
+  Input,
+  CardBody,
+  CardFooter,
   TabPanel,
+  IconButton,
 } from "@material-tailwind/react";
 import {
   MapPinIcon,
   BriefcaseIcon,
   BuildingLibraryIcon,
 } from "@heroicons/react/24/solid";
-import { Footer } from "@/widgets/layout";
+import {
+  CloudArrowUpIcon,
+  ArrowLongRightIcon,
+  ArrowPathIcon,
+  BookmarkIcon,
+  KeyIcon,
+} from "@heroicons/react/24/outline";
+import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
+import React, { useState, useCallback, useMemo } from 'react';
 
 const TABLE_HEAD = ["Name", "Job", "Employed", ""];
 
@@ -46,6 +60,10 @@ const TABLE_ROWS = [
 
 
 export function Libraries() {
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(!open);
 
   const data = [
     {
@@ -85,6 +103,9 @@ export function Libraries() {
 
   return (
     <>
+      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+        <Navbar3 />
+      </div>
       <section className="relative block h-[50vh]">
         <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
         <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
@@ -147,6 +168,9 @@ export function Libraries() {
                             <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
                               Edit
                             </Typography>
+                            <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
+                              Delete
+                            </Typography>
                           </td>
                         </tr>
                       );
@@ -154,10 +178,39 @@ export function Libraries() {
                   </tbody>
                 </table>
               </Card>
-              <div className="flex w-max gap-4 mt-5">
-              <button>hello</button>
-              <button>hello</button>
-              <button>hello</button></div>
+              <div className="px-6 flex flex-col items-center mt-2">
+                <Button className=" flex items-center gap-3 " color="green" onClick={handleOpen}>
+                  <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Library
+                </Button>
+                <Dialog
+                  size="xs"
+                  open={open}
+                  handler={handleOpen}
+                  className="bg-transparent shadow-none">
+                  <Card className="mx-auto w-full max-w-[24rem]">
+                    <CardHeader
+                      variant="gradient"
+                      color="blue"
+                      className="mb-4 grid h-28 place-items-center">
+                      <Typography variant="h3" color="white">
+                        New Library
+                      </Typography>
+                    </CardHeader>
+                    <CardBody className="flex flex-col gap-4">
+                      <Input label="Library Name" size="lg" type="text" />
+                    </CardBody>
+                    <CardFooter className="pt-0">
+                      <div className="mb-3 flex gap-2">
+                        <Button variant="gradient" onClick={handleOpen} fullWidth>
+                          Add
+                        </Button>
+                        <Button variant="gradient" onClick={handleOpen} fullWidth>
+                          Cancel
+                        </Button></div>
+                    </CardFooter>
+                  </Card>
+                </Dialog>
+              </div>
             </div>
           </div>
         </div>

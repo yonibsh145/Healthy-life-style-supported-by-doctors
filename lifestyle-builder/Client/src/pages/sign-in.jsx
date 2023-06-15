@@ -19,7 +19,6 @@ export function SignIn() {
   const [password, setPassword] = useState('');
 
 
-
   const userData = {
     email: email,
     password: password
@@ -38,9 +37,13 @@ export function SignIn() {
 
         // Save the user data and token in local storage
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        
+        //const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
+
+        //console.log('check', userProfile1.username)
 
         // Redirect to the home page
-        window.location.href = '/home';
+        window.location.href = '/homeuser';
       })
       .catch(error => {
         // Handle error.
