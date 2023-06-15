@@ -4,7 +4,7 @@ const programController = require('../controllers/programController');
 const { protected, specialist } = require('../middleware/authMiddleware');
 
 router.route('/')
-.post(protected,specialist,programController.createProgram)
+.post(programController.createProgram)
 .get(programController.getAllPrograms);
 
 router.route('/:id/reviews').post(protected,programController.addReview);

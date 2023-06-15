@@ -13,7 +13,7 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { SimpleFooter } from "@/widgets/layout";
+import { SimpleFooter, Navbar2 } from "@/widgets/layout";
 import axios from 'axios';
 
 export function SignUp() {
@@ -76,25 +76,28 @@ export function SignUp() {
     }
 
     //Select type
-    if (selectedValue == "Trainer") {
+    if (selectedValue == "Specialist") {
       axios.post('http://localhost:3001/api/specialists/register', userData)
-      .then(response => {
-        // Handle success.
-        console.log('User profile', response.data.user);
-        console.log('User token', response.data.token);
-        window.location.href = '/sign-in';
-      })
-      .catch(error => {
-        // Handle error.
-        console.log('An error occurred:', error.response);
-      });
+        .then(response => {
+          // Handle success.
+          console.log('User profile', response.data.user);
+          console.log('User token', response.data.token);
+          window.location.href = '/sign-in';
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('An error occurred:', error.response);
+        });
 
     }
-    
+
   }
 
   return (
     <>
+      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+        <Navbar2 />
+      </div>
       <img
         src="/img/background-2.jpg"
         className="absolute inset-0 z-0 h-full w-full object-cover"
@@ -125,7 +128,7 @@ export function SignUp() {
             <select value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}>
               <option value="">Select a user type</option>
               <option value="User">User</option>
-              <option value="Trainer">Trainer</option>
+              <option value="Specialist">Specialist</option>
             </select>
             <div className="-ml-2.5">
               <Checkbox label="I agree the Terms and Conditions" />

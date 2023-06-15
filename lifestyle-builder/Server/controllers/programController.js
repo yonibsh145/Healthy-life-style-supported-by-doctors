@@ -18,6 +18,7 @@ const createProgram = asyncHandler(async (req, res) => {
     // Check if the specialist exists
     const existingSpecialist = await Specialist.findById(specialist);
     if (!existingSpecialist) {
+      Error('error');
       res.status(404).json({ message: "Specialist not found" });
       return;
     }

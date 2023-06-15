@@ -40,7 +40,7 @@ const authSpecialist = asyncHandler(async (req, res) => {
     if (specialist && (await specialist.matchPassword(password))) {
         res.json({
             _id: specialist._id,
-            name: specialist.name,
+            username: specialist.username,
             email: specialist.email,
             role: specialist.role,
             token: generateToken(specialist._id),

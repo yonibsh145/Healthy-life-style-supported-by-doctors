@@ -26,7 +26,7 @@ const messageSchema = new Schema({
 const specialistSchema = new Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   username: {
     type: String,

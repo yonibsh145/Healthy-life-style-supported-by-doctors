@@ -73,8 +73,6 @@ export function Navbar3() {
                 <div className="hidden lg:block">{navList}</div>
                 <div className="hidden gap-2 lg:flex">
                     <Typography
-                        as="a"
-                        href="/home"
                         color="purple"
                         className="mr-4 cursor-pointer py-1.5 font-medium"
                     >

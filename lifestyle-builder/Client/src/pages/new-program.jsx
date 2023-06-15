@@ -33,13 +33,15 @@ import {
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemo } from 'react';
+import axios from 'axios';
 
 
 
-const TABLE_HEAD = ["Name", "Length", "Action"];
+const TABLE_HEAD = ["Name", "Length", "Description" ,"Action"];
 
 
 export function NewProgram() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
 
     const [open, setOpen] = useState(false);
 
@@ -48,6 +50,7 @@ export function NewProgram() {
     const [trainings, setTrainings] = useState([]);
     const [trainingName, setTrainingName] = useState('');
     const [trainingLength, setTrainingLength] = useState('');
+    const [trainingDescription, setTrainingDescription] = useState('');
     const [ProgramName, setProgramName] = useState('');
     const [ProgramLength, setProgramLength] = useState('');
     const [ProgramTags, setProgramTags] = useState('');
@@ -56,8 +59,17 @@ export function NewProgram() {
     const [ProgramLibrary, setProgramLibrary] = useState('');
     const [editIndex, setEditIndex] = useState(-1);
 
+    const programData = {
+        name: ProgramName,
+        duration: ProgramLength,
+        specialist: userProfile._id,
+        activities: trainings,
+        kindOfProgram: ProgramType,
+        description: ProgramDescription,
+    };
+
     const handleSave = () => {
-        if (trainingName && trainingLength) {
+        if (trainingName && trainingLength && trainingDescription) {
             const existingTraining = trainings.find(
                 (training) => training.name === trainingName
             );
@@ -70,15 +82,17 @@ export function NewProgram() {
                 updatedTrainings[editIndex] = {
                     name: trainingName,
                     length: trainingLength,
+                    description: trainingDescription,
                 };
                 setTrainings(updatedTrainings);
                 setEditIndex(-1);
             } else {
-                const newTraining = { name: trainingName, length: trainingLength };
+                const newTraining = { name: trainingName, length: trainingLength, description: trainingDescription };
                 setTrainings([...trainings, newTraining]);
             }
             setTrainingName('');
             setTrainingLength('');
+            setTrainingDescription('');
             setOpen(!open)
         }
         else {
@@ -90,6 +104,7 @@ export function NewProgram() {
         const trainingToEdit = trainings[index];
         setTrainingName(trainingToEdit.name);
         setTrainingLength(trainingToEdit.length);
+        setTrainingDescription(trainingToEdit.description);
         setEditIndex(index);
         setOpen(!open)
     };
@@ -101,19 +116,24 @@ export function NewProgram() {
     };
 
     const handleSaveAll = () => {
-        setSavedTrainings([...savedTrainings, ...trainings]);
-        setTrainings([]);
+        axios.post('http://localhost:3001/api/program', programData)
+            .then(response => {
+                // Handle success.
+                const programData = response.data;
+                console.log('Data', programData);
+            })
+            .catch(error => {
+                // Handle error.
+                console.log('Program Error:', error.response);
+            });
     };
 
-    const programData = {
-        programName: ProgramName,
-        programlength: ProgramLength,
-        programtags: ProgramTags,
-        programdescription: ProgramDescription,
-        programtype: ProgramType,
-        programlibrary: ProgramLibrary,
-        programactions: trainings,
-    };
+    const handleSelectChange = (event) => {
+        const selectedOption = event.target.value;
+        setProgramType(selectedOption.toString());
+      };
+
+
 
     return (
         <>
@@ -141,12 +161,12 @@ export function NewProgram() {
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
                                 <div className="mb-4 flex flex-col gap-6 bg-gray-200">
-                                    <select className="bg-gray-200" value={ProgramType} onChange={(e) => setProgramType(e.target.value)}>
+                                    <select className="bg-gray-200" value={ProgramType} onChange={handleSelectChange}>
                                         <option value="">Select Type</option>
                                         <option value="Medicine">Take Medicine</option>
-                                        <option value="Trainer">Lifestyle Action</option>
-                                        <option value="Trainer">Sport</option>
-                                        <option value="Trainer">Diet</option>
+                                        <option value="Lifestyle">Lifestyle Action</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Diet">Diet</option>
                                     </select>
                                     <Input size="lg" label="Program Name" value={ProgramName} onChange={(e) => setProgramName(e.target.value)} />
                                     <Input size="lg" label="Program Length(Days)" value={ProgramLength} onChange={(e) => setProgramLength(e.target.value)} />
@@ -184,6 +204,7 @@ export function NewProgram() {
                                             <Input label="Training Length" size="lg" type="text"
                                                 value={trainingLength}
                                                 onChange={(e) => setTrainingLength(e.target.value)} />
+                                            <Textarea label="Short Description" value={trainingDescription} onChange={(e) => setTrainingDescription(e.target.value)} />
                                         </CardBody>
                                         <CardFooter className="pt-0">
                                             <div className="mb-3 flex gap-2">
@@ -228,6 +249,11 @@ export function NewProgram() {
                                                 <td className="p-4">
                                                     <Typography variant="small" color="blue-gray" className="font-normal">
                                                         {training.length}
+                                                    </Typography>
+                                                </td>
+                                                <td className="p-4">
+                                                    <Typography variant="small" color="blue-gray" className="font-normal">
+                                                        {training.description}
                                                     </Typography>
                                                 </td>
                                                 <td className="p-4">
