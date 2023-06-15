@@ -30,7 +30,7 @@ import {
     BookmarkIcon,
     KeyIcon,
 } from "@heroicons/react/24/outline";
-import { Footer } from "@/widgets/layout";
+import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemo } from 'react';
 
@@ -48,6 +48,12 @@ export function NewProgram() {
     const [trainings, setTrainings] = useState([]);
     const [trainingName, setTrainingName] = useState('');
     const [trainingLength, setTrainingLength] = useState('');
+    const [ProgramName, setProgramName] = useState('');
+    const [ProgramLength, setProgramLength] = useState('');
+    const [ProgramTags, setProgramTags] = useState('');
+    const [ProgramDescription, setProgramDescription] = useState('');
+    const [ProgramType, setProgramType] = useState('');
+    const [ProgramLibrary, setProgramLibrary] = useState('');
     const [editIndex, setEditIndex] = useState(-1);
 
     const handleSave = () => {
@@ -99,9 +105,21 @@ export function NewProgram() {
         setTrainings([]);
     };
 
+    const programData = {
+        programName: ProgramName,
+        programlength: ProgramLength,
+        programtags: ProgramTags,
+        programdescription: ProgramDescription,
+        programtype: ProgramType,
+        programlibrary: ProgramLibrary,
+        programactions: trainings,
+    };
 
     return (
         <>
+            <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+                <Navbar3 />
+            </div>
             <section className="relative block h-[50vh]">
                 <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
                 <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
@@ -123,17 +141,24 @@ export function NewProgram() {
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
                                 <div className="mb-4 flex flex-col gap-6 bg-gray-200">
-                                    <select className="bg-gray-200">
+                                    <select className="bg-gray-200" value={ProgramType} onChange={(e) => setProgramType(e.target.value)}>
                                         <option value="">Select Type</option>
                                         <option value="Medicine">Take Medicine</option>
                                         <option value="Trainer">Lifestyle Action</option>
                                         <option value="Trainer">Sport</option>
                                         <option value="Trainer">Diet</option>
                                     </select>
-                                    <Input size="lg" label="Program Name" />
-                                    <Input size="lg" label="Program Length(Days)" />
-                                    <Input size="lg" label="Tags" />
-                                    <Textarea label="Short Description" />
+                                    <Input size="lg" label="Program Name" value={ProgramName} onChange={(e) => setProgramName(e.target.value)} />
+                                    <Input size="lg" label="Program Length(Days)" value={ProgramLength} onChange={(e) => setProgramLength(e.target.value)} />
+                                    <Input size="lg" label="Tags" value={ProgramTags} onChange={(e) => setProgramTags(e.target.value)} />
+                                    <Textarea label="Short Description" value={ProgramDescription} onChange={(e) => setProgramDescription(e.target.value)} />
+                                    <select className="bg-gray-200" value={ProgramLibrary} onChange={(e) => setProgramLibrary(e.target.value)}>
+                                        <option value="">Select Library</option>
+                                        <option value="Medicine">Library1</option>
+                                        <option value="Trainer">Library2</option>
+                                        <option value="Trainer">Library3</option>
+                                        <option value="Trainer">Library4</option>
+                                    </select>
                                 </div>
                                 <Button className="flex items-center gap-3" onClick={handleOpen}>
                                     <BookmarkIcon strokeWidth={2} className="h-5 w-5" /> Add Action
@@ -142,14 +167,12 @@ export function NewProgram() {
                                     size="xs"
                                     open={open}
                                     handler={handleOpen}
-                                    className="bg-transparent shadow-none"
-                                >
+                                    className="bg-transparent shadow-none">
                                     <Card className="mx-auto w-full max-w-[24rem]">
                                         <CardHeader
                                             variant="gradient"
                                             color="blue"
-                                            className="mb-4 grid h-28 place-items-center"
-                                        >
+                                            className="mb-4 grid h-28 place-items-center">
                                             <Typography variant="h3" color="white">
                                                 Add Action
                                             </Typography>
@@ -170,7 +193,6 @@ export function NewProgram() {
                                                 <Button variant="gradient" onClick={handleOpen} fullWidth>
                                                     Cancel
                                                 </Button></div>
-
                                         </CardFooter>
                                     </Card>
                                 </Dialog>
@@ -223,9 +245,9 @@ export function NewProgram() {
                                     </tbody>
                                 </table>
                                 <div className="px-6 flex flex-col items-center">
-                                <Button className=" flex items-center gap-3 " color="green" onClick={handleSaveAll}>
-                                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> Save Program
-                                </Button>
+                                    <Button className=" flex items-center gap-3 " color="green" onClick={handleSaveAll}>
+                                        <KeyIcon strokeWidth={2} className="h-5 w-5" /> Save Program
+                                    </Button>
                                 </div>
                             </Card>
                         )}

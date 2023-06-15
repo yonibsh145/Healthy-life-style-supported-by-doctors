@@ -6,3 +6,5 @@ export * from "@/pages/aboutus";
 export * from "@/pages/libraries";
 export * from "@/pages/programs";
 export * from "@/pages/new-program";
+export * from "@/pages/homeuser";
+export * from "@/pages/ourproducts";

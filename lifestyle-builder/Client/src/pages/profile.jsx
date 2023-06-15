@@ -10,14 +10,15 @@ import {
   BriefcaseIcon,
   BuildingLibraryIcon,
 } from "@heroicons/react/24/solid";
-import { Footer } from "@/widgets/layout";
+import { Footer , Navbar3} from "@/widgets/layout";
 import { Rating } from '@mui/material';
 
-const storedUserProfile = localStorage.getItem('userProfile');
+
 
 export function Profile() {
 
-
+  const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
+  console.log('check', userProfile1.username);
 
   const data = [
     {
@@ -57,6 +58,9 @@ export function Profile() {
 
   return (
     <>
+      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+        <Navbar3 />
+      </div>
       <section className="relative block h-[50vh]">
         <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
         <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
@@ -133,11 +137,11 @@ export function Profile() {
               </div>
               <div className="my-8 text-center">
                 <Typography variant="h2" color="blue-gray" className="mb-2">
-                  Shahar Almog
+                  {userProfile1.username}
                 </Typography>
                 <div className="mb-16 flex items-center justify-center gap-2">
                   <Typography className="font-medium text-blue-gray-700">
-                  <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                    <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
                   </Typography>
                 </div>
                 <div className="mb-2 flex items-center justify-center gap-2">
@@ -152,7 +156,7 @@ export function Profile() {
                     University of Computer Science
                   </Typography>
                 </div>
-                
+
               </div>
               <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
                 <div className="mt-2 flex flex-wrap justify-center">
