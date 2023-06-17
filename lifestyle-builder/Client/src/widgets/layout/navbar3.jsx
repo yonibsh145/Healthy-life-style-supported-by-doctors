@@ -37,7 +37,7 @@ export function Navbar3() {
                 className="p-1 font-normal"
             >
                 <a href="libraries" className="flex items-center">
-                    Libraries
+                    Programs
                 </a>
             </Typography>
             <Typography

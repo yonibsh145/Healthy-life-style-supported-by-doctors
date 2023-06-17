@@ -26,6 +26,7 @@ import {
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemo } from 'react';
+import { Link } from "react-router-dom";
 
 const TABLE_HEAD = ["Name", "Job", "Employed", ""];
 
@@ -122,7 +123,7 @@ export function Libraries() {
               </div>
               <div className="my-8 text-center">
                 <Typography variant="h2" color="blue-gray" className="mb-2">
-                  My Libraries
+                  My Programs
                 </Typography>
               </div>
               <Card className="overflow-scroll h-full w-full">
@@ -179,9 +180,11 @@ export function Libraries() {
                 </table>
               </Card>
               <div className="px-6 flex flex-col items-center mt-2">
-                <Button className=" flex items-center gap-3 " color="green" onClick={handleOpen}>
-                  <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Library
+              <Link to="/new-program">
+                <Button className=" flex items-center gap-3 " color="green">
+                  <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
                 </Button>
+                </Link>
                 <Dialog
                   size="xs"
                   open={open}
