@@ -267,7 +267,7 @@ const getSpecialistRequests = asyncHandler(async (req, res) => {
 
 //desc get programs that specialist has created
 //@route GET /api/specialists/programs
-//@access Private
+//@access Public
 const getSpecialistPrograms = asyncHandler(async (req, res) => {
   try {
     // Find the specialist based on the logged-in user

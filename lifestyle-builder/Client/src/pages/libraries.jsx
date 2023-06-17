@@ -27,6 +27,7 @@ import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemo } from 'react';
 import { Link } from "react-router-dom";
+import axios from 'axios';
 
 const TABLE_HEAD = ["Name", "Job", "Employed", ""];
 
@@ -66,6 +67,8 @@ export function Libraries() {
 
   const handleOpen = () => setOpen(!open);
 
+  const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+
   const data = [
     {
       label: "HTML",
@@ -101,6 +104,21 @@ export function Libraries() {
       constantly trying to express ourselves and actualize our dreams.`,
     },
   ];
+
+  const loadPrograms = () => {
+    console.log(userProfile._id);
+    axios.post('http://localhost:3001/api/specialists/programs', userProfile._id)
+      .then(response => {
+        // Handle success.
+        const programData = response.data;
+        console.log('Data', programData);
+      })
+      .catch(error => {
+        // Handle error.
+        console.log('Program Error:', error.response);
+      });
+  };
+
 
   return (
     <>
@@ -180,11 +198,14 @@ export function Libraries() {
                 </table>
               </Card>
               <div className="px-6 flex flex-col items-center mt-2">
-              <Link to="/new-program">
-                <Button className=" flex items-center gap-3 " color="green">
-                  <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
-                </Button>
+                <Link to="/new-program">
+                  <Button className=" flex items-center gap-3 " color="green">
+                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
+                  </Button>
                 </Link>
+                <Button className=" flex items-center gap-3 " color="green" onClick={loadPrograms}>
+                  <KeyIcon strokeWidth={2} className="h-5 w-5" /> load program
+                </Button>
                 <Dialog
                   size="xs"
                   open={open}

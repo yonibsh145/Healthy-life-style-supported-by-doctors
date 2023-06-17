@@ -21,7 +21,7 @@ const createProgram = asyncHandler(async (req, res) => {
       res.status(404).json({ message: "Specialist not found" });
       return;
     }
-    
+
     // Convert activities to match the activity schema
     const convertedActivities = activities.map(activity => ({
       name: activity.name,
@@ -74,8 +74,8 @@ const addActivity = asyncHandler(async (req, res) => {
 //@route    GET /api/programs
 //@access   Public
 const getAllPrograms = asyncHandler(async (req, res) => {
-    const programs = await Program.find({});
-    res.json(programs);
+  const programs = await Program.find({});
+  res.json(programs);
 }
 );
 
@@ -83,61 +83,77 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 //@route    GET /api/programs/:id
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
-    const program = await Program.findById(req.params.id);
-    if(program){
-        res.json(program);
-    }else{
-        res.status(404).json({message: "Program not found"});
-    }
+  const program = await Program.findById(req.params.id);
+  if (program) {
+    res.json(program);
+  } else {
+    res.status(404).json({ message: "Program not found" });
+  }
 });
 
 
 //@desc     get all programs by specialist id
 //@route    GET /api/programs/specialist-programs/:id
 //@access   Public
-const getSpecialistPrograms = asyncHandler(async (req, res) => {
-    const programs = await Program.find({specialist: req.params.id});
-    res.json(programs);
-}
-);
+/*const getSpecialistPrograms = asyncHandler(async (req, res) => {
+  try {
+    const specialistId = req.params.id;
+
+    // Find specialist by ID
+    const specialist = await Specialist.findById(specialistId);
+
+    if (!specialist) {
+      return res.status(404).json({ message: 'Specialist not found' });
+    }
+
+    // Find programs by specialist ID
+    const programs = await Program.find({ specialist: specialistId });
+
+    res.status(200).json({ specialist, programs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+*/
 
 //@desc     add review to program by user
 //@route    POST /api/programs/:id/reviews
 //@access   Public
 const addReview = asyncHandler(async (req, res) => {
-    const {rating, comment} = req.body;
-    const program = await Program.findById(req.params.id);
-    if(program){
-        const alreadyReviewed = program.reviews.find(r => r.user.toString() === req.user._id.toString());
-        if(alreadyReviewed){
-            res.status(400).json({message: "Program already reviewed"});
-        }
-        const review = {
-            name: req.user.username,
-            rating: Number(rating),
-            comment,
-            user: req.user._id
-        }
-        program.reviews.push(review);
-        program.numOfReviews = program.reviews.length;
-        program.rating = program.reviews.reduce((acc, item) => item.rating + acc, 0) / program.reviews.length;
-        await program.save();
-        res.status(200).json({message: "Review added"});
-    }else{
-        res.status(404).json({message: "Program not found"});
+  const { rating, comment } = req.body;
+  const program = await Program.findById(req.params.id);
+  if (program) {
+    const alreadyReviewed = program.reviews.find(r => r.user.toString() === req.user._id.toString());
+    if (alreadyReviewed) {
+      res.status(400).json({ message: "Program already reviewed" });
     }
+    const review = {
+      name: req.user.username,
+      rating: Number(rating),
+      comment,
+      user: req.user._id
+    }
+    program.reviews.push(review);
+    program.numOfReviews = program.reviews.length;
+    program.rating = program.reviews.reduce((acc, item) => item.rating + acc, 0) / program.reviews.length;
+    await program.save();
+    res.status(200).json({ message: "Review added" });
+  } else {
+    res.status(404).json({ message: "Program not found" });
+  }
 });
 
 //@desc     get program url by program id
 //@route    GET /api/programs/program-url/:id
 //@access   Public
 const getProgramUrl = asyncHandler(async (req, res) => {
-    const program = await Program.findById(req.params.id);
-    if(program){
-        res.json(program.url);
-    }else{
-        res.status(404).json({message: "Program not found"});
-    }
+  const program = await Program.findById(req.params.id);
+  if (program) {
+    res.json(program.url);
+  } else {
+    res.status(404).json({ message: "Program not found" });
+  }
 });
 
 //@desc     get program daily activities by program id
@@ -216,53 +232,53 @@ const getDailyActivities = async (req, res) => {
 //@route    PUT /api/programs/edit-program/:id
 //@access   Public
 const editProgram = asyncHandler(async (req, res) => {
-    //want that details will be shown in the edit form
+  //want that details will be shown in the edit form
 
-    const program = await Program.findById(req.params.id);
-    if(program){
-        program.name = req.body.name || program.name;
-        program.description = req.body.description || program.description;
-        program.url = req.body.url || program.url;
-        program.price = req.body.price || program.price;
-        program.category = req.body.category || program.category;
-        program.image = req.body.image || program.image;
-        program.specailist = req.body.specialist || program.specialist;
-        program.numOfRatings = req.body.numReviews || program.numOfRatings;
-        program.rating = req.body.rating || program.rating;
-        program.reviews = req.body.reviews || program.reviews;
-        program.activities = req.body.activities || program.activities;
-        const updatedProgram = await program.save();
-        res.json(updatedProgram);
-    }else{
-        res.status(404).json({message: "Program not found"});
-    }
+  const program = await Program.findById(req.params.id);
+  if (program) {
+    program.name = req.body.name || program.name;
+    program.description = req.body.description || program.description;
+    program.url = req.body.url || program.url;
+    program.price = req.body.price || program.price;
+    program.category = req.body.category || program.category;
+    program.image = req.body.image || program.image;
+    program.specailist = req.body.specialist || program.specialist;
+    program.numOfRatings = req.body.numReviews || program.numOfRatings;
+    program.rating = req.body.rating || program.rating;
+    program.reviews = req.body.reviews || program.reviews;
+    program.activities = req.body.activities || program.activities;
+    const updatedProgram = await program.save();
+    res.json(updatedProgram);
+  } else {
+    res.status(404).json({ message: "Program not found" });
+  }
 });
 
 //@desc     update program details by program id
 //@route    PUT /api/programs/update-program/:id
 //@access   Public
 const updateProgram = asyncHandler(async (req, res) => {
-    const program = await Program.findById(req.params.id);
-    if(program){
-        program.name = req.body.name || program.name;
-        program.description = req.body.description || program.description;
-        program.activities = req.body.activities || program.activities;
-        const updatedProgram = await program.save();
-        res.json(updatedProgram);
-    }else{
-        res.status(404).json({message: "Program not found"});
-    }
+  const program = await Program.findById(req.params.id);
+  if (program) {
+    program.name = req.body.name || program.name;
+    program.description = req.body.description || program.description;
+    program.activities = req.body.activities || program.activities;
+    const updatedProgram = await program.save();
+    res.json(updatedProgram);
+  } else {
+    res.status(404).json({ message: "Program not found" });
+  }
 });
 
-  
+
 
 module.exports = {
-    getProgramById,
-    createProgram,
-    updateProgram,
-    getSpecialistPrograms,
-    addReview,
-    getProgramUrl,
-    getDailyActivities,
-    editProgram
+  getProgramById,
+  createProgram,
+  updateProgram,
+  //getSpecialistPrograms,
+  addReview,
+  getProgramUrl,
+  getDailyActivities,
+  editProgram
 };

@@ -14,8 +14,8 @@ router.route('/edit-program/:id').put(programController.editProgram);
 router.route('/:id')
 .get(programController.getProgramById);
 
-router.route('/specialist-programs/:id')
-.get(programController.getSpecialistPrograms);
+//router.route('/specialist-programs/:id')
+//.get(programController.getSpecialistPrograms);
 
 router.route('/add-review/:id')
 .put(programController.addReview);
