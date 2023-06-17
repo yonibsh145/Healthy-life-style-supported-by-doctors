@@ -8,3 +8,4 @@ export * from "@/pages/programs";
 export * from "@/pages/new-program";
 export * from "@/pages/homeuser";
 export * from "@/pages/ourproducts";
+export * from "@/pages/inbox1";

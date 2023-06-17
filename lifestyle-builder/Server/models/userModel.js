@@ -57,7 +57,10 @@ const userSchema = new Schema({
     required: true,
     default: "patient",
   },
-  programs: [{ type: Schema.Types.ObjectId, ref: "programs" }],
+  programs: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Program',
+  }],
   messages: [messageSchema],
   numOfMessages: {
     type: Number,

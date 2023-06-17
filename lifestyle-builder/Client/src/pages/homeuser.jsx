@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   Card,
   CardBody,
@@ -21,6 +21,8 @@ const userType = "";
 
 export function HomeUser() {
   const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
+
+
   if (userProfile1.role == "specialist") {
     return (
       <>

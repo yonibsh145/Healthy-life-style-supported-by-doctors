@@ -25,11 +25,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 
-const TABLE_HEAD = ["Name", "Job", "Employed", ""];
+const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
 
 const TABLE_ROWS = [
   {
@@ -69,6 +69,29 @@ export function Libraries() {
 
   const userProfile = JSON.parse(localStorage.getItem('userProfile'));
 
+  const [data1, setData] = useState(null);
+
+  const [pageData, setPageData] = useState('');
+
+  const handleDelete = () => {
+    console.log('hello');
+    axios.delete('http://localhost:3001/api/programs/delete-program', {
+      data: {
+        programId: "648df3ec024bd4452dbe8db6" // Replace programId with the actual program ID you want to delete
+      }
+    })
+      .then(response => {
+        // Handle success.
+        const programData = response.data;
+        console.log('Data', programData);
+      })
+      .catch(error => {
+        // Handle error.
+        console.log('Program Error:', error.response);
+      });
+  };
+
+
   const data = [
     {
       label: "HTML",
@@ -107,7 +130,11 @@ export function Libraries() {
 
   const loadPrograms = () => {
     console.log(userProfile._id);
-    axios.post('http://localhost:3001/api/specialists/programs', userProfile._id)
+    axios.put('http://localhost:3001/api/users/use-program', {
+      params: {
+        specialistId: userProfile._id
+      }
+    })
       .then(response => {
         // Handle success.
         const programData = response.data;
@@ -119,127 +146,291 @@ export function Libraries() {
       });
   };
 
+  if (userProfile.role == "specialist") {
+    useEffect(() => {
+      fetchData();
+    }, []);
 
-  return (
-    <>
-      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
-        <Navbar3 />
-      </div>
-      <section className="relative block h-[50vh]">
-        <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
-        <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
-      </section>
-      <section className="relative bg-blue-gray-50/50 py-16 px-4">
-        <div className="container mx-auto">
-          <div className="relative mb-6 -mt-64 flex w-full min-w-0 flex-col break-words rounded-3xl bg-white shadow-xl shadow-gray-500/5">
-            <div className="px-6">
-              <div className="flex flex-wrap justify-center">
-                <div className="flex w-full justify-center px-4 lg:order-2 lg:w-3/12">
-                  <div className="relative">
+    const fetchData = async () => {
+      console.log(userProfile._id);
+      axios.get('http://localhost:3001/api/specialists/programs', {
+        params: {
+          specialistId: userProfile._id
+        }
+      })
+        .then(response => {
+          // Handle success.
+          const programData = response.data.programs;
+          console.log('Data', programData);
+          setPageData(programData);
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+    };
+
+    return (
+      <>
+        <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+          <Navbar3 />
+        </div>
+        <section className="relative block h-[50vh]">
+          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
+          <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
+        </section>
+        <section className="relative bg-blue-gray-50/50 py-16 px-4">
+          <div className="container mx-auto">
+            <div className="relative mb-6 -mt-64 flex w-full min-w-0 flex-col break-words rounded-3xl bg-white shadow-xl shadow-gray-500/5">
+              <div className="px-6">
+                <div className="flex flex-wrap justify-center">
+                  <div className="flex w-full justify-center px-4 lg:order-2 lg:w-3/12">
+                    <div className="relative">
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="my-8 text-center">
-                <Typography variant="h2" color="blue-gray" className="mb-2">
-                  My Programs
-                </Typography>
-              </div>
-              <Card className="overflow-scroll h-full w-full">
-                <table className="w-full min-w-max table-auto text-left">
-                  <thead>
-                    <tr>
-                      {TABLE_HEAD.map((head) => (
-                        <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal leading-none opacity-70"
-                          >
-                            {head}
-                          </Typography>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {TABLE_ROWS.map(({ name, job, date }, index) => {
-                      const isLast = index === TABLE_ROWS.length - 1;
-                      const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+                <div className="my-8 text-center">
+                  <Typography variant="h2" color="blue-gray" className="mb-2">
+                    My Programs
+                  </Typography>
+                </div>
+                <Card className="overflow-scroll h-full w-full">
+                  <table className="w-full min-w-max table-auto text-left">
+                    <thead>
+                      <tr>
+                        {TABLE_HEAD.map((head) => (
+                          <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal leading-none opacity-70"
+                            >
+                              {head}
+                            </Typography>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {TABLE_ROWS.map(({ name, job, date }, index) => {
+                        const isLast = index === TABLE_ROWS.length - 1;
+                        const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
-                      return (
-                        <tr key={name}>
-                          <td className={classes}>
-                            <Typography variant="small" color="blue-gray" className="font-normal">
-                              {name}
-                            </Typography>
-                          </td>
-                          <td className={classes}>
-                            <Typography variant="small" color="blue-gray" className="font-normal">
-                              {job}
-                            </Typography>
-                          </td>
-                          <td className={classes}>
-                            <Typography variant="small" color="blue-gray" className="font-normal">
-                              {date}
-                            </Typography>
-                          </td>
-                          <td className={classes}>
-                            <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                              Edit
-                            </Typography>
-                            <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                              Delete
-                            </Typography>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </Card>
-              <div className="px-6 flex flex-col items-center mt-2">
-                <Link to="/new-program">
-                  <Button className=" flex items-center gap-3 " color="green">
-                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
+                        return (
+                          <tr key={name}>
+                            <td className={classes}>
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {name}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {job}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {date}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
+                                Edit
+                              </Typography>
+                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
+                                <button onClick={handleDelete}> Delete</button>
+                              </Typography>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </Card>
+                <div className="px-6 flex flex-col items-center mt-2">
+                  <Link to="/new-program">
+                    <Button className=" flex items-center gap-3 " color="green">
+                      <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
+                    </Button>
+                  </Link>
+                  <Button className=" flex items-center gap-3 " color="green" onClick={loadPrograms}>
+                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> load program
                   </Button>
-                </Link>
-                <Button className=" flex items-center gap-3 " color="green" onClick={loadPrograms}>
-                  <KeyIcon strokeWidth={2} className="h-5 w-5" /> load program
-                </Button>
-                <Dialog
-                  size="xs"
-                  open={open}
-                  handler={handleOpen}
-                  className="bg-transparent shadow-none">
-                  <Card className="mx-auto w-full max-w-[24rem]">
-                    <CardHeader
-                      variant="gradient"
-                      color="blue"
-                      className="mb-4 grid h-28 place-items-center">
-                      <Typography variant="h3" color="white">
-                        New Library
-                      </Typography>
-                    </CardHeader>
-                    <CardBody className="flex flex-col gap-4">
-                      <Input label="Library Name" size="lg" type="text" />
-                    </CardBody>
-                    <CardFooter className="pt-0">
-                      <div className="mb-3 flex gap-2">
-                        <Button variant="gradient" onClick={handleOpen} fullWidth>
-                          Add
-                        </Button>
-                        <Button variant="gradient" onClick={handleOpen} fullWidth>
-                          Cancel
-                        </Button></div>
-                    </CardFooter>
-                  </Card>
-                </Dialog>
+                  <Dialog
+                    size="xs"
+                    open={open}
+                    handler={handleOpen}
+                    className="bg-transparent shadow-none">
+                    <Card className="mx-auto w-full max-w-[24rem]">
+                      <CardHeader
+                        variant="gradient"
+                        color="blue"
+                        className="mb-4 grid h-28 place-items-center">
+                        <Typography variant="h3" color="white">
+                          New Library
+                        </Typography>
+                      </CardHeader>
+                      <CardBody className="flex flex-col gap-4">
+                        <Input label="Library Name" size="lg" type="text" />
+                      </CardBody>
+                      <CardFooter className="pt-0">
+                        <div className="mb-3 flex gap-2">
+                          <Button variant="gradient" onClick={handleOpen} fullWidth>
+                            Add
+                          </Button>
+                          <Button variant="gradient" onClick={handleOpen} fullWidth>
+                            Cancel
+                          </Button></div>
+                      </CardFooter>
+                    </Card>
+                  </Dialog>
+                </div>
               </div>
             </div>
           </div>
+        </section>
+      </>
+    );
+  }
+  if (userProfile.role == "patient") {
+    useEffect(() => {
+      fetchData();
+    }, []);
+
+    const fetchData = async () => {
+      axios
+        .get('http://localhost:3001/api/programs')
+        .then(response => {
+          // Handle success.
+          const programsData = response.data;
+          console.log('Programs Data:', programsData);
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Programs Error:', error.response);
+        });
+    };
+    return (
+      <>
+        <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+          <Navbar3 />
         </div>
-      </section>
-    </>
-  );
+        <section className="relative block h-[50vh]">
+          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
+          <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
+        </section>
+        <section className="relative bg-blue-gray-50/50 py-16 px-4">
+          <div className="container mx-auto">
+            <div className="relative mb-6 -mt-64 flex w-full min-w-0 flex-col break-words rounded-3xl bg-white shadow-xl shadow-gray-500/5">
+              <div className="px-6">
+                <div className="flex flex-wrap justify-center">
+                  <div className="flex w-full justify-center px-4 lg:order-2 lg:w-3/12">
+                    <div className="relative">
+                    </div>
+                  </div>
+                </div>
+                <div className="my-8 text-center">
+                  <Typography variant="h2" color="blue-gray" className="mb-2">
+                    My Programs
+                  </Typography>
+                </div>
+                <Card className="overflow-scroll h-full w-full">
+                  <table className="w-full min-w-max table-auto text-left">
+                    <thead>
+                      <tr>
+                        {TABLE_HEAD.map((head) => (
+                          <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal leading-none opacity-70"
+                            >
+                              {head}
+                            </Typography>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {TABLE_ROWS.map(({ name, job, date }, index) => {
+                        const isLast = index === TABLE_ROWS.length - 1;
+                        const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+
+                        return (
+                          <tr key={name}>
+                            <td className={classes}>
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {name}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {job}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {date}
+                              </Typography>
+                            </td>
+                            <td className={classes}>
+                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
+                                Edit
+                              </Typography>
+                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
+                                <button onClick={handleDelete}> Delete</button>
+                              </Typography>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </Card>
+                <div className="px-6 flex flex-col items-center mt-2">
+                  <Link to="/new-program">
+                    <Button className=" flex items-center gap-3 " color="green">
+                      <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
+                    </Button>
+                  </Link>
+                  <Button className=" flex items-center gap-3 " color="green" onClick={loadPrograms}>
+                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> load program
+                  </Button>
+                  <Dialog
+                    size="xs"
+                    open={open}
+                    handler={handleOpen}
+                    className="bg-transparent shadow-none">
+                    <Card className="mx-auto w-full max-w-[24rem]">
+                      <CardHeader
+                        variant="gradient"
+                        color="blue"
+                        className="mb-4 grid h-28 place-items-center">
+                        <Typography variant="h3" color="white">
+                          New Library
+                        </Typography>
+                      </CardHeader>
+                      <CardBody className="flex flex-col gap-4">
+                        <Input label="Library Name" size="lg" type="text" />
+                      </CardBody>
+                      <CardFooter className="pt-0">
+                        <div className="mb-3 flex gap-2">
+                          <Button variant="gradient" onClick={handleOpen} fullWidth>
+                            Add
+                          </Button>
+                          <Button variant="gradient" onClick={handleOpen} fullWidth>
+                            Cancel
+                          </Button></div>
+                      </CardFooter>
+                    </Card>
+                  </Dialog>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
 }
 export default Libraries;

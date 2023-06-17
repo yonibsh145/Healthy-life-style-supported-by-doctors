@@ -7,7 +7,7 @@ const asyncHandler = require('express-async-handler');
 //@route    POST /api/programs
 //@access   Public
 const createProgram = asyncHandler(async (req, res) => {
-  const { name, duration, specialist, activities, kindOfProgram, description, reviews } = req.body;
+  const { name, duration, specialist, activities, kindOfProgram, description } = req.body;
 
   if (!name || !duration || !specialist || !activities || !kindOfProgram || !description) {
     res.status(400).json({ message: "Please fill all fields" });
@@ -46,9 +46,14 @@ const createProgram = asyncHandler(async (req, res) => {
     });
 
     if (program) {
-      // Update the specialist's programs array
-      existingSpecialist.programs.push(program._id);
+      // Update the specialist's programs array which conatins the program id and the program name
+      existingSpecialist.programs.push({
+        program: program._id,
+        programName: program.name,
+        programStartDate: program.startDate,
+      });
       await existingSpecialist.save();
+
 
       res.status(200).json({ message: "Program created successfully", program });
     } else {
@@ -74,10 +79,14 @@ const addActivity = asyncHandler(async (req, res) => {
 //@route    GET /api/programs
 //@access   Public
 const getAllPrograms = asyncHandler(async (req, res) => {
-  const programs = await Program.find({});
-  res.json(programs);
-}
-);
+  try {
+    const programs = await Program.find({});
+    res.status(200).json(programs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
 
 //@desc     get program by id
 //@route    GET /api/programs/:id
@@ -271,6 +280,27 @@ const updateProgram = asyncHandler(async (req, res) => {
 });
 
 
+//@desc     Delete program by program 
+//@route    DELETE /api/programs/delete-program
+//@access   Public
+const deleteProgram = asyncHandler(async (req, res) => {
+  const { programId } = req.body;
+
+  try {
+    // Delete the program
+    const program = await Program.findByIdAndDelete(programId);
+    if (!program) {
+      res.status(404).json({ message: "Program not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "Program deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 
 module.exports = {
   getProgramById,
@@ -280,5 +310,7 @@ module.exports = {
   addReview,
   getProgramUrl,
   getDailyActivities,
-  editProgram
+  editProgram,
+  deleteProgram,
+  getAllPrograms
 };

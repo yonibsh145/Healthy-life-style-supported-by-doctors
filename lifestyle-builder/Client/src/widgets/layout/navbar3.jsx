@@ -50,6 +50,26 @@ export function Navbar3() {
                     NewProgram
                 </a>
             </Typography>
+            <Typography
+                as="li"
+                variant="h6"
+                color="blue-gray"
+                className="p-1 font-normal"
+            >
+                <a href="inbox" className="flex items-center">
+                    Inbox
+                </a>
+            </Typography>
+            <Typography
+                as="li"
+                variant="h6"
+                color="blue-gray"
+                className="p-1 font-normal"
+            >
+                <a href="inbox1" className="flex items-center">
+                    Inbox1
+                </a>
+            </Typography>
         </ul>
     );
 

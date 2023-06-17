@@ -4,7 +4,8 @@ const programController = require('../controllers/programsController');
 //const { protected, specialist } = require('../middleware/authMiddleware');
 
 router.route('/')
-.post(programController.createProgram);
+.post(programController.createProgram)
+.get(programController.getAllPrograms);
 
 router.route('/:id/reviews').post(programController.addReview);
 router.route('/program-daily-activities/:id').get(programController.getDailyActivities);
@@ -23,6 +24,8 @@ router.route('/add-review/:id')
 router.route('program-url/:id')
 .get(programController.getProgramUrl);
 
+router.route('/delete-program')
+.delete(programController.deleteProgram);
 
 
 module.exports = router;
