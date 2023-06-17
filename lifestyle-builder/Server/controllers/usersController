@@ -52,45 +52,43 @@ const authUser = asyncHandler(async (req, res) => {
     }
   });
 
-//@desc     client send request to specialist to use his program
-//@route    PUT /api/specialist/use-program
-//@access   Private
+//@desc     Client sends a request to a specialist to use a specific program
+//@route    PUT /api/users/use-program
+//@access   Public
 const useProgram = asyncHandler(async (req, res) => {
-    // Obtain the necessary data from the request
-    const userId = req.user._id;
-    const programId = req.body.programId; // Assuming the program ID is sent in the request body
-  
-    try {
-      // Check if the user and program exist
-      const user = await User.findById(userId);
-      const program = await Program.findById(programId);
-      const specialist = await Specialist.findOne({ user: program.specailist });
-  
-      if (!user || !program || !specialist) {
-        res.status(404).json({ message: 'User, program, or specialist not found' });
-        return;
-      }
-  
-      // Update the user's document with the program and its pending status
-      user.programs.push(programId);
-      const programIndex = user.programs.findIndex(program => program._id.toString() === programId);
-      user.programs[programIndex].programStatus = 'Pending';
-      await user.save();
-  
-      // Update the specialist's document with the new request
-      specialist.requests.push({
-        user: userId,
-        program: programId,
-      });
-      await specialist.save();
-  
-      res.status(200).json({ message: 'Request sent to the specialist' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server Error' });
+  // Obtain the necessary data from the request body
+  const { userId, programId } = req.body;
+
+  try {
+    // Check if the user and program exist
+    const user = await User.findById(userId);
+    const program = await Program.findById(programId);
+    const specialist = await Specialist.findOne({ user: program.specailist });
+
+    if (!user || !program || !specialist) {
+      res.status(404).json({ message: 'User, program, or specialist not found' });
+      return;
     }
-  });
-  
+
+    // Update the user's document with the program and its pending status
+    user.programs.push(programId);
+    const programIndex = user.programs.findIndex(program => program._id.toString() === programId);
+    user.programs[programIndex].programStatus = 'Pending';
+    await user.save();
+
+    // Update the specialist's document with the new request
+    specialist.requests.push({
+      user: userId,
+      program: programId,
+    });
+    await specialist.save();
+
+    res.status(200).json({ message: 'Request sent to the specialist' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 
 //@desc     activate program for a user by program id
