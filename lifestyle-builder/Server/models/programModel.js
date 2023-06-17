@@ -29,11 +29,6 @@ const activitySchema = new Schema({
         type: String,
         required: true
     },
-    createBy: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'specialists',
-        required: true 
-    },
     //check if activity has previous activity that must be completed before starting this activity
     previousActivity: {
         type: Schema.Types.ObjectId,
@@ -78,9 +73,9 @@ const programSchema = new Schema({
         type: Number,
         required:false,
     },
-    specailist: {
+    specialist: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "specailists",
+        ref: "specialists",
         required:true,
     },
     activities: [activitySchema],

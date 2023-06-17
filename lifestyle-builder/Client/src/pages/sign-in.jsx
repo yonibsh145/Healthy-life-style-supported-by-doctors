@@ -11,12 +11,13 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
-import { SimpleFooter } from "@/widgets/layout";
+import { SimpleFooter, Navbar2 } from "@/widgets/layout";
 
 export function SignIn() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
 
 
   const userData = {
@@ -27,32 +28,59 @@ export function SignIn() {
   function handleLogin(event) {
     event.preventDefault();
     console.log(userData.email)
+    if (selectedValue == "User") {
+      axios.post('http://localhost:3001/api/users/login', userData)
+        .then(response => {
+          // Handle success.
+          const userProfile = response.data;
+          console.log('User profile', userProfile);
+          console.log('User token', userProfile.token);
 
-    axios.post('http://localhost:3001/api/users/login', userData)
-      .then(response => {
-        // Handle success.
-        const userProfile = response.data;
-        console.log('User profile', userProfile);
-        console.log('User token', userProfile.token);
+          // Save the user data and token in local storage
+          localStorage.setItem('userProfile', JSON.stringify(userProfile));
 
-        // Save the user data and token in local storage
-        localStorage.setItem('userProfile', JSON.stringify(userProfile));
-        
-        //const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
+          //const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
 
-        //console.log('check', userProfile1.username)
+          //console.log('check', userProfile1.username)
 
-        // Redirect to the home page
-        window.location.href = '/homeuser';
-      })
-      .catch(error => {
-        // Handle error.
-        console.log('Login Error:', error.response);
-      });
+          // Redirect to the home page
+          window.location.href = '/homeuser';
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Login Error:', error.response);
+        });
+    }
+    if (selectedValue == "Specialist") {
+      axios.post('http://localhost:3001/api/specialists/login', userData)
+        .then(response => {
+          // Handle success.
+          const userProfile = response.data;
+          console.log('User profile', userProfile);
+          console.log('User token', userProfile.token);
+          // Save the user data and token in local storage
+          localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+
+          //const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
+
+          //console.log('check', userProfile1.username)
+
+          // Redirect to the home page
+          window.location.href = '/homeuser';
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Login Error:', error.response);
+        });
+    }
   }
 
   return (
     <>
+      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+        <Navbar2 />
+      </div>
       <img
         src="/img/background-2.jpg"
         className="absolute inset-0 z-0 h-full w-full object-cover"
@@ -79,6 +107,11 @@ export function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
               size="lg"
             />
+            <select value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}>
+              <option value="">Select a user type</option>
+              <option value="User">User</option>
+              <option value="Specialist">Specialist</option>
+            </select>
             <div className="-ml-2.5">
               <Checkbox label="Remember Me" />
             </div>
