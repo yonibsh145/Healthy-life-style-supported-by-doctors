@@ -1,22 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const programController = require('../controllers/programController');
-const { protected, specialist } = require('../middleware/authMiddleware');
+const programController = require('../controllers/programsController');
+//const { protected, specialist } = require('../middleware/authMiddleware');
 
 router.route('/')
-.post(programController.createProgram)
-.get(programController.getAllPrograms);
+.post(programController.createProgram);
 
-router.route('/:id/reviews').post(protected,programController.addReview);
+router.route('/:id/reviews').post(programController.addReview);
 router.route('/program-daily-activities/:id').get(programController.getDailyActivities);
 router.route('/program-url/:id').get(programController.getProgramUrl);
-router.route('edit-program/:id').put(protected,specialist,programController.editProgram);
+router.route('/edit-program/:id').put(programController.editProgram);
 
-/*router.route('/:id')
+router.route('/:id')
 .get(programController.getProgramById);
-
-router.route('/update-activity/:id')
-.put(programController.updateActivity);
 
 router.route('/specialist-programs/:id')
 .get(programController.getSpecialistPrograms);
@@ -26,7 +22,7 @@ router.route('/add-review/:id')
 
 router.route('program-url/:id')
 .get(programController.getProgramUrl);
-*/
+
 
 
 module.exports = router;

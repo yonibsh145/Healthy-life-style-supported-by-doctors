@@ -4,10 +4,10 @@ const Specialist = require('../models/specialistsModel');
 const asyncHandler = require('express-async-handler');
 
 //@desc     Create a new program by specialist
-//@route    POST /api/program
+//@route    POST /api/programs
 //@access   Public
 const createProgram = asyncHandler(async (req, res) => {
-  const { name, duration, specialist, activities, kindOfProgram, description } = req.body;
+  const { name, duration, specialist, activities, kindOfProgram, description, reviews } = req.body;
 
   if (!name || !duration || !specialist || !activities || !kindOfProgram || !description) {
     res.status(400).json({ message: "Please fill all fields" });
@@ -18,17 +18,29 @@ const createProgram = asyncHandler(async (req, res) => {
     // Check if the specialist exists
     const existingSpecialist = await Specialist.findById(specialist);
     if (!existingSpecialist) {
-      Error('error');
       res.status(404).json({ message: "Specialist not found" });
       return;
     }
+    
+    // Convert activities to match the activity schema
+    const convertedActivities = activities.map(activity => ({
+      name: activity.name,
+      description: activity.description,
+      duration: activity.duration,
+      previousActivity: activity.previousActivity,
+      hasPreviousActivity: activity.hasPreviousActivity,
+      completed: activity.completed,
+      day: activity.day,
+      feedback: activity.feedback,
+      result: activity.result
+    }));
 
     // Create the program without setting the startDate field
     const program = await Program.create({
       name,
       duration,
       specialist,
-      activities,
+      activities: convertedActivities,
       kindOfProgram,
       description,
     });
@@ -48,6 +60,7 @@ const createProgram = asyncHandler(async (req, res) => {
   }
 });
 
+
 /*//@desc     create activity to program by specialist
 //@route    POST /api/program/addActivity
 //@access   Private
@@ -58,7 +71,7 @@ const addActivity = asyncHandler(async (req, res) => {
 
 
 //@desc     get all programs
-//@route    GET /api/program
+//@route    GET /api/programs
 //@access   Public
 const getAllPrograms = asyncHandler(async (req, res) => {
     const programs = await Program.find({});
@@ -67,7 +80,7 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 );
 
 //@desc     get program by id
-//@route    GET /api/program/:id
+//@route    GET /api/programs/:id
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
     const program = await Program.findById(req.params.id);
@@ -80,8 +93,8 @@ const getProgramById = asyncHandler(async (req, res) => {
 
 
 //@desc     get all programs by specialist id
-//@route    GET /api/program/specialist-programs/:id
-//@access   Private
+//@route    GET /api/programs/specialist-programs/:id
+//@access   Public
 const getSpecialistPrograms = asyncHandler(async (req, res) => {
     const programs = await Program.find({specialist: req.params.id});
     res.json(programs);
@@ -89,8 +102,8 @@ const getSpecialistPrograms = asyncHandler(async (req, res) => {
 );
 
 //@desc     add review to program by user
-//@route    POST /api/program/:id/reviews
-//@access   Private
+//@route    POST /api/programs/:id/reviews
+//@access   Public
 const addReview = asyncHandler(async (req, res) => {
     const {rating, comment} = req.body;
     const program = await Program.findById(req.params.id);
@@ -116,8 +129,8 @@ const addReview = asyncHandler(async (req, res) => {
 });
 
 //@desc     get program url by program id
-//@route    GET /api/program/program-url/:id
-//@access   Private
+//@route    GET /api/programs/program-url/:id
+//@access   Public
 const getProgramUrl = asyncHandler(async (req, res) => {
     const program = await Program.findById(req.params.id);
     if(program){
@@ -128,8 +141,8 @@ const getProgramUrl = asyncHandler(async (req, res) => {
 });
 
 //@desc     get program daily activities by program id
-//@route    GET /api/program/program-daily-activities/:id
-//@access   Private
+//@route    GET /api/programs/program-daily-activities/:id
+//@access   Public
 const getDailyActivities = async (req, res) => {
   const userId = req.user._id;
   const programId = req.params.id;
@@ -200,8 +213,8 @@ const getDailyActivities = async (req, res) => {
 
 
 //@desc     edit program details by program id
-//@route    PUT /api/program/edit-program/:id
-//@access   Private
+//@route    PUT /api/programs/edit-program/:id
+//@access   Public
 const editProgram = asyncHandler(async (req, res) => {
     //want that details will be shown in the edit form
 
@@ -226,8 +239,8 @@ const editProgram = asyncHandler(async (req, res) => {
 });
 
 //@desc     update program details by program id
-//@route    PUT /api/program/update-program/:id
-//@access   Private
+//@route    PUT /api/programs/update-program/:id
+//@access   Public
 const updateProgram = asyncHandler(async (req, res) => {
     const program = await Program.findById(req.params.id);
     if(program){
@@ -243,4 +256,13 @@ const updateProgram = asyncHandler(async (req, res) => {
 
   
 
-module.exports = {createProgram, getAllPrograms, getProgramById, getSpecialistPrograms, addReview, getProgramUrl, getDailyActivities, editProgram};
+module.exports = {
+    getProgramById,
+    createProgram,
+    updateProgram,
+    getSpecialistPrograms,
+    addReview,
+    getProgramUrl,
+    getDailyActivities,
+    editProgram
+};
