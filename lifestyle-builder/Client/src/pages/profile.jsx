@@ -4,21 +4,32 @@ import {
   TabsBody,
   Tab,
   TabPanel,
+  Dialog,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Input,
 } from "@material-tailwind/react";
 import {
   MapPinIcon,
   BriefcaseIcon,
   BuildingLibraryIcon,
 } from "@heroicons/react/24/solid";
-import { Footer , Navbar3} from "@/widgets/layout";
+import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
+import React, { useState, useCallback, useMemo } from 'react';
+//import { Input } from "postcss";
 
 
 
 export function Profile() {
 
   const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
-  console.log('check', userProfile1.username);
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(!open);
 
   const data = [
     {
@@ -83,7 +94,44 @@ export function Profile() {
                   </div>
                 </div>
                 <div className="mt-10 flex w-full justify-center px-4 lg:order-3 lg:mt-0 lg:w-4/12 lg:justify-end lg:self-center">
-                  <Button className="bg-blue-400">Chat</Button>
+                  <Button className="bg-blue-400" onClick={handleOpen}>Edit</Button>
+                  <Dialog
+                    size="md"
+                    open={open}
+                    handler={handleOpen}
+                    className="bg-transparent shadow-none">
+                    <Card className="mx-auto w-full max-w-[24rem]">
+                      <CardHeader
+                        variant="gradient"
+                        color="blue"
+                        className="mb-4 grid h-28 place-items-center">
+                        <Typography variant="h3" color="white">
+                          Edit Profile
+                        </Typography>
+                      </CardHeader>
+                      <CardBody>
+                        <div className="flex-col mb-3 flex gap-3">
+                          <Input label="Name" size="lg" type="text"></Input>
+                          <Input label="User Name" size="lg" type="text"></Input>
+                          <Input label="Email"  size="lg" type="email"></Input>
+                        </div>
+                        <div className="flex-col mb-3 flex gap-3">
+                          <Input label="Name" size="lg" type="text"></Input>
+                          <Input label="User Name" size="lg" type="text"></Input>
+                          <Input label="Email" size="lg" type="text"></Input>
+                        </div>
+                      </CardBody>
+                      <CardFooter className="pt-0">
+                        <div className="mb-3 flex gap-2">
+                          <Button variant="gradient" fullWidth>
+                            Add
+                          </Button>
+                          <Button variant="gradient" fullWidth>
+                            Cancel
+                          </Button></div>
+                      </CardFooter>
+                    </Card>
+                  </Dialog>
                 </div>
                 <div className="w-full px-4 lg:order-1 lg:w-4/12">
                   <div className="flex justify-center py-4 pt-8 lg:pt-4">

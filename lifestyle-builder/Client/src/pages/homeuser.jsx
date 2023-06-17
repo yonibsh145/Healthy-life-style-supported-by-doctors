@@ -17,17 +17,16 @@ import { Routes, Route } from "react-router-dom";
 import routes from "@/routes";
 
 const userType = "";
-const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
-console.log('check', userProfile1.username);
-console.log('check', userProfile1.role);
+
 
 export function HomeUser() {
+  const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
   if (userProfile1.role == "specialist") {
     return (
       <>
-      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
-        <Navbar3/>
-      </div>
+        <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+          <Navbar3 />
+        </div>
         <div className="relative flex h-screen content-center items-center justify-center pt-16 pb-32">
           <div className="absolute top-0 h-full w-full bg-[url('https://www.muscleandfitness.com/wp-content/uploads/2018/11/Group-Fitness-Class-Performing-A-Variety-Of-Exercises-1.jpg?quality=86&strip=all')] bg-cover bg-center" />
           <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
@@ -104,9 +103,9 @@ export function HomeUser() {
   if (userProfile1.role == "patient") {
     return (
       <>
-      <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
-        <Navbar3/>
-      </div>
+        <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+          <Navbar3 />
+        </div>
         <div className="relative flex h-screen content-center items-center justify-center pt-16 pb-32">
           <div className="absolute top-0 h-full w-full bg-[url('https://www.muscleandfitness.com/wp-content/uploads/2018/11/Group-Fitness-Class-Performing-A-Variety-Of-Exercises-1.jpg?quality=86&strip=all')] bg-cover bg-center" />
           <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />

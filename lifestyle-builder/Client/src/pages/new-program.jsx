@@ -37,7 +37,7 @@ import axios from 'axios';
 
 
 
-const TABLE_HEAD = ["Name", "Length", "Description" ,"Action"];
+const TABLE_HEAD = ["Name", "Length", "Day", "Description", "Action"];
 
 
 export function NewProgram() {
@@ -51,12 +51,12 @@ export function NewProgram() {
     const [trainingName, setTrainingName] = useState('');
     const [trainingLength, setTrainingLength] = useState('');
     const [trainingDescription, setTrainingDescription] = useState('');
+    const [trainingDay, setTrainingDay] = useState('');
     const [ProgramName, setProgramName] = useState('');
     const [ProgramLength, setProgramLength] = useState('');
     const [ProgramTags, setProgramTags] = useState('');
     const [ProgramDescription, setProgramDescription] = useState('');
     const [ProgramType, setProgramType] = useState('');
-    const [ProgramLibrary, setProgramLibrary] = useState('');
     const [editIndex, setEditIndex] = useState(-1);
 
     const programData = {
@@ -68,8 +68,22 @@ export function NewProgram() {
         description: ProgramDescription,
     };
 
+    const handleLength = (event) => {
+        const inputValue = event.target.value;
+        const integerValue = parseInt(inputValue);
+
+        setProgramLength(integerValue);
+    };
+
+    const handleDay = (event) => {
+        const inputValue = event.target.value;
+        const integerValue = parseInt(inputValue);
+
+        setTrainingDay(integerValue);
+    };
+
     const handleSave = () => {
-        if (trainingName && trainingLength && trainingDescription) {
+        if (trainingName && trainingLength && trainingDescription && trainingDay) {
             const existingTraining = trainings.find(
                 (training) => training.name === trainingName
             );
@@ -81,17 +95,19 @@ export function NewProgram() {
                 const updatedTrainings = [...trainings];
                 updatedTrainings[editIndex] = {
                     name: trainingName,
-                    length: trainingLength,
+                    duration: trainingLength,
+                    day: trainingDay,
                     description: trainingDescription,
                 };
                 setTrainings(updatedTrainings);
                 setEditIndex(-1);
             } else {
-                const newTraining = { name: trainingName, length: trainingLength, description: trainingDescription };
+                const newTraining = { name: trainingName, duration: trainingLength, day: trainingDay, description: trainingDescription };
                 setTrainings([...trainings, newTraining]);
             }
             setTrainingName('');
             setTrainingLength('');
+            setTrainingDay('');
             setTrainingDescription('');
             setOpen(!open)
         }
@@ -104,6 +120,7 @@ export function NewProgram() {
         const trainingToEdit = trainings[index];
         setTrainingName(trainingToEdit.name);
         setTrainingLength(trainingToEdit.length);
+        setTrainingDay(trainingToEdit.day);
         setTrainingDescription(trainingToEdit.description);
         setEditIndex(index);
         setOpen(!open)
@@ -116,7 +133,7 @@ export function NewProgram() {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/program', programData)
+        axios.post('http://localhost:3001/api/programs', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;
@@ -131,7 +148,7 @@ export function NewProgram() {
     const handleSelectChange = (event) => {
         const selectedOption = event.target.value;
         setProgramType(selectedOption.toString());
-      };
+    };
 
 
 
@@ -169,16 +186,9 @@ export function NewProgram() {
                                         <option value="Diet">Diet</option>
                                     </select>
                                     <Input size="lg" label="Program Name" value={ProgramName} onChange={(e) => setProgramName(e.target.value)} />
-                                    <Input size="lg" label="Program Length(Days)" value={ProgramLength} onChange={(e) => setProgramLength(e.target.value)} />
+                                    <Input size="lg" label="Program Length(Days)" value={ProgramLength} onChange={handleLength} />
                                     <Input size="lg" label="Tags" value={ProgramTags} onChange={(e) => setProgramTags(e.target.value)} />
                                     <Textarea label="Short Description" value={ProgramDescription} onChange={(e) => setProgramDescription(e.target.value)} />
-                                    <select className="bg-gray-200" value={ProgramLibrary} onChange={(e) => setProgramLibrary(e.target.value)}>
-                                        <option value="">Select Library</option>
-                                        <option value="Medicine">Library1</option>
-                                        <option value="Trainer">Library2</option>
-                                        <option value="Trainer">Library3</option>
-                                        <option value="Trainer">Library4</option>
-                                    </select>
                                 </div>
                                 <Button className="flex items-center gap-3" onClick={handleOpen}>
                                     <BookmarkIcon strokeWidth={2} className="h-5 w-5" /> Add Action
@@ -204,6 +214,9 @@ export function NewProgram() {
                                             <Input label="Training Length" size="lg" type="text"
                                                 value={trainingLength}
                                                 onChange={(e) => setTrainingLength(e.target.value)} />
+                                            <Input label="Training Day" size="lg" type="text"
+                                                value={trainingDay}
+                                                onChange={handleDay} />
                                             <Textarea label="Short Description" value={trainingDescription} onChange={(e) => setTrainingDescription(e.target.value)} />
                                         </CardBody>
                                         <CardFooter className="pt-0">
@@ -221,7 +234,6 @@ export function NewProgram() {
                         </div>
                         {trainings.length > 0 && (
                             <Card className="overflow-scroll h-full w-full">
-                                <h2>Unsaved Trainings:</h2>
                                 <table className="w-full min-w-max table-auto text-left">
                                     <thead>
                                         <tr>
@@ -248,7 +260,12 @@ export function NewProgram() {
                                                 </td>
                                                 <td className="p-4">
                                                     <Typography variant="small" color="blue-gray" className="font-normal">
-                                                        {training.length}
+                                                        {training.duration}
+                                                    </Typography>
+                                                </td>
+                                                <td className="p-4">
+                                                    <Typography variant="small" color="blue-gray" className="font-normal">
+                                                        {training.day}
                                                     </Typography>
                                                 </td>
                                                 <td className="p-4">

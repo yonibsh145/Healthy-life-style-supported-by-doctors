@@ -17,9 +17,6 @@ import { Routes, Route } from "react-router-dom";
 import routes from "@/routes";
 
 const userType = "";
-const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
-console.log('check', userProfile1.username);
-console.log('check', userProfile1.role);
 
 export function Home() {
   if (userType == "") {
