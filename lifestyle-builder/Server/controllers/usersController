@@ -58,7 +58,8 @@ const authUser = asyncHandler(async (req, res) => {
 const useProgram = asyncHandler(async (req, res) => {
   // Obtain the necessary data from the request body
   const { userId, programId } = req.body;
-
+  console.log('here',userId);
+  console.log('here2',programId);
   try {
     // Check if the user and program exist
     const user = await User.findById(userId).populate('programs');
@@ -76,7 +77,7 @@ const useProgram = asyncHandler(async (req, res) => {
       return;
     }
 
-    const hasProgram = user.programs.some((program) => program._id.toString() === programId);
+    const hasProgram = user.programs.some((program) => program.program.toString() === programId);
 
     if (hasProgram) {
       res.status(400).json({ message: 'User already has the program in their array' });

@@ -99,9 +99,10 @@ export function WatchProgram() {
     const handleUse = () => {
         const requestBody = {
             userId: userProfile._id,
-            programId: program._id
+            programId: program._id,
         };
-
+        console.log('here',program._id);
+        console.log('check',requestBody);
         axios.put('http://localhost:3001/api/users/use-program', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed

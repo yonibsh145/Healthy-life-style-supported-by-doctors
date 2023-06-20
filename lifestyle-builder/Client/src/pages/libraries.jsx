@@ -22,6 +22,7 @@ import {
   ArrowPathIcon,
   BookmarkIcon,
   KeyIcon,
+  HomeIcon,
 } from "@heroicons/react/24/outline";
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
@@ -92,7 +93,7 @@ export function Libraries() {
     localStorage.setItem('editProgram', JSON.stringify(editProgram));
     window.location.href = '/watchreviews';
   };
-  
+
 
   const loadPrograms = () => {
     console.log('check', pageData);
@@ -123,7 +124,7 @@ export function Libraries() {
            });*/
           setPageData(programData);
           console.log('check', pageData);
-          console.log('check2',userProfile);
+          console.log('check2', userProfile);
 
         })
         .catch(error => {
@@ -203,7 +204,7 @@ export function Libraries() {
                           </td>
                           <td className="p-4">
                             <Typography variant="small" color="blue-gray" className="font-normal">
-                              {program._id}
+                              {program.rating}
                             </Typography>
                           </td>
                           <td className="p-4">
@@ -228,34 +229,6 @@ export function Libraries() {
                       <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
                     </Button>
                   </Link>
-                  <Dialog
-                    size="xs"
-                    open={open}
-                    handler={handleOpen}
-                    className="bg-transparent shadow-none">
-                    <Card className="mx-auto w-full max-w-[24rem]">
-                      <CardHeader
-                        variant="gradient"
-                        color="blue"
-                        className="mb-4 grid h-28 place-items-center">
-                        <Typography variant="h3" color="white">
-                          New Library
-                        </Typography>
-                      </CardHeader>
-                      <CardBody className="flex flex-col gap-4">
-                        <Input label="Library Name" size="lg" type="text" />
-                      </CardBody>
-                      <CardFooter className="pt-0">
-                        <div className="mb-3 flex gap-2">
-                          <Button variant="gradient" onClick={handleOpen} fullWidth>
-                            Add
-                          </Button>
-                          <Button variant="gradient" onClick={handleOpen} fullWidth>
-                            Cancel
-                          </Button></div>
-                      </CardFooter>
-                    </Card>
-                  </Dialog>
                 </div>
               </div>
             </div>
@@ -368,10 +341,10 @@ export function Libraries() {
                     </tbody>
                   </table>
                 </Card>
-                <div className="px-6 flex flex-col items-center mt-2">
-                  <Link to="/newprogram">
+                <div className="px-6 flex flex-col items-center mt-4">
+                  <Link to="/homeuser">
                     <Button className=" flex items-center gap-3 " color="green">
-                      <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
+                      <HomeIcon strokeWidth={2} className="h-5 w-5" /> Home
                     </Button>
                   </Link>
                 </div>

@@ -129,7 +129,7 @@ export function Inbox1() {
                                 </Typography>
                             </div>
                             <div className="flex h-screen font-sans">
-                                <div className="w-[300px] h-[600px] bg-gray-100 p-4 overflow-y-auto">
+                                <div className="w-[300px] h-[500px] bg-gray-100 p-4 overflow-y-auto">
                                     {/* Map through your list of people and render each chat item */}
                                     {people.map((person) => (
                                         <div
@@ -155,7 +155,7 @@ export function Inbox1() {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="h-[600px] flex-1 bg-white p-4 border-2 border-blue-500 rounded">
+                                <div className="h-[500px] flex-1 bg-white p-4 border-2 border-blue-500 rounded">
                                     {/* Render the selected chat in the right section */}
                                     {selectedChat && (
                                         <div className="flex flex-col h-full">

@@ -154,9 +154,6 @@ export function SignUp() {
           </CardFooter>
         </Card>
       </div>
-      <div className="container absolute bottom-6 left-2/4 z-10 mx-auto -translate-x-2/4 text-white">
-        <SimpleFooter />
-      </div>
     </>
   );
 }

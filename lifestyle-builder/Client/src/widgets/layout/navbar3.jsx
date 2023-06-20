@@ -186,16 +186,6 @@ export function Navbar3() {
                     color="blue-gray"
                     className="p-1 font-normal"
                 >
-                    <a href="waitinglist" className="flex items-center">
-                        Waiting List
-                    </a>
-                </Typography>
-                <Typography
-                    as="li"
-                    variant="h6"
-                    color="blue-gray"
-                    className="p-1 font-normal"
-                >
                     <a href="inbox1" className="flex items-center">
                         Inbox
                     </a>

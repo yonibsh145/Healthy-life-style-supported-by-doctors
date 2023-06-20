@@ -44,14 +44,18 @@ export function WaitingList() {
 
     const [pageData, setPageData] = useState([]);
 
+
+
+
     const handleAccept = (index) => {
+        const requestData = {
+            specialistId: userProfile._id,
+            userId: pageData[index].user._id, // Replace programId with the actual program ID you want to delete
+            programId: pageData[index].program._id,// Replace specialistId with the actual specialist ID
+            action: "accept",
+          }
         console.log('hello', pageData[index]._id);
-        axios.delete('http://localhost:3001/api/programs/delete-program', {
-            data: {
-                programId: pageData[index]._id, // Replace programId with the actual program ID you want to delete
-                specialistId: userProfile._id // Replace specialistId with the actual specialist ID
-            }
-        })
+        axios.put('http://localhost:3001/api/specialists/updaterequest', requestData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;
@@ -66,7 +70,6 @@ export function WaitingList() {
                 // Handle error.
                 console.log('Program Error:', error.response);
             });
-
     };
 
     const handleDeny = (index) => {
@@ -99,14 +102,14 @@ export function WaitingList() {
 
     const fetchData = async () => {
         console.log(userProfile._id);
-        axios.get('http://localhost:3001/api/specialists/programs', {
+        axios.get('http://localhost:3001/api/specialists/requests', {
             params: {
                 specialistId: userProfile._id
             }
         })
             .then(response => {
                 // Handle success.
-                const programData = response.data.programs;
+                const programData = response.data.requests;
                 console.log('Data', programData);
                 /* const convertedData = programData.map(program => {
                    return {
@@ -159,89 +162,67 @@ export function WaitingList() {
                                 </div>
                             </div>
                             <div className="my-8 text-center">
-                                <Typography variant="h2" color="blue-gray" className="mb-2">
+                                <Typography variant="h1" color="blue-gray" className="mb-2">
                                     Waiting List
                                 </Typography>
                             </div>
-                            <Card className="overflow-scroll h-full w-full">
-                                <table className="w-full min-w-max table-auto text-left">
-                                    <thead>
-                                        <tr>
-                                            {TABLE_HEAD.map((head) => (
-                                                <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                                                    <Typography
-                                                        variant="small"
-                                                        color="blue-gray"
-                                                        className="font-normal leading-none opacity-70"
-                                                    >
-                                                        {head}
-                                                    </Typography>
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {pageData.map((program, index) => (
+                            {
+                                pageData.length == 0 && (
+                                    <div className="my-8 text-center">
+                                    <Typography variant="h5" color="red" className="mb-2">
+                                        Empty List.
+                                    </Typography>
+                                </div>
+                                )
+                            }
+                            {
+                                pageData.length > 0 && (
 
-                                            <tr key={index}>
-                                                <td className="p-4">
-                                                    <Typography variant="small" color="blue-gray" className="font-normal">
-                                                        {program.name}
-                                                    </Typography>
-                                                </td>
-                                                <td className="p-4">
-                                                    <Typography variant="small" color="blue-gray" className="font-normal">
-                                                        {formatDate(program.startDate)}
-                                                    </Typography>
-                                                </td>
-                                                <td className="p-4">
-                                                    <Typography variant="small" color="blue" className="font-medium">
-                                                        <div className="mb-3 flex gap-2">
-                                                            <button onClick={() => handleAccept(index)}>Accept</button>
-                                                            <button onClick={() => handleDeny(index)}>Deny</button>
-                                                        </div>
-                                                    </Typography>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </Card>
-                            <div className="px-6 flex flex-col items-center mt-2">
-                                <Link to="/newprogram">
-                                    <Button className=" flex items-center gap-3 " color="green">
-                                        <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
-                                    </Button>
-                                </Link>
-                                <Dialog
-                                    size="xs"
-                                    open={open}
-                                    handler={handleOpen}
-                                    className="bg-transparent shadow-none">
-                                    <Card className="mx-auto w-full max-w-[24rem]">
-                                        <CardHeader
-                                            variant="gradient"
-                                            color="blue"
-                                            className="mb-4 grid h-28 place-items-center">
-                                            <Typography variant="h3" color="white">
-                                                New Library
-                                            </Typography>
-                                        </CardHeader>
-                                        <CardBody className="flex flex-col gap-4">
-                                            <Input label="Library Name" size="lg" type="text" />
-                                        </CardBody>
-                                        <CardFooter className="pt-0">
-                                            <div className="mb-3 flex gap-2">
-                                                <Button variant="gradient" onClick={handleOpen} fullWidth>
-                                                    Add
-                                                </Button>
-                                                <Button variant="gradient" onClick={handleOpen} fullWidth>
-                                                    Cancel
-                                                </Button></div>
-                                        </CardFooter>
+                                    <Card className="overflow-scroll h-full w-full">
+                                        <table className="w-full min-w-max table-auto text-left">
+                                            <thead>
+                                                <tr>
+                                                    {TABLE_HEAD.map((head) => (
+                                                        <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                                                            <Typography
+                                                                variant="small"
+                                                                color="blue-gray"
+                                                                className="font-normal leading-none opacity-70"
+                                                            >
+                                                                {head}
+                                                            </Typography>
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {pageData.map((program, index) => (
+
+                                                    <tr key={index}>
+                                                        <td className="p-4">
+                                                            <Typography variant="small" color="blue-gray" className="font-normal">
+                                                                {program.user.username}
+                                                            </Typography>
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <Typography variant="small" color="blue-gray" className="font-normal">
+                                                                {program.program.name}
+                                                            </Typography>
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <Typography variant="small" color="blue" className="font-medium">
+                                                                <div className="mb-3 flex gap-2">
+                                                                    <button onClick={() => handleAccept(index)}>Accept</button>
+                                                                    <button onClick={() => handleDeny(index)}>Reject</button>
+                                                                </div>
+                                                            </Typography>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </Card>
-                                </Dialog>
-                            </div>
+                                )}
                         </div>
                     </div>
                 </div>

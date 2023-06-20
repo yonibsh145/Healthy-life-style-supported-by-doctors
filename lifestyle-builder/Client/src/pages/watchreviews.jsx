@@ -21,7 +21,7 @@ import {
     ArrowLongRightIcon,
     ArrowPathIcon,
     BookmarkIcon,
-    KeyIcon,
+    HomeIcon,
 } from "@heroicons/react/24/outline";
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
@@ -29,7 +29,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 
-const TABLE_HEAD = ["User Name", "Rating", "Comment" ,"Action"];
+const TABLE_HEAD = ["User Name", "Rating", "Comment"];
 
 
 export function WatchReviews() {
@@ -89,25 +89,20 @@ export function WatchReviews() {
     };
 
 
-    const loadPrograms = () => {
-        console.log('check', pageData);
-    };
-
-
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
-        console.log(userProfile._id);
-        axios.get('http://localhost:3001/api/specialists/programs', {
+        console.log(requestBody.programId);
+        axios.get('http://localhost:3001/api/programs/all-programs', {
             params: {
-                specialistId: userProfile._id
+                programId: program._id,
             }
         })
             .then(response => {
                 // Handle success.
-                const programData = response.data.programs;
+                const programData = response.data;
                 console.log('Data', programData);
                 /* const convertedData = programData.map(program => {
                    return {
@@ -161,7 +156,7 @@ export function WatchReviews() {
                             </div>
                             <div className="my-8 text-center">
                                 <Typography variant="h2" color="blue-gray" className="mb-2">
-                                {program.name} - Program Reviews
+                                    {program.name} - Program Reviews
                                 </Typography>
                             </div>
                             <Card className="overflow-scroll h-full w-full">
@@ -182,24 +177,21 @@ export function WatchReviews() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {pageData.map((program, index) => (
-
+                                        {pageData.map((review, index) => (
                                             <tr key={index}>
-                                                <td className="p-4">
+                                                <td className="p-4 w-[300px]">
                                                     <Typography variant="small" color="blue-gray" className="font-normal">
-                                                        {program.name}
+                                                        {review.user.username}
+                                                    </Typography>
+                                                </td>
+                                                <td className="p-4 w-[300px]">
+                                                    <Typography variant="small" color="blue-gray" className="font-normal ">
+                                                        <Rating name="half-rating-read" value={program.rating} readOnly />
                                                     </Typography>
                                                 </td>
                                                 <td className="p-4">
                                                     <Typography variant="small" color="blue-gray" className="font-normal">
-                                                        {formatDate(program.startDate)}
-                                                    </Typography>
-                                                </td>
-                                                <td className="p-4">
-                                                    <Typography variant="small" color="blue" className="font-medium">
-                                                        <div className="mb-3 flex gap-2">
-                                                            <button onClick={() => handleChat(index)}>Chat</button>
-                                                        </div>
+                                                        {review.comment}
                                                     </Typography>
                                                 </td>
                                             </tr>
@@ -207,40 +199,12 @@ export function WatchReviews() {
                                     </tbody>
                                 </table>
                             </Card>
-                            <div className="px-6 flex flex-col items-center mt-2">
-                                <Link to="/newprogram">
+                            <div className="px-6 flex flex-col items-center mt-4">
+                                <Link to="/homeuser">
                                     <Button className=" flex items-center gap-3 " color="green">
-                                        <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
+                                        <HomeIcon strokeWidth={2} className="h-5 w-5" /> Home
                                     </Button>
                                 </Link>
-                                <Dialog
-                                    size="xs"
-                                    open={open}
-                                    handler={handleOpen}
-                                    className="bg-transparent shadow-none">
-                                    <Card className="mx-auto w-full max-w-[24rem]">
-                                        <CardHeader
-                                            variant="gradient"
-                                            color="blue"
-                                            className="mb-4 grid h-28 place-items-center">
-                                            <Typography variant="h3" color="white">
-                                                New Library
-                                            </Typography>
-                                        </CardHeader>
-                                        <CardBody className="flex flex-col gap-4">
-                                            <Input label="Library Name" size="lg" type="text" />
-                                        </CardBody>
-                                        <CardFooter className="pt-0">
-                                            <div className="mb-3 flex gap-2">
-                                                <Button variant="gradient" onClick={handleOpen} fullWidth>
-                                                    Add
-                                                </Button>
-                                                <Button variant="gradient" onClick={handleOpen} fullWidth>
-                                                    Cancel
-                                                </Button></div>
-                                        </CardFooter>
-                                    </Card>
-                                </Dialog>
                             </div>
                         </div>
                     </div>
