@@ -10,6 +10,8 @@ import {
     CardBody,
     CardFooter,
     Input,
+    Textarea,
+    IconButton,
 } from "@material-tailwind/react";
 import {
     MapPinIcon,
@@ -18,7 +20,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemom, useRef, useEffect } from 'react';
+import { ArrowRightIcon, TrashIcon , BackspaceIcon } from "@heroicons/react/24/outline";
 //import { Input } from "postcss";
 
 
@@ -28,6 +31,8 @@ export function Inbox1() {
     const [selectedChat, setSelectedChat] = useState(null);
     const [inputMessage, setInputMessage] = useState('');
     const [chatHistory, setChatHistory] = useState({});
+    const [lastMessages, setLastMessages] = useState({});
+    const scrollContainerRef = useRef(null);
 
     const handleChatSelection = (chatId) => {
         setSelectedChat(chatId);
@@ -48,22 +53,41 @@ export function Inbox1() {
                 [selectedChat]: [...(chatHistory[selectedChat] || []), newMessage],
             };
 
+            const updatedLastMessages = {
+                ...lastMessages,
+                [selectedChat]: newMessage,
+            };
+
             setChatHistory(updatedChatHistory);
+            setLastMessages(updatedLastMessages);
             setInputMessage('');
         }
     };
-
+    
     const handleDeleteChatHistory = () => {
         if (selectedChat) {
             const updatedChatHistory = { ...chatHistory };
+            const updatedLastMessages = { ...lastMessages };
+
             delete updatedChatHistory[selectedChat];
+            delete updatedLastMessages[selectedChat];
+
             setChatHistory(updatedChatHistory);
+            setLastMessages(updatedLastMessages);
         }
     };
 
     const handleDeleteInput = () => {
         setInputMessage('');
     };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    };
+
+
 
     // Sample list of people
     const people = [
@@ -73,6 +97,12 @@ export function Inbox1() {
     ];
 
     const chatMessages = chatHistory[selectedChat] || [];
+
+    useEffect(() => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
+    }, [chatMessages]);
 
     return (
         <>
@@ -99,67 +129,92 @@ export function Inbox1() {
                                 </Typography>
                             </div>
                             <div className="flex h-screen font-sans">
-                                <div className="max-w-max bg-gray-100 p-4">
+                                <div className="w-[300px] h-[600px] bg-gray-100 p-4 overflow-y-auto">
                                     {/* Map through your list of people and render each chat item */}
                                     {people.map((person) => (
                                         <div
                                             key={person.id}
-                                            className={`flex items-center p-2 cursor-pointer ${selectedChat === person.id ? 'bg-gray-200' : ''
-                                                } rounded-md mb-2`}
+                                            className={`flex items-center p-2 cursor-pointer ${selectedChat === person.id ? 'bg-gray-200' : ''} rounded-md mb-2`}
                                             onClick={() => handleChatSelection(person.id)}
                                         >
-                                            <div className="w-10 h-10 bg-gray-300 rounded-full mr-3">{person.avatar}</div>
-                                            <div>{person.name}</div>
+                                            <div className="relative w-12 h-12">
+                                                <img
+                                                    className="w-full h-full rounded-full object-cover"
+                                                    src={`https://source.unsplash.com/random/60x60?person=${person.id}`}
+                                                    alt={person.name}
+                                                />
+                                                {selectedChat === person.id && (
+                                                    <div className="absolute inset-0 rounded-full border-2 border-blue-500" />
+                                                )}
+                                            </div>
+                                            <div className="ml-4">
+                                                <h4 className="text-sm font-medium">{person.name}</h4>
+                                                {/* Add message preview and timestamp here */}
+                                                <p className="text-xs text-gray-500 w-[185px] truncate">{lastMessages[person.id]}</p> {/* Display last message with truncation */}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="flex-1 bg-white p-4 border-2 border-blue-500 rounded">
+                                <div className="h-[600px] flex-1 bg-white p-4 border-2 border-blue-500 rounded">
                                     {/* Render the selected chat in the right section */}
                                     {selectedChat && (
-                                        <div>
-                                            {/* Render the chat messages here */}
-                                            <div className="mb-4 border border-gray-500 rounded-lg p-4">
-                                                {/* Render chat messages */}
-                                                {chatMessages.map((message, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="bg-gray-200 p-2 rounded-md mb-2"
-                                                    >
-                                                        {message}
-                                                    </div>
-                                                ))}
+                                        <div className="flex flex-col h-full">
+                                            {/* Render the chat messages preview */}
+                                            <div className="overflow-y-auto flex-grow" ref={scrollContainerRef}>
+                                                {chatMessages.map((message, index) => {
+                                                    const isSentMessage = message.startsWith('Shahar Almog');
+                                                    return (
+                                                        <div
+                                                            key={index}
+                                                            className={`flex mb-4 ${isSentMessage ? 'justify-end' : 'justify-start'}`}
+                                                        >
+                                                            <div
+                                                                className={`rounded-lg p-2 max-w-[70%] ${isSentMessage ? 'bg-blue-500 text-white self-end' : 'bg-gray-200 text-black self-start'}`}
+                                                            >
+                                                                <p className={`${isSentMessage ? 'text-right' : 'text-left'}`}>{message}</p>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                             {/* Render the input box for typing messages */}
-                                            <div className="flex items-center">
-                                                <Input
-                                                    type="text"
-                                                    value={inputMessage}
-                                                    onChange={handleInputChange}
-                                                    className="flex-1 py-2 px-4 border border-gray-300 rounded-md mr-3"
-                                                />
-                                                <Button
-                                                    color="green"
-                                                    onClick={handleSendMessage}
-                                                    ripple="light"
-                                                    className="mr-3"
-                                                >
-                                                    Send
-                                                </Button>
-                                                <Button
-                                                    color="red"
-                                                    onClick={handleDeleteInput}
-                                                    ripple="light"
-                                                    className="mr-3"
-                                                >
-                                                    Delete
-                                                </Button>
-                                                <Button
-                                                    color="red"
-                                                    onClick={handleDeleteChatHistory}
-                                                    ripple="light"
-                                                >
-                                                    History Delete
-                                                </Button>
+                                            <div className="flex items-center border-t border-gray-300 py-3">
+                                                <div className="flex-grow">
+                                                    <Input
+                                                        type="text"
+                                                        value={inputMessage}
+                                                        onChange={handleInputChange}
+                                                        onKeyDown={handleKeyDown}
+                                                        className="py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:border-gray-400"
+                                                        placeholder="Type a message"
+                                                    />
+                                                </div>
+                                                <div className="ml-4 flex space-x-2">
+                                                    <IconButton
+                                                        color="blue"
+                                                        onClick={handleSendMessage}
+                                                        ripple="light"
+                                                        className="p-2"
+                                                    >
+                                                        <ArrowRightIcon className="h-6 w-6" />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        color="red"
+                                                        onClick={handleDeleteInput}
+                                                        ripple="light"
+                                                        className="p-2"
+                                                    >
+                                                        <BackspaceIcon className="h-6 w-6" />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        color="red"
+                                                        onClick={handleDeleteChatHistory}
+                                                        ripple="light"
+                                                        className="p-2"
+                                                    >
+                                                        <TrashIcon className="h-6 w-6" />
+                                                    </IconButton>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -169,11 +224,9 @@ export function Inbox1() {
                     </div>
                 </div>
             </section>
-            <div className="bg-blue-gray-50/50">
-                <Footer />
-            </div>
         </>
     );
 }
 
 export default Inbox1;
+
