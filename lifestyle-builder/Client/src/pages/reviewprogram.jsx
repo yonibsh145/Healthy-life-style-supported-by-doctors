@@ -56,14 +56,14 @@ export function ReviewProgram() {
             comment: reviewDescription,
         };
 
-        /*axios.post('http://localhost:3001/api/programs/:id/reviews', requestBody)
+        axios.post('http://localhost:3001/api/programs/addReview', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
             })
             .catch(error => {
                 console.error(error); // Handle any errors that occur
             });
-        console.log(program._id);*/
+        console.log(program._id);
 
     }
 

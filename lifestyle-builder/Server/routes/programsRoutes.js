@@ -8,6 +8,7 @@ router.route('/')
 .get(programController.getAllPrograms);
 
 router.route('/addReview').post(programController.addReview);
+router.route('/all-programs').get(programController.getAllReviews);
 router.route('/program-daily-activities').get(programController.getDailyActivities);
 router.route('/program-url/').get(programController.getProgramUrl);
 router.route('/edit-program').put(programController.editProgram);

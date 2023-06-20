@@ -60,25 +60,26 @@ export function EditProgram() {
     const [editIndex, setEditIndex] = useState(-1);
 
     const programData = {
+        programId: program._id,
         name: ProgramName,
         duration: ProgramLength,
         specialist: userProfile._id,
         activities: trainings,
-        kindOfProgram: ProgramType,
+        category: ProgramType,
         description: ProgramDescription,
     };
 
     useEffect(() => {
         fetchData();
-      }, []);
+    }, []);
 
-      const fetchData = async () => {
+    const fetchData = async () => {
         setProgramName(program.name);
         setProgramType(program.kindOfProgram);
         setProgramDescription(program.description);
         setProgramLength(program.duration);
         setTrainings(program.activities);
-      };
+    };
 
     const handleLength = (event) => {
         const inputValue = event.target.value;
@@ -96,24 +97,53 @@ export function EditProgram() {
 
     const handleSave = () => {
         if (trainingName && trainingLength && trainingDescription && trainingDay) {
+            if (isNaN(trainingLength)) {
+                alert(`Training Length must be a number`);
+                return;
+            }
+            if (isNaN(trainingDay)) {
+                alert(`Training Day Length must be a number`);
+                return;
+            }
+            if (parseInt(trainingDay) > parseInt(trainingLength)) {
+                alert(`Training Length must be larger than Training Day`);
+                return;
+            }
+            if (parseInt(trainingDay) > parseInt(trainingLength)) {
+                alert(`Training Length must be larger than Training Day`);
+                return;
+            }
             const existingTraining = trainings.find(
                 (training) => training.name === trainingName
             );
-            if (existingTraining) {
-                alert(`A training with the name "${trainingName}" already exists.`);
-                return;
-            }
             if (editIndex !== -1) {
                 const updatedTrainings = [...trainings];
+                const tempName = updatedTrainings[editIndex].name;
                 updatedTrainings[editIndex] = {
                     name: trainingName,
                     duration: trainingLength,
                     day: trainingDay,
                     description: trainingDescription,
                 };
+                if (existingTraining && updatedTrainings[editIndex].name !== tempName) {
+                    alert(`A training with the name "${trainingName}" already exists.`);
+                    return;
+                }
+                console.log('check');
                 setTrainings(updatedTrainings);
                 setEditIndex(-1);
-            } else {
+                setTrainingName('');
+                setTrainingLength('');
+                setTrainingDay('');
+                setTrainingDescription('');
+                setOpen(!open)
+                return;
+            }
+            if (existingTraining) {
+                alert(`A training with the name "${trainingName}" already exists.`);
+                return;
+            }
+            else {
                 const newTraining = { name: trainingName, duration: trainingLength, day: trainingDay, description: trainingDescription };
                 setTrainings([...trainings, newTraining]);
             }
@@ -131,7 +161,7 @@ export function EditProgram() {
     const handleEdit = (index) => {
         const trainingToEdit = trainings[index];
         setTrainingName(trainingToEdit.name);
-        setTrainingLength(trainingToEdit.length);
+        setTrainingLength(trainingToEdit.duration);
         setTrainingDay(trainingToEdit.day);
         setTrainingDescription(trainingToEdit.description);
         setEditIndex(index);
@@ -145,7 +175,7 @@ export function EditProgram() {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/programs', programData)
+        axios.put('http://localhost:3001/api/programs/edit-program', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;

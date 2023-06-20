@@ -1,8 +1,8 @@
 export const teamData = [
   {
-    img: "/img/team-5.jpg",
+    img: "https://source.unsplash.com/random/600x600?person=${1}",
     name: "Shahar Almog",
-    position: "Trainer",
+    position: "Specialist",
     socials: [
       {
         color: "light-blue",
@@ -19,9 +19,9 @@ export const teamData = [
     ],
   },
   {
-    img: "/img/team-6.jpg",
+    img: "https://source.unsplash.com/random/600x600?person=${2}",
     name: "Yehonatan Cohen",
-    position: "Trainer",
+    position: "Specialist",
     socials: [
       {
         color: "light-blue",
@@ -38,9 +38,9 @@ export const teamData = [
     ],
   },
   {
-    img: "/img/team-3.jpg",
+    img: "https://source.unsplash.com/random/600x600?person=${3}",
     name: "Alexa Smith",
-    position: "Trainer",
+    position: "Specialist",
     socials: [
       {
         color: "light-blue",
@@ -57,9 +57,9 @@ export const teamData = [
     ],
   },
   {
-    img: "/img/team-4.png",
+    img: "https://source.unsplash.com/random/600x600?person=${4}",
     name: "Jenna Kardi",
-    position: "Trainer",
+    position: "Specialist",
     socials: [
       {
         color: "light-blue",

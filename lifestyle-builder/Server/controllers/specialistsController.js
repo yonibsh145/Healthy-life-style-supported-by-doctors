@@ -106,6 +106,7 @@ const updateSpecialistProfile = asyncHandler(async (req, res) => {
 
 const updateRequest = asyncHandler(async (req, res) => {
   const { specialistId, userId, programId, action } = req.body;
+  console.log('hh',specialistId);
 
   try {
     const specialist = await Specialist.findById(specialistId);
@@ -234,7 +235,7 @@ const getMessages = asyncHandler(async (req, res) => {
 //@route    GET /api/specialists/patients
 //@access   Private
 const getSpecialistPatients = async (req, res) => {
-  const {specialistId} = req.body;
+  const {specialistId} = req.query;
   try {
     // Find the specialist
     const specialist = await Specialist.findById(specialistId).populate('patients');
@@ -256,14 +257,15 @@ const getSpecialistPatients = async (req, res) => {
 //@access Private
 const getSpecialistRequests = asyncHandler(async (req, res) => {
   try {
-    const { specialistId } = req.body;
+    const { specialistId } = req.query;
+    console.log(specialistId);
 
     const specialist = await Specialist.findById(specialistId).populate({
       path: 'requests.user',
-      select: 'name email', // Populate 'name' and 'email' fields of the user document
+      select: 'username email _id', // Populate 'name' and 'email' fields of the user document
     }).populate({
       path: 'requests.program',
-      select: 'name description', // Populate 'name' and 'description' fields of the program document
+      select: 'name description _id', // Populate 'name' and 'description' fields of the program document
     });
 
     if (!specialist) {
@@ -285,7 +287,7 @@ const getSpecialistRequests = asyncHandler(async (req, res) => {
 //@route  GET /api/specialists/programs
 //@access Public
 const getSpecialistPrograms = asyncHandler(async (req, res) => {
-  const {specialistId} = req.body; // Use req.query to access the query parameter
+  const {specialistId} = req.query; // Use req.query to access the query parameter
   console.log(specialistId);
   try {
     const specialist = await Specialist.findById(specialistId).populate('programs')

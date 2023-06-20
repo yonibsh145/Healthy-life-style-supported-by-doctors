@@ -79,7 +79,7 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 //@route    GET /api/programs/program
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
-  const {programId}= req.body;
+  const { programId } = req.body;
   const program = await Program.findById(programId);
   if (program) {
     res.json(program);
@@ -93,32 +93,32 @@ const getProgramById = asyncHandler(async (req, res) => {
 //@access   Public
 const addReview = asyncHandler(async (req, res) => {
   const { userId, programId, rating, comment } = req.body;
-
   try {
     const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!user.programs.includes(programId)) {
+    if (!user.programs.some((program) => program.program.toString() === programId)) {
       return res.status(400).json({ message: "You can't review a program you are not doing" });
     }
 
-    const program = await Program.findById(programId);
+    const program = await Program.findById(programId).populate('reviews.user');
+    console.log(program.reviews)
     if (!program) {
       return res.status(404).json({ message: "Program not found" });
     }
 
-    const alreadyReviewed = program.reviews.find(review => review.user.toString() === userId);
+    const alreadyReviewed = program.reviews.find(review => review.user._id.toString() === userId);
     if (alreadyReviewed) {
       return res.status(400).json({ message: "Program already reviewed" });
     }
 
     const review = {
-      name: user.name,
+      user: user._id,
       rating: Number(rating),
       comment: comment,
-      user: user._id
     };
 
     program.reviews.push(review);
@@ -191,7 +191,7 @@ const getDailyActivities = async (req, res) => {
 };
 
 const getCurrentDay = () => {
-  
+
   const currentDay = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
   return currentDay;
 };
@@ -251,6 +251,31 @@ const deleteProgram = asyncHandler(async (req, res) => {
   }
 });
 
+//@desc     get all program reviews
+//@route    GET /api/programs/all-programs
+//@access   Public
+const getAllReviews = asyncHandler(async (req, res) => {
+  const {programId} = req.query;
+  console.log(programId);
+  try{
+    const program = await Program.findById(programId).populate({
+      path: 'reviews.user',
+      select: 'username', // Populate 'name' and 'email' fields of the user document
+    });
+    console.log(program);
+    if(!program){
+      res.status(404).json({ message: "Program not found" });
+      return;
+    }
+    res.json(program.reviews);
+  }catch(error){
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+
+  }
+  res.json(programs);
+});
+
 
 module.exports = {
   getProgramById,
@@ -261,5 +286,6 @@ module.exports = {
   getDailyActivities,
   editProgram,
   deleteProgram,
-  getAllPrograms
+  getAllPrograms,
+  getAllReviews
 };

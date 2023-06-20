@@ -55,6 +55,12 @@ export function HomeUser() {
     window.location.href = '/watchprogram';
   };
 
+  const handleReviews = (index) => {
+    const watchProgram = pageData[index];
+    localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
+    window.location.href = '/watchreviews';
+  };
+
   const useProgram = (index) => {
     const requestBody = {
       userId: userProfile1._id,
@@ -270,6 +276,7 @@ export function HomeUser() {
                               <div className="mb-3 flex gap-2">
                                 <button onClick={() => handleWatch(index)}>Watch</button>
                                 <button onClick={() => useProgram(index)}>Use</button>
+                                <button onClick={() => handleReviews(index)}>Reviews</button>                               
                               </div>
                             </Typography>
                           </td>
