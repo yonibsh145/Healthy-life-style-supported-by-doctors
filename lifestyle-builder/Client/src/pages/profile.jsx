@@ -85,7 +85,7 @@ export function Profile() {
                   <div className="relative">
                     <div className="-mt-20 w-40">
                       <Avatar
-                        src="/img/team-1.jpg"
+                        src={`https://source.unsplash.com/random/150x150?person=${userProfile1.id}`}
                         alt="Profile picture"
                         variant="circular"
                         className="h-full w-full shadow-xl"
@@ -162,7 +162,7 @@ export function Profile() {
                         variant="small"
                         className="font-normal text-blue-gray-500"
                       >
-                        Photos
+                        Programs
                       </Typography>
                     </div>
                     <div className="p-3 text-center lg:mr-4">
@@ -177,7 +177,7 @@ export function Profile() {
                         variant="small"
                         className="font-normal text-blue-gray-500"
                       >
-                        Comments
+                        Reviews
                       </Typography>
                     </div>
                   </div>

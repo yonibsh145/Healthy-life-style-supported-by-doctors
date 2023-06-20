@@ -31,8 +31,8 @@ import {
     KeyIcon,
 } from "@heroicons/react/24/outline";
 import { Footer, Navbar3 } from "@/widgets/layout";
-import { Rating } from '@mui/material';
-import React, { useState, useCallback, useMemo } from 'react';
+import { Rating, duration } from '@mui/material';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import axios from 'axios';
 
 
@@ -40,9 +40,9 @@ import axios from 'axios';
 const TABLE_HEAD = ["Name", "Length", "Day", "Description", "Action"];
 
 
-export function NewProgram() {
+export function EditProgram() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-
+    const program = JSON.parse(localStorage.getItem('editProgram'));
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => setOpen(!open);
@@ -67,6 +67,18 @@ export function NewProgram() {
         kindOfProgram: ProgramType,
         description: ProgramDescription,
     };
+
+    useEffect(() => {
+        fetchData();
+      }, []);
+
+      const fetchData = async () => {
+        setProgramName(program.name);
+        setProgramType(program.kindOfProgram);
+        setProgramDescription(program.description);
+        setProgramLength(program.duration);
+        setTrainings(program.activities);
+      };
 
     const handleLength = (event) => {
         const inputValue = event.target.value;
@@ -138,6 +150,7 @@ export function NewProgram() {
                 // Handle success.
                 const programData = response.data;
                 console.log('Data', programData);
+                window.location.href = '/libraries';
             })
             .catch(error => {
                 // Handle error.
@@ -173,7 +186,7 @@ export function NewProgram() {
                             </div>
                             <div className="my-8 text-center">
                                 <Typography variant="h2" color="blue-gray" className="mb-2">
-                                    My Programs
+                                    Edit Program
                                 </Typography>
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
@@ -300,4 +313,4 @@ export function NewProgram() {
         </>
     );
 }
-export default NewProgram;
+export default EditProgram;

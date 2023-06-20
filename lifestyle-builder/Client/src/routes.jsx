@@ -1,4 +1,4 @@
-import { Home, Profile, Libraries, NewProgram, AboutUs, SignIn, SignUp,HomeUser, OurProducts, Inbox1 } from "@/pages";
+import { Home, Profile, Libraries, NewProgram, AboutUs, SignIn, SignUp,HomeUser, OurProducts, Inbox1, EditProgram, WatchProgram, ReviewProgram, WaitingList, WatchReviews} from "@/pages";
 import {
   HomeIcon,
   UserCircleIcon,
@@ -29,8 +29,8 @@ export const routes = [
   },
   {
     icon: UserPlusIcon,
-    name: "new-program",
-    path: "/new-program",
+    name: "newprogram",
+    path: "/newprogram",
     element: <NewProgram />,
   },
   {
@@ -68,6 +68,36 @@ export const routes = [
     name: "inbox1",
     path: "/inbox1",
     element: <Inbox1 />,
+  },
+  {
+    icon: DocumentTextIcon,
+    name: "editprogram",
+    path: "/editprogram",
+    element: <EditProgram />,
+  },
+  {
+    icon: DocumentTextIcon,
+    name: "watchprogram",
+    path: "/watchprogram",
+    element: <WatchProgram />,
+  },
+  {
+    icon: DocumentTextIcon,
+    name: "reviewprogram",
+    path: "/reviewprogram",
+    element: <ReviewProgram />,
+  },
+  {
+    icon: DocumentTextIcon,
+    name: "waitinglist",
+    path: "/waitinglist",
+    element: <WaitingList />,
+  },
+  {
+    icon: DocumentTextIcon,
+    name: "watchreviews",
+    path: "/watchreviews",
+    element: <WatchReviews />,
   },
 ];
 

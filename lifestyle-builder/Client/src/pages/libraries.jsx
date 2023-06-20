@@ -31,35 +31,6 @@ import axios from 'axios';
 
 const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
 
-const TABLE_ROWS = [
-  {
-    name: "John Michael",
-    job: "Manager",
-    date: "23/04/18",
-  },
-  {
-    name: "Alexa Liras",
-    job: "Developer",
-    date: "23/04/18",
-  },
-  {
-    name: "Laurent Perrier",
-    job: "Executive",
-    date: "19/09/17",
-  },
-  {
-    name: "Michael Levi",
-    job: "Developer",
-    date: "24/12/08",
-  },
-  {
-    name: "Richard Gran",
-    job: "Manager",
-    date: "04/10/21",
-  },
-];
-
-
 
 export function Libraries() {
 
@@ -71,79 +42,60 @@ export function Libraries() {
 
   const [data1, setData] = useState(null);
 
-  const [pageData, setPageData] = useState('');
+  const [pageData, setPageData] = useState([]);
 
-  const handleDelete = () => {
-    console.log('hello');
+  const handleDelete = (index) => {
+    console.log('hello', pageData[index]._id);
     axios.delete('http://localhost:3001/api/programs/delete-program', {
       data: {
-        programId: "648df3ec024bd4452dbe8db6" // Replace programId with the actual program ID you want to delete
+        programId: pageData[index]._id, // Replace programId with the actual program ID you want to delete
+        specialistId: userProfile._id // Replace specialistId with the actual specialist ID
       }
     })
       .then(response => {
         // Handle success.
         const programData = response.data;
         console.log('Data', programData);
+
+        // Remove the item from pageData array
+        const updatedPageData = [...pageData];
+        updatedPageData.splice(index, 1);
+        setPageData(updatedPageData);
       })
       .catch(error => {
         // Handle error.
         console.log('Program Error:', error.response);
       });
+
   };
 
+  const handleEdit = (index) => {
+    const editProgram = pageData[index];
+    localStorage.setItem('editProgram', JSON.stringify(editProgram));
+    window.location.href = '/editprogram';
+  };
 
-  const data = [
-    {
-      label: "HTML",
-      value: "html",
-      desc: `It really matters and then like it really doesn't matter.
-      What matters is the people who are sparked by it. And the people 
-      who are like offended by it, it doesn't matter.`,
-    },
-    {
-      label: "React",
-      value: "react",
-      desc: `Because it's about motivating the doers. Because I'm here
-      to follow my dreams and inspire other people to follow their dreams, too.`,
-    },
-    {
-      label: "Vue",
-      value: "vue",
-      desc: `We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
-    },
-    {
-      label: "Angular",
-      value: "angular",
-      desc: `Because it's about motivating the doers. Because I'm here
-      to follow my dreams and inspire other people to follow their dreams, too.`,
-    },
-    {
-      label: "Svelte",
-      value: "svelte",
-      desc: `We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
-    },
-  ];
+  const handleWatch = (index) => {
+    const watchProgram = pageData[index];
+    localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
+    window.location.href = '/watchprogram';
+  };
+
+  const handleReview = (index) => {
+    const watchProgram = pageData[index];
+    localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
+    window.location.href = '/reviewprogram';
+  };
+
+  const handleReviews = (index) => {
+    const editProgram = pageData[index];
+    localStorage.setItem('editProgram', JSON.stringify(editProgram));
+    window.location.href = '/watchreviews';
+  };
+  
 
   const loadPrograms = () => {
-    console.log(userProfile._id);
-    axios.put('http://localhost:3001/api/users/use-program', {
-      params: {
-        specialistId: userProfile._id
-      }
-    })
-      .then(response => {
-        // Handle success.
-        const programData = response.data;
-        console.log('Data', programData);
-      })
-      .catch(error => {
-        // Handle error.
-        console.log('Program Error:', error.response);
-      });
+    console.log('check', pageData);
   };
 
   if (userProfile.role == "specialist") {
@@ -162,13 +114,37 @@ export function Libraries() {
           // Handle success.
           const programData = response.data.programs;
           console.log('Data', programData);
+          /* const convertedData = programData.map(program => {
+             return {
+               id: program._id,
+               name: program.programName,
+               startDate: program.programStartDate,
+             };
+           });*/
           setPageData(programData);
+          console.log('check', pageData);
+          console.log('check2',userProfile);
+
         })
         .catch(error => {
           // Handle error.
           console.log('Program Error:', error.response);
         });
     };
+
+    const formatDate = (dateString) => {
+      const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      };
+
+      return new Date(dateString).toLocaleString('en-US', options);
+    };
+
 
     return (
       <>
@@ -212,50 +188,46 @@ export function Libraries() {
                       </tr>
                     </thead>
                     <tbody>
-                      {TABLE_ROWS.map(({ name, job, date }, index) => {
-                        const isLast = index === TABLE_ROWS.length - 1;
-                        const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+                      {pageData.map((program, index) => (
 
-                        return (
-                          <tr key={name}>
-                            <td className={classes}>
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {name}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {job}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {date}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                                Edit
-                              </Typography>
-                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                                <button onClick={handleDelete}> Delete</button>
-                              </Typography>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                        <tr key={index}>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {program.name}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {formatDate(program.startDate)}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {program._id}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue" className="font-medium">
+                              <div className="mb-3 flex gap-2">
+                                <button onClick={() => handleDelete(index)}>Delete</button>
+                                <button onClick={() => handleEdit(index)}>Edit</button>
+                                <button onClick={() => handleReviews(index)}>Reviews</button>
+                              </div>
+                            </Typography>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </Card>
                 <div className="px-6 flex flex-col items-center mt-2">
-                  <Link to="/new-program">
+                  <Link to="/newprogram">
                     <Button className=" flex items-center gap-3 " color="green">
                       <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
                     </Button>
                   </Link>
-                  <Button className=" flex items-center gap-3 " color="green" onClick={loadPrograms}>
-                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> load program
-                  </Button>
                   <Dialog
                     size="xs"
                     open={open}
@@ -298,18 +270,29 @@ export function Libraries() {
     }, []);
 
     const fetchData = async () => {
-      axios
-        .get('http://localhost:3001/api/programs')
-        .then(response => {
-          // Handle success.
-          const programsData = response.data;
-          console.log('Programs Data:', programsData);
-        })
-        .catch(error => {
-          // Handle error.
-          console.log('Programs Error:', error.response);
-        });
+      try {
+        const response = await axios.get('http://localhost:3001/api/programs');
+        const programsData = response.data;
+        setPageData(programsData);
+      } catch (error) {
+        console.log('Programs Error:', error.response);
+      }
     };
+
+    const formatDate = (dateString) => {
+      const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      };
+
+      return new Date(dateString).toLocaleString('en-US', options);
+    };
+
+
     return (
       <>
         <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
@@ -352,78 +335,45 @@ export function Libraries() {
                       </tr>
                     </thead>
                     <tbody>
-                      {TABLE_ROWS.map(({ name, job, date }, index) => {
-                        const isLast = index === TABLE_ROWS.length - 1;
-                        const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+                      {pageData.map((program, index) => (
 
-                        return (
-                          <tr key={name}>
-                            <td className={classes}>
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {name}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {job}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {date}
-                              </Typography>
-                            </td>
-                            <td className={classes}>
-                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                                Edit
-                              </Typography>
-                              <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                                <button onClick={handleDelete}> Delete</button>
-                              </Typography>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                        <tr key={index}>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {program.name}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {formatDate(program.startDate)}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {program.rating}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue" className="font-medium">
+                              <div className="mb-3 flex gap-2">
+                                <button onClick={() => handleWatch(index)}>Watch</button>
+                                <button onClick={() => handleReview(index)}>Review</button>
+                              </div>
+                            </Typography>
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </Card>
                 <div className="px-6 flex flex-col items-center mt-2">
-                  <Link to="/new-program">
+                  <Link to="/newprogram">
                     <Button className=" flex items-center gap-3 " color="green">
                       <KeyIcon strokeWidth={2} className="h-5 w-5" /> New Program
                     </Button>
                   </Link>
-                  <Button className=" flex items-center gap-3 " color="green" onClick={loadPrograms}>
-                    <KeyIcon strokeWidth={2} className="h-5 w-5" /> load program
-                  </Button>
-                  <Dialog
-                    size="xs"
-                    open={open}
-                    handler={handleOpen}
-                    className="bg-transparent shadow-none">
-                    <Card className="mx-auto w-full max-w-[24rem]">
-                      <CardHeader
-                        variant="gradient"
-                        color="blue"
-                        className="mb-4 grid h-28 place-items-center">
-                        <Typography variant="h3" color="white">
-                          New Library
-                        </Typography>
-                      </CardHeader>
-                      <CardBody className="flex flex-col gap-4">
-                        <Input label="Library Name" size="lg" type="text" />
-                      </CardBody>
-                      <CardFooter className="pt-0">
-                        <div className="mb-3 flex gap-2">
-                          <Button variant="gradient" onClick={handleOpen} fullWidth>
-                            Add
-                          </Button>
-                          <Button variant="gradient" onClick={handleOpen} fullWidth>
-                            Cancel
-                          </Button></div>
-                      </CardFooter>
-                    </Card>
-                  </Dialog>
                 </div>
               </div>
             </div>
