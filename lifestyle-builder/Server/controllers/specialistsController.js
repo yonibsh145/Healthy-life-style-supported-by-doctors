@@ -3,6 +3,7 @@ const Program = require('../models/programModel');
 const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
+const { request } = require('express');
 //@desc     register a new specialist
 //@route    POST /api/specialists/register
 //@access  Public
@@ -57,7 +58,8 @@ const authSpecialist = asyncHandler(async (req, res) => {
 //@route  GET /api/specialists/profile
 //@access Private
 const getSpecialistProfile = asyncHandler(async (req, res) => {
-  const specialist = await Specialist.findById(req.specialist._id);
+  const specialistId = req.body.specialistId;
+  const specialist = await Specialist.findById(specialistId);
   if (specialist) {
     res.json({
       _id: specialist._id,
@@ -75,7 +77,8 @@ const getSpecialistProfile = asyncHandler(async (req, res) => {
 //@route  PUT /api/specialists/profile
 //@access Private
 const updateSpecialistProfile = asyncHandler(async (req, res) => {
-  const specialist = await Specialist.findById(req.specialist._id);
+  const specialistId = req.body.specialistId;
+  const specialist = await Specialist.findById(req.specialistId._id);
   if (specialist) {
     specialist.name = req.body.name || specialist.name;
     specialist.email = req.body.email || specialist.email;
@@ -102,48 +105,49 @@ const updateSpecialistProfile = asyncHandler(async (req, res) => {
 //@access   Private
 
 const updateRequest = asyncHandler(async (req, res) => {
-  const { userId, programId, action } = req.body;
+  const { specialistId, userId, programId, action } = req.body;
 
   try {
-    // Find the specialist based on the logged-in user
-    const specialist = await Specialist.findById(req.user._id);
+    const specialist = await Specialist.findById(specialistId);
+    const user = await User.findById(userId).populate('programs');
 
-    // Find the user and program
-    const user = await User.findById(userId);
-    const program = await Program.findById(programId);
-
-    if (!specialist || !user || !program) {
+    if (!specialist || !user) {
       res.status(404).json({ message: 'Specialist, user, or program not found' });
       return;
     }
 
-    // Update the user's program and programStatus
-    const programIndex = user.programs.findIndex(prog => prog.toString() === programId);
-    if (programIndex !== -1) {
-      if (action === 'accept') {
-        user.programStatus[programId] = 'Accepted';
+    const requestIndex = specialist.requests.findIndex(request => request.user.toString() === userId && request.program.toString() === programId);
 
-        // Set the start date to the current date
-        user.programs[programIndex].startDate = new Date();
-        await user.save();
-      } else if (action === 'reject') {
-        user.programStatus[programId] = 'Rejected';
-        await user.save();
-      }
-    } else {
+    if (requestIndex === -1) {
+      res.status(404).json({ message: 'Request not found' });
+      return;
+    }
+
+    const programIndex = user.programs.findIndex(program => program.program._id.toString() === programId);
+
+    if (programIndex === -1) {
       res.status(404).json({ message: 'Program not found in user\'s programs' });
       return;
     }
 
-    // Remove the request from the specialist's requests array
-    const requestIndex = specialist.requests.findIndex(
-      (request) => request.user.toString() === userId && request.program.toString() === programId
-    );
-    if (requestIndex !== -1) {
-      specialist.requests.splice(requestIndex, 1);
+    const programStatus = user.programs[programIndex].programStatus;
+
+    if (programStatus !== 'Pending') {
+      res.status(400).json({ message: 'Program status is not Pending' });
+      return;
     }
 
-    // Add the user to the specialist's patients array if the request was accepted
+    if (action === 'accept') {
+      user.programs[programIndex].programStatus = 'Active';
+      user.programs[programIndex].startDate = new Date();
+      await user.save();
+    } else if (action === 'reject') {
+      user.programs[programIndex].programStatus = 'Rejected';
+      await user.save();
+    }
+
+    specialist.requests.splice(requestIndex, 1);
+
     if (action === 'accept') {
       specialist.patients.push(userId);
       await specialist.save();
@@ -230,15 +234,16 @@ const getMessages = asyncHandler(async (req, res) => {
 //@route    GET /api/specialists/patients
 //@access   Private
 const getSpecialistPatients = async (req, res) => {
+  const {specialistId} = req.body;
   try {
     // Find the specialist
-    const specialist = await SpecialistModel.findById(req.user._id);
+    const specialist = await Specialist.findById(specialistId).populate('patients');
     // Check if the specialist exists
     if (!specialist) {
       return res.status(404).json({ message: 'Specialist not found' });
     }
     // Get the specialist's patients
-    const patients = await UserModel.find({ _id: { $in: specialist.patients } });
+    const patients = specialist.patients;
     res.status(200).json(patients);
   } catch (error) {
     console.error(error);
@@ -251,7 +256,15 @@ const getSpecialistPatients = async (req, res) => {
 //@access Private
 const getSpecialistRequests = asyncHandler(async (req, res) => {
   try {
-    const specialist = await Specialist.findById(req.specialist._id).populate('requests.user', 'name');
+    const { specialistId } = req.body;
+
+    const specialist = await Specialist.findById(specialistId).populate({
+      path: 'requests.user',
+      select: 'name email', // Populate 'name' and 'email' fields of the user document
+    }).populate({
+      path: 'requests.program',
+      select: 'name description', // Populate 'name' and 'description' fields of the program document
+    });
 
     if (!specialist) {
       return res.status(404).json({ message: 'Specialist not found' });
@@ -266,26 +279,22 @@ const getSpecialistRequests = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 //@desc   Get all programs of a specialist
 //@route  GET /api/specialists/programs
 //@access Public
 const getSpecialistPrograms = asyncHandler(async (req, res) => {
-  const specialistId = req.query.specialistId; // Use req.query to access the query parameter
+  const {specialistId} = req.body; // Use req.query to access the query parameter
   console.log(specialistId);
   try {
-    const specialist = await Specialist.findById(specialistId);
+    const specialist = await Specialist.findById(specialistId).populate('programs')
 
     if (!specialist) {
       return res.status(404).json({ message: 'Specialist not found' });
     }
 
-    const programs = specialist.programs.map((program) => {
-      return {
-        _id: program.program,
-        programName: program.programName,
-        programStartDate: program.programStartDate
-      };
-    });
+    const programs = specialist.programs;
 
     res.status(200).json({ programs });
   } catch (error) {

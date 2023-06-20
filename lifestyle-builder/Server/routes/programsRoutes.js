@@ -7,10 +7,10 @@ router.route('/')
 .post(programController.createProgram)
 .get(programController.getAllPrograms);
 
-router.route('/:id/reviews').post(programController.addReview);
-router.route('/program-daily-activities/:id').get(programController.getDailyActivities);
-router.route('/program-url/:id').get(programController.getProgramUrl);
-router.route('/edit-program/:id').put(programController.editProgram);
+router.route('/addReview').post(programController.addReview);
+router.route('/program-daily-activities').get(programController.getDailyActivities);
+router.route('/program-url/').get(programController.getProgramUrl);
+router.route('/edit-program').put(programController.editProgram);
 
 router.route('/:id')
 .get(programController.getProgramById);

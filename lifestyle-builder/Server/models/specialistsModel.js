@@ -47,34 +47,19 @@ const specialistSchema = new Schema({
   },
   outgoingMessages: [messageSchema], // Messages sent by the specialist
   incomingMessages: [messageSchema], // Messages received by the specialist
+  //array of the spcialist's patients
   patients: [
     {
-      patient: {
-        type: Schema.Types.ObjectId,
-        ref: "users",
-        required: true,
-      },
-      patientName: {
-        type: String,
-        required: true,
-      },
+      type: Schema.Types.ObjectId,
+      ref: "users",
+      required: false,
     },
   ],
   programs: [
     {
-      program: {
         type: Schema.Types.ObjectId,
         ref: "programs",
         required: false,
-      },
-      programName: {
-        type: String,
-        required: false,
-      },
-      programStartDate: {
-        type: Date,
-        required: false,
-      },
     },
   ],
     rating: {
@@ -89,19 +74,11 @@ const specialistSchema = new Schema({
         ref: "users",
         required: false,
       },
-      userUsername: {
-        type: String,
-        required: false,
-      },
       program: {
         type: Schema.Types.ObjectId,
         ref: "programs",
         required: false,
       },
-      programName: {
-        type: String,
-        required: false,
-    },
   },
   ],
 }, {
