@@ -47,11 +47,7 @@ const createProgram = asyncHandler(async (req, res) => {
 
     if (program) {
       // Update the specialist's programs array which conatins the program id and the program name
-      existingSpecialist.programs.push({
-        program: program._id,
-        programName: program.name,
-        programStartDate: program.startDate,
-      });
+      existingSpecialist.programs.push(program._id);
       await existingSpecialist.save();
 
 
@@ -64,15 +60,6 @@ const createProgram = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
-
-
-/*//@desc     create activity to program by specialist
-//@route    POST /api/program/addActivity
-//@access   Private
-const addActivity = asyncHandler(async (req, res) => {
-    const { name, description, duration, type, intensity } = req.body;
-    const programId = req.body.programId;
-*/
 
 
 //@desc     get all programs
@@ -89,10 +76,11 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 });
 
 //@desc     get program by id
-//@route    GET /api/programs/:id
+//@route    GET /api/programs/program
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
-  const program = await Program.findById(req.params.id);
+  const {programId}= req.body;
+  const program = await Program.findById(programId);
   if (program) {
     res.json(program);
   } else {
@@ -100,58 +88,51 @@ const getProgramById = asyncHandler(async (req, res) => {
   }
 });
 
-
-//@desc     get all programs by specialist id
-//@route    GET /api/programs/specialist-programs/:id
-//@access   Public
-/*const getSpecialistPrograms = asyncHandler(async (req, res) => {
-  try {
-    const specialistId = req.params.id;
-
-    // Find specialist by ID
-    const specialist = await Specialist.findById(specialistId);
-
-    if (!specialist) {
-      return res.status(404).json({ message: 'Specialist not found' });
-    }
-
-    // Find programs by specialist ID
-    const programs = await Program.find({ specialist: specialistId });
-
-    res.status(200).json({ specialist, programs });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
-*/
-
 //@desc     add review to program by user
-//@route    POST /api/programs/:id/reviews
+//@route    POST /api/programs/addReview
 //@access   Public
 const addReview = asyncHandler(async (req, res) => {
-  const { rating, comment } = req.body;
-  const program = await Program.findById(req.params.id);
-  if (program) {
-    const alreadyReviewed = program.reviews.find(r => r.user.toString() === req.user._id.toString());
+  const { userId, programId, rating, comment } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.programs.includes(programId)) {
+      return res.status(400).json({ message: "You can't review a program you are not doing" });
+    }
+
+    const program = await Program.findById(programId);
+    if (!program) {
+      return res.status(404).json({ message: "Program not found" });
+    }
+
+    const alreadyReviewed = program.reviews.find(review => review.user.toString() === userId);
     if (alreadyReviewed) {
-      res.status(400).json({ message: "Program already reviewed" });
+      return res.status(400).json({ message: "Program already reviewed" });
     }
+
     const review = {
-      name: req.user.username,
+      name: user.name,
       rating: Number(rating),
-      comment,
-      user: req.user._id
-    }
+      comment: comment,
+      user: user._id
+    };
+
     program.reviews.push(review);
     program.numOfReviews = program.reviews.length;
     program.rating = program.reviews.reduce((acc, item) => item.rating + acc, 0) / program.reviews.length;
     await program.save();
+
     res.status(200).json({ message: "Review added" });
-  } else {
-    res.status(404).json({ message: "Program not found" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
+
 
 //@desc     get program url by program id
 //@route    GET /api/programs/program-url/:id
@@ -166,68 +147,41 @@ const getProgramUrl = asyncHandler(async (req, res) => {
 });
 
 //@desc     get program daily activities by program id
-//@route    GET /api/programs/program-daily-activities/:id
+//@route    GET /api/programs/program-daily-activities
 //@access   Public
 const getDailyActivities = async (req, res) => {
-  const userId = req.user._id;
-  const programId = req.params.id;
+  const { userId } = req.body;
 
   try {
     // Find the user
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate({
+      path: 'programs',
+      match: { programStatus: 'Active' }, // Filter active programs only
+      populate: {
+        path: 'activities',
+        match: { day: getCurrentDay() }, // Filter activities for the current day
+        populate: { path: 'previousActivity' } // Populate previousActivity field in activitySchema
+      }
+    }).exec();
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Find the active program for the user
-    const activeProgram = await Program.findOne({
-      _id: programId,
-      specialist: req.user._id,
-      programStatus: 'Active',
-    })
-      .populate({
-        path: 'activities',
-        model: 'activity',
-      })
-      .exec();
+    const currentDay = getCurrentDay();
 
-    if (!activeProgram) {
-      return res.status(404).json({ message: 'Active program not found' });
-    }
-
-    const currentDay = Math.floor((Date.now() - activeProgram.startDate) / (24 * 60 * 60 * 1000)) + 1;
-
-    if (currentDay > activeProgram.duration) {
-      // Program duration exceeded, change program status to 'Done'
-      activeProgram.programStatus = 'Done';
-      await activeProgram.save();
-      return res.status(200).json({ message: 'Program duration exceeded', programStatus: 'Done' });
-    }
-
-    const dailyActivities = [];
-
-    // Retrieve the activities for the current day from each active program
-    for (const program of user.programs) {
-      if (program.programStatus === 'Active') {
-        const dailyActivity = program.dailyActivities.find(da => da.day === currentDay);
-
-        if (dailyActivity) {
-          dailyActivities.push({
-            program: {
-              _id: program._id,
-              name: program.name,
-              status: program.programStatus,
-              startDate: program.startDate,
-              endDate: program.endDate,
-              description: program.description,
-              // Include other program fields as needed
-            },
-            activities: dailyActivity.activities,
+    const dailyActivities = user.programs.reduce((result, program) => {
+      if (currentDay <= program.duration) {
+        const activities = program.activities.filter(activity => activity.day === currentDay);
+        if (activities.length > 0) {
+          result.push({
+            programName: program.name,
+            activities
           });
         }
       }
-    }
+      return result;
+    }, []);
 
     res.status(200).json({ dailyActivities });
   } catch (error) {
@@ -236,25 +190,25 @@ const getDailyActivities = async (req, res) => {
   }
 };
 
+const getCurrentDay = () => {
+  
+  const currentDay = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+  return currentDay;
+};
+
 
 //@desc     edit program details by program id
-//@route    PUT /api/programs/edit-program/:id
+//@route    PUT /api/programs/edit-program
 //@access   Public
 const editProgram = asyncHandler(async (req, res) => {
   //want that details will be shown in the edit form
-
-  const program = await Program.findById(req.params.id);
+  const programId = req.body.programId;
+  const program = await Program.findById(programId);
   if (program) {
     program.name = req.body.name || program.name;
     program.description = req.body.description || program.description;
-    program.url = req.body.url || program.url;
-    program.price = req.body.price || program.price;
-    program.category = req.body.category || program.category;
-    program.image = req.body.image || program.image;
-    program.specailist = req.body.specialist || program.specialist;
-    program.numOfRatings = req.body.numReviews || program.numOfRatings;
-    program.rating = req.body.rating || program.rating;
-    program.reviews = req.body.reviews || program.reviews;
+    program.kindOfProgram = req.body.category || program.category;
+    program.duration = req.body.duration || program.duration;
     program.activities = req.body.activities || program.activities;
     const updatedProgram = await program.save();
     res.json(updatedProgram);
@@ -266,33 +220,29 @@ const editProgram = asyncHandler(async (req, res) => {
 //@desc     update program details by program id
 //@route    PUT /api/programs/update-program/:id
 //@access   Public
-const updateProgram = asyncHandler(async (req, res) => {
-  const program = await Program.findById(req.params.id);
-  if (program) {
-    program.name = req.body.name || program.name;
-    program.description = req.body.description || program.description;
-    program.activities = req.body.activities || program.activities;
-    const updatedProgram = await program.save();
-    res.json(updatedProgram);
-  } else {
-    res.status(404).json({ message: "Program not found" });
-  }
-});
 
-
-//@desc     Delete program by program 
+//@desc     Delete program by program ID
 //@route    DELETE /api/programs/delete-program
 //@access   Public
 const deleteProgram = asyncHandler(async (req, res) => {
-  const { programId } = req.body;
+  const programId = req.body.programId;
 
   try {
-    // Delete the program
-    const program = await Program.findByIdAndDelete(programId);
+    // Find the program by ID
+    const program = await Program.findById(programId);
     if (!program) {
       res.status(404).json({ message: "Program not found" });
       return;
     }
+
+    // Check if the requesting specialist created the program
+    if (program.specialist.toString() !== req.body.specialistId) {
+      res.status(401).json({ message: "Unauthorized to delete this program" });
+      return;
+    }
+
+    // Delete the program
+    await Program.findByIdAndDelete(programId);
 
     res.status(200).json({ message: "Program deleted successfully" });
   } catch (error) {
@@ -305,7 +255,6 @@ const deleteProgram = asyncHandler(async (req, res) => {
 module.exports = {
   getProgramById,
   createProgram,
-  updateProgram,
   //getSpecialistPrograms,
   addReview,
   getProgramUrl,

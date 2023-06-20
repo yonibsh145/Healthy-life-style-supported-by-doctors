@@ -113,11 +113,6 @@ const programSchema = new Schema({
             required: true
         }]
     }],
-    programStatus: {
-        type: String,
-        required: false,
-
-    },
     startDate: {
         type: Date,
         required: true,
