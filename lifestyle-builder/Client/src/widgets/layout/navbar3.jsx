@@ -21,7 +21,7 @@ export function Navbar3() {
         // Remove the user profile from local storage
         userProfile.username = "";
         userProfile.role = "";
-        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        localStorage.removeItem('userProfile');
     }
 
 

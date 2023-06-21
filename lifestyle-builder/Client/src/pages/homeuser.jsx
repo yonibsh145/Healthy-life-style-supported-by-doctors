@@ -10,7 +10,7 @@ import {
   Input,
   Textarea,
   Dialog,
-  Alert ,
+  Alert,
 } from "@material-tailwind/react";
 import { Rating } from '@mui/material';
 import { UsersIcon } from "@heroicons/react/24/solid";
@@ -33,7 +33,7 @@ export function HomeUser() {
 
   const [open, setOpen] = useState(false);
 
-    const handleOpen = () => setOpen(!open);
+  const handleOpen = () => setOpen(!open);
 
   useEffect(() => {
     fetchData();
@@ -52,7 +52,7 @@ export function HomeUser() {
   const handleWatch = (index) => {
     const watchProgram = pageData[index];
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
-    window.location.href = '/watchprogram';
+    window.location.href = `/watchprogram/`;
   };
 
   const handleReviews = (index) => {
@@ -276,7 +276,7 @@ export function HomeUser() {
                               <div className="mb-3 flex gap-2">
                                 <button onClick={() => handleWatch(index)}>Watch</button>
                                 <button onClick={() => useProgram(index)}>Use</button>
-                                <button onClick={() => handleReviews(index)}>Reviews</button>                               
+                                <button onClick={() => handleReviews(index)}>Reviews</button>
                               </div>
                             </Typography>
                           </td>
