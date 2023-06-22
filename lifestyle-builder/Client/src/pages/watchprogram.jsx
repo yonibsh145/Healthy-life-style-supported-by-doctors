@@ -101,8 +101,8 @@ export function WatchProgram() {
             userId: userProfile._id,
             programId: program._id,
         };
-        console.log('here',program._id);
-        console.log('check',requestBody);
+        console.log('here', program._id);
+        console.log('check', requestBody);
         axios.put('http://localhost:3001/api/users/use-program', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
@@ -209,6 +209,7 @@ export function WatchProgram() {
                                 </Typography>
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
+                                <Button className="bg-blue-400 mb-6" >Specialist Profile</Button>
                                 <div className="mb-4 flex flex-col gap-6 ">
                                     <label>Type: {ProgramType}</label>
                                     <label>Length: {ProgramLength}</label>

@@ -94,7 +94,6 @@ export function WatchReviews() {
     }, []);
 
     const fetchData = async () => {
-        console.log(requestBody.programId);
         axios.get('http://localhost:3001/api/programs/all-programs', {
             params: {
                 programId: program._id,
@@ -104,13 +103,6 @@ export function WatchReviews() {
                 // Handle success.
                 const programData = response.data;
                 console.log('Data', programData);
-                /* const convertedData = programData.map(program => {
-                   return {
-                     id: program._id,
-                     name: program.programName,
-                     startDate: program.programStartDate,
-                   };
-                 });*/
                 setPageData(programData);
                 console.log('check', pageData);
 

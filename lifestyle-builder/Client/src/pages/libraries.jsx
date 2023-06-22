@@ -29,11 +29,15 @@ import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
+import { FacebookShareButton, TwitterShareButton } from 'react-share';
 
 const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
 
 
 export function Libraries() {
+
+
+  
 
   const [open, setOpen] = useState(false);
 
@@ -41,9 +45,14 @@ export function Libraries() {
 
   const userProfile = JSON.parse(localStorage.getItem('userProfile'));
 
+  //const [sharedLink, setDharedLink] = useState('');
+
   const [data1, setData] = useState(null);
 
   const [pageData, setPageData] = useState([]);
+
+  const [sharedLink, setSharedLink] = useState('');
+  const title = 'Check out my program on Lifestyle-Builder'; // Title of the shared content
 
   const handleDelete = (index) => {
     console.log('hello', pageData[index]._id);
@@ -79,7 +88,7 @@ export function Libraries() {
   const handleWatch = (index) => {
     const watchProgram = pageData[index];
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
-    window.location.href = '/watchprogram';
+    window.location.href = `/watchprogram/`;
   };
 
   const handleReview = (index) => {
@@ -94,6 +103,13 @@ export function Libraries() {
     window.location.href = '/watchreviews';
   };
 
+  const handleShare = (index) => {
+    setOpen(!open);
+    console.log(pageData[index]._id);
+    const shareUrl = `http://localhost:5173/watchsharedprogram/${pageData[index]._id}`;
+    setSharedLink(shareUrl);
+    console.log(shareUrl);
+  };
 
   const loadPrograms = () => {
     console.log('check', pageData);
@@ -213,6 +229,43 @@ export function Libraries() {
                                 <button onClick={() => handleDelete(index)}>Delete</button>
                                 <button onClick={() => handleEdit(index)}>Edit</button>
                                 <button onClick={() => handleReviews(index)}>Reviews</button>
+                                <button onClick={() => handleShare(index)}>Share</button>
+                                <Dialog
+                                  size="md"
+                                  open={open}
+                                  handler={handleOpen}
+                                  className="bg-transparent shadow-none">
+                                  <Card className="mx-auto w-full max-w-[24rem]">
+                                    <CardHeader
+                                      variant="gradient"
+                                      color="blue"
+                                      className="mb-4 grid h-28 place-items-center">
+                                      <Typography variant="h3" color="white">
+                                        Share
+                                      </Typography>
+                                    </CardHeader>
+                                    <CardBody>
+                                      <div className="flex justify-center">
+                                        <FacebookShareButton url={sharedLink} quote={title}>
+                                          <IconButton className='mr-5' >
+                                            <i className={`fa-brands text-lg fa-facebook`} />
+                                          </IconButton>
+                                        </FacebookShareButton>
+                                        <TwitterShareButton url={sharedLink} title={title} >
+                                          <IconButton >
+                                            <i className={`fa-brands text-lg fa-twitter`} />
+                                          </IconButton>
+                                        </TwitterShareButton>
+                                      </div>
+                                    </CardBody>
+                                    <CardFooter className="pt-0">
+                                      <div className="mb-3 flex gap-2">
+                                        <Button variant="gradient" onClick={handleOpen} fullWidth>
+                                          Back
+                                        </Button></div>
+                                    </CardFooter>
+                                  </Card>
+                                </Dialog>
                               </div>
                             </Typography>
                           </td>

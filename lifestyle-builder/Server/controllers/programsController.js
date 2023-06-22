@@ -79,7 +79,8 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 //@route    GET /api/programs/program
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
-  const { programId } = req.body;
+  const { programId } = req.query;
+  console.log(programId);
   const program = await Program.findById(programId);
   if (program) {
     res.json(program);

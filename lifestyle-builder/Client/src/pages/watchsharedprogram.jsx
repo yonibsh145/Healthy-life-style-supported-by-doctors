@@ -30,19 +30,20 @@ import {
     BookmarkIcon,
     KeyIcon,
 } from "@heroicons/react/24/outline";
-import { Footer, Navbar3 } from "@/widgets/layout";
-import { Rating } from '@mui/material';
-import React, { useState, useCallback, useMemo } from 'react';
+import { Footer, Navbar2, Navbar3 } from "@/widgets/layout";
+import { Rating, duration } from '@mui/material';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from "react-router-dom";
 
 
 
-const TABLE_HEAD = ["Name", "Length", "Day", "Description", "Action"];
+const TABLE_HEAD = ["Name", "Length", "Day", "Description"];
 
 
-export function NewProgram() {
+export function WatchSharedProgram() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-
+    const program = JSON.parse(localStorage.getItem('watchProgram'));
     const [open, setOpen] = useState(false);
 
     const handleOpen = () => setOpen(!open);
@@ -59,13 +60,44 @@ export function NewProgram() {
     const [ProgramType, setProgramType] = useState('');
     const [editIndex, setEditIndex] = useState(-1);
 
-    const programData = {
+    /*const programData = {
         name: ProgramName,
         duration: ProgramLength,
         specialist: userProfile._id,
         activities: trainings,
         kindOfProgram: ProgramType,
         description: ProgramDescription,
+    };*/
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        const currentURL = window.location.href;
+        const parts = currentURL.split('/');
+        const programID = parts[parts.length - 1];
+        axios.get('http://localhost:3001/api/programs/program', {
+            params: {
+                programId: programID,
+            }
+        })
+            .then(response => {
+                // Handle success.
+                const programData = response.data;
+                console.log('Data', programData);
+                setProgramName(programData.name);
+                setProgramType(programData.kindOfProgram);
+                setProgramDescription(programData.description);
+                setProgramLength(programData.duration);
+                setTrainings(programData.activities);
+
+            })
+            .catch(error => {
+                // Handle error.
+                console.log('Program Error:', error.response);
+            });
+
     };
 
     const handleLength = (event) => {
@@ -82,55 +114,44 @@ export function NewProgram() {
         setTrainingDay(integerValue);
     };
 
+
+    const handleUse = () => {
+        const requestBody = {
+            userId: userProfile._id,
+            programId: program._id,
+        };
+        console.log('here', program._id);
+        console.log('check', requestBody);
+        axios.put('http://localhost:3001/api/users/use-program', requestBody)
+            .then(response => {
+                console.log(response.data); // Handle the response data as needed
+            })
+            .catch(error => {
+                console.error(error); // Handle any errors that occur
+            });
+        console.log(program._id);
+    }
+
     const handleSave = () => {
         if (trainingName && trainingLength && trainingDescription && trainingDay) {
-            if(isNaN(trainingLength)){
-                alert(`Training Length must be a number`);
-                return;
-            }
-            if(isNaN(trainingDay)){
-                alert(`Training Day Length must be a number`);
-                return;
-            }
-            if(parseInt(trainingDay)>parseInt(trainingLength)){
-                alert(`Training Length must be larger than Training Day`);
-                return;
-            }
-            if(parseInt(trainingDay)>parseInt(trainingLength)){
-                alert(`Training Length must be larger than Training Day`);
-                return;
-            }
             const existingTraining = trainings.find(
                 (training) => training.name === trainingName
             );
+            if (existingTraining) {
+                alert(`A training with the name "${trainingName}" already exists.`);
+                return;
+            }
             if (editIndex !== -1) {
                 const updatedTrainings = [...trainings];
-                const tempName = updatedTrainings[editIndex].name;
                 updatedTrainings[editIndex] = {
                     name: trainingName,
                     duration: trainingLength,
                     day: trainingDay,
                     description: trainingDescription,
                 };
-                if (existingTraining && updatedTrainings[editIndex].name!==tempName) {
-                    alert(`A training with the name "${trainingName}" already exists.`);
-                    return;
-                }
-                console.log('check');
                 setTrainings(updatedTrainings);
                 setEditIndex(-1);
-                setTrainingName('');
-                setTrainingLength('');
-                setTrainingDay('');
-                setTrainingDescription('');
-                setOpen(!open)
-                return;
-            }
-            if (existingTraining) {
-                alert(`A training with the name "${trainingName}" already exists.`);
-                return;
-            }
-            else {
+            } else {
                 const newTraining = { name: trainingName, duration: trainingLength, day: trainingDay, description: trainingDescription };
                 setTrainings([...trainings, newTraining]);
             }
@@ -148,7 +169,7 @@ export function NewProgram() {
     const handleEdit = (index) => {
         const trainingToEdit = trainings[index];
         setTrainingName(trainingToEdit.name);
-        setTrainingLength(trainingToEdit.duration);
+        setTrainingLength(trainingToEdit.length);
         setTrainingDay(trainingToEdit.day);
         setTrainingDescription(trainingToEdit.description);
         setEditIndex(index);
@@ -185,7 +206,12 @@ export function NewProgram() {
     return (
         <>
             <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
-                <Navbar3 />
+                {
+                    userProfile && <Navbar3 />
+                }
+                {
+                    !userProfile && <Navbar2 />
+                }
             </div>
             <section className="relative block h-[50vh]">
                 <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
@@ -203,63 +229,17 @@ export function NewProgram() {
                             </div>
                             <div className="my-8 text-center">
                                 <Typography variant="h2" color="blue-gray" className="mb-2">
-                                    My Programs
+                                    Name: {ProgramName}
                                 </Typography>
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
-                                <div className="mb-4 flex flex-col gap-6 bg-gray-200">
-                                    <select className="bg-gray-200" value={ProgramType} onChange={handleSelectChange}>
-                                        <option value="">Select Type</option>
-                                        <option value="Medicine">Take Medicine</option>
-                                        <option value="Lifestyle">Lifestyle Action</option>
-                                        <option value="Sport">Sport</option>
-                                        <option value="Diet">Diet</option>
-                                    </select>
-                                    <Input size="lg" label="Program Name" value={ProgramName} onChange={(e) => setProgramName(e.target.value)} />
-                                    <Input size="lg" label="Program Length(Days)" value={ProgramLength} onChange={handleLength} />
-                                    <Input size="lg" label="Tags" value={ProgramTags} onChange={(e) => setProgramTags(e.target.value)} />
-                                    <Textarea label="Short Description" value={ProgramDescription} onChange={(e) => setProgramDescription(e.target.value)} />
+                                <Button className="bg-blue-400 mb-6" >Specialist Profile</Button>
+                                <div className="mb-4 flex flex-col gap-6 ">
+                                    <label>Type: {ProgramType}</label>
+                                    <label>Length: {ProgramLength}</label>
+                                    <label>Description: {ProgramDescription}</label>
                                 </div>
-                                <Button className="flex items-center gap-3" onClick={handleOpen}>
-                                    <BookmarkIcon strokeWidth={2} className="h-5 w-5" /> Add Action
-                                </Button>
-                                <Dialog
-                                    size="xs"
-                                    open={open}
-                                    handler={handleOpen}
-                                    className="bg-transparent shadow-none">
-                                    <Card className="mx-auto w-full max-w-[24rem]">
-                                        <CardHeader
-                                            variant="gradient"
-                                            color="blue"
-                                            className="mb-4 grid h-28 place-items-center">
-                                            <Typography variant="h3" color="white">
-                                                Add Action
-                                            </Typography>
-                                        </CardHeader>
-                                        <CardBody className="flex flex-col gap-4">
-                                            <Input label="Training Name" size="lg" type="text"
-                                                value={trainingName}
-                                                onChange={(e) => setTrainingName(e.target.value)} />
-                                            <Input label="Training Length" size="lg" type="text"
-                                                value={trainingLength}
-                                                onChange={(e) => setTrainingLength(e.target.value)} />
-                                            <Input label="Training Day" size="lg" type="text"
-                                                value={trainingDay}
-                                                onChange={handleDay} />
-                                            <Textarea label="Short Description" value={trainingDescription} onChange={(e) => setTrainingDescription(e.target.value)} />
-                                        </CardBody>
-                                        <CardFooter className="pt-0">
-                                            <div className="mb-3 flex gap-2">
-                                                <Button variant="gradient" onClick={handleSave} fullWidth>
-                                                    Add
-                                                </Button>
-                                                <Button variant="gradient" onClick={handleOpen} fullWidth>
-                                                    Cancel
-                                                </Button></div>
-                                        </CardFooter>
-                                    </Card>
-                                </Dialog>
+
                             </form>
                         </div>
                         {trainings.length > 0 && (
@@ -303,24 +283,32 @@ export function NewProgram() {
                                                         {training.description}
                                                     </Typography>
                                                 </td>
-                                                <td className="p-4">
-                                                    <Typography variant="small" color="blue" className="font-medium">
-                                                        <div className="mb-3 flex gap-2">
-                                                            <button onClick={() => handleDelete(index)}>Delete</button>
-                                                            <button onClick={() => handleEdit(index)}>Edit</button>
-                                                        </div>
-                                                    </Typography>
-                                                </td>
                                                 <td>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="px-6 flex flex-col items-center">
-                                    <Button className=" flex items-center gap-3 " color="green" onClick={handleSaveAll}>
-                                        <KeyIcon strokeWidth={2} className="h-5 w-5" /> Save Program
-                                    </Button>
+                                <div className="px-6 flex flex-row justify-center mt-10">
+                                    {
+                                        userProfile && (<Button className=" flex items-center gap-3 mr-10" color="green" onClick={handleUse}>
+                                            <KeyIcon strokeWidth={2} className="h-5 w-5" /> Use Program
+                                        </Button>)
+                                    }
+                                    {
+                                        userProfile && (<Link to="/homeuser">
+                                            <Button className=" flex items-center gap-3 " color="blue">
+                                                <KeyIcon strokeWidth={2} className="h-5 w-5" /> Home
+                                            </Button>
+                                        </Link>)
+                                    }
+                                    {
+                                        !userProfile && (<Link to="/home">
+                                            <Button className=" flex items-center gap-3 " color="blue">
+                                                <KeyIcon strokeWidth={2} className="h-5 w-5" /> Home
+                                            </Button>
+                                        </Link>)
+                                    }
                                 </div>
                             </Card>
                         )}
@@ -330,4 +318,4 @@ export function NewProgram() {
         </>
     );
 }
-export default NewProgram;
+export default WatchSharedProgram;
