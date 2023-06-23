@@ -108,21 +108,53 @@ const programSchema = new Schema({
             type: Number,
             required: true
         },
-        activities: [{
-            type: Schema.Types.ObjectId,
-            ref: 'activity',
-            required: true
-        }]
+        dailyActivity: [activitySchema]
     }],
     startDate: {
         type: Date,
         required: true,
         default: Date.now,
       },
+      endDate: {
+        type: Date,
+        required: false
+      }
 
 });
 
 // Pre middleware to populate the dailyActivities field
+programSchema.pre('save', function (next) {
+  const program = this;
+
+  // Calculate the end date based on the start date and duration
+  const endDate = new Date(program.startDate);
+  endDate.setDate(endDate.getDate() + program.duration);
+  program.endDate = endDate;
+
+  // Create daily activities array
+  program.dailyActivities = [];
+
+  // Populate daily activities for each day within the duration
+  for (let i = 1; i <= program.duration; i++) {
+    const dailyActivity = {
+      day: i,
+      activities: [],
+    };
+    program.dailyActivities.push(dailyActivity);
+  }
+
+  // Assign activities to their respective day
+  program.activities.forEach((activity) => {
+    const day = activity.day;
+    if (day >= 1 && day <= program.duration) {
+      // Add activity ID to program.dailyActivities
+      program.dailyActivities[day - 1].dailyActivity.push(activity);
+    }
+  });
+
+  next();
+});
+
 
 
 const ProgramModel = model("programs",programSchema);
