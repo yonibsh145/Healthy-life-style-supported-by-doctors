@@ -127,6 +127,14 @@ const addReview = asyncHandler(async (req, res) => {
     program.rating = program.reviews.reduce((acc, item) => item.rating + acc, 0) / program.reviews.length;
     await program.save();
 
+    // Update the rating field in the specialist model
+    const specialist = await Specialist.findById(program.specialist);
+    if (!specialist) {
+      return res.status(404).json({ message: "Specialist not found" });
+    }
+    specialist.rating = specialist.programs.reduce((acc, item) => item.rating + acc, 0) / specialist.programs.length;
+    await specialist.save();
+
     res.status(200).json({ message: "Review added" });
   } catch (error) {
     console.error(error);
