@@ -1,4 +1,7 @@
-import { Home, Profile, Libraries, NewProgram, AboutUs, SignIn, SignUp,HomeUser, OurProducts, Inbox1, EditProgram, WatchProgram, ReviewProgram, WaitingList, WatchReviews, WatchProfile, WatchSharedProgram} from "@/pages";
+import { Home, Profile, Libraries, NewProgram, AboutUs, SignIn, 
+  SignUp,HomeUser, OurProducts, Inbox1, EditProgram, WatchProgram, 
+  ReviewProgram, WaitingList, WatchReviews, WatchProfile, 
+  WatchSharedProgram, Progressing} from "@/pages";
 import {
   HomeIcon,
   UserCircleIcon,
@@ -101,8 +104,8 @@ export const routes = [
   },
   {
     icon: DocumentTextIcon,
-    name: "watchreviews",
-    path: "/watchreviews",
+    name: "watchprofile",
+    path: "/watchprofile",
     element: <WatchProfile />,
   },
   {
@@ -110,6 +113,12 @@ export const routes = [
     name: "watchsharedprogram",
     path: "/watchsharedprogram/:programId",
     element: <WatchSharedProgram />,
+  },
+  {
+    icon: DocumentTextIcon,
+    name: "progress",
+    path: "/progress",
+    element: <Progressing />,
   },
 ];
 export default routes;

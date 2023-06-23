@@ -32,20 +32,28 @@ export function Profile() {
   const [profileData, setProfileData] = useState([]);
   const [programData, setProgramData] = useState([]);
   const handleOpen = () => setOpen(!open);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const userData = {
+    username: fullName,
+    email: email,
+    password: password,
+  };
 
   const data = [
     {
       label: "Programs",
       value: "html",
-      desc: `It really matters and then like it really doesn't matter.
-      What matters is the people who are sparked by it. And the people 
-      who are like offended by it, it doesn't matter.`,
+      desc: `In this section of the stats you can see the number of users that using the specialist programs.\n
+      The counts of programs created by the specialist: ${profileData.length}`,
     },
     {
       label: "Reviews",
       value: "react",
-      desc: `Because it's about motivating the doers. Because I'm here
-      to follow my dreams and inspire other people to follow their dreams, too.`,
+      desc: `In this section of the stats you can see the number of reviews that the user posses.\n
+      The counts of reviews created by the specialist: ${programData.length}`,
     },
     {
       label: "Ratings",
@@ -81,26 +89,40 @@ export function Profile() {
           console.log('Program Error:', error.response);
         });
 
-        axios.get('http://localhost:3001/api/specialists/programs', {
-          params: {
-            specialistId: userProfile._id
-          }
+      axios.get('http://localhost:3001/api/specialists/programs', {
+        params: {
+          specialistId: userProfile._id
+        }
+      })
+        .then(response => {
+          const programData = response.data.programs;
+          console.log('Data', programData);
+          setProgramData(programData);
+          console.log('check2', programData);
+
+
         })
-          .then(response => {
-            const programData = response.data.programs;
-            console.log('Data', programData);
-            setProgramData(programData);
-            console.log('check2', programData);
-
-
-          })
-          .catch(error => {
-            // Handle error.
-            console.log('Program Error:', error.response);
-          });
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
 
 
     };
+
+    const handleEdit =( ) => {
+      axios.put('http://localhost:3001/api/specialists/profile', userData)
+        .then(response => {
+          // Handle success.
+          console.log('User profile', response.data.user);
+          console.log('User token', response.data.token);
+          window.location.href = '/sign-in';
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('An error occurred:', error.response);
+        });
+    }
 
 
     return (
@@ -109,7 +131,7 @@ export function Profile() {
           <Navbar3 />
         </div>
         <section className="relative block h-[50vh]">
-          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
+          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('https://www.muscleandfitness.com/wp-content/uploads/2018/11/Group-Fitness-Class-Performing-A-Variety-Of-Exercises-1.jpg?quality=86&strip=all')] bg-cover bg-center" />
           <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
         </section>
         <section className="relative bg-blue-gray-50/50 py-16 px-4">
@@ -147,22 +169,23 @@ export function Profile() {
                         </CardHeader>
                         <CardBody>
                           <div className="flex-col mb-3 flex gap-3">
-                            <Input label="Name" size="lg" type="text"></Input>
-                            <Input label="User Name" size="lg" type="text"></Input>
-                            <Input label="Email" size="lg" type="email"></Input>
-                          </div>
-                          <div className="flex-col mb-3 flex gap-3">
-                            <Input label="Name" size="lg" type="text"></Input>
-                            <Input label="User Name" size="lg" type="text"></Input>
-                            <Input label="Email" size="lg" type="text"></Input>
+                            <Input label="Name" size="lg" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} ></Input>
+                            <Input label="Email" size="lg" type="email" value={email} onChange={(e) => setEmail(e.target.value)}></Input>
+                            <Input
+                              type="password"
+                              label="Password"
+                              size="lg"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                            />
                           </div>
                         </CardBody>
                         <CardFooter className="pt-0">
                           <div className="mb-3 flex gap-2">
-                            <Button variant="gradient" fullWidth>
-                              Add
+                            <Button variant="gradient" fullWidth onClick={handleEdit}>
+                              Change
                             </Button>
-                            <Button variant="gradient" fullWidth>
+                            <Button variant="gradient" fullWidth onClick={handleOpen}>
                               Cancel
                             </Button></div>
                         </CardFooter>
@@ -225,19 +248,16 @@ export function Profile() {
                   </Typography>
                   <div className="mb-16 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                      <Rating name="half-rating-read" value={(userProfile.rating)} readOnly />
                     </Typography>
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
-                    <BriefcaseIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
                     <Typography className="font-medium text-blue-gray-700">
-                      Solution Manager - Creative Tim Officer
                     </Typography>
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
-                    <BuildingLibraryIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
                     <Typography className="font-medium text-blue-gray-700">
-                      University of Computer Science
+                      My tags
                     </Typography>
                   </div>
 
@@ -246,11 +266,6 @@ export function Profile() {
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">
-                        An artist of considerable range, Jenna the name taken by
-                        Melbourne-raised, Brooklyn-based Nick Murphy writes,
-                        performs and records all of his own music, giving it a
-                        warm, intimate feel with a solid groove structure. An
-                        artist of considerable range.
                       </Typography>
                       <Button variant="text">Statistics</Button>
                       <Tabs value="html">
@@ -276,9 +291,6 @@ export function Profile() {
             </div>
           </div>
         </section>
-        <div className="bg-blue-gray-50/50">
-          <Footer />
-        </div>
       </>
     );
   }
@@ -291,7 +303,7 @@ export function Profile() {
           <Navbar3 />
         </div>
         <section className="relative block h-[50vh]">
-          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
+          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('https://www.muscleandfitness.com/wp-content/uploads/2018/11/Group-Fitness-Class-Performing-A-Variety-Of-Exercises-1.jpg?quality=86&strip=all')] bg-cover bg-center" />
           <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
         </section>
         <section className="relative bg-blue-gray-50/50 py-16 px-4">
@@ -411,28 +423,19 @@ export function Profile() {
                     </Typography>
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
-                    <BriefcaseIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
                     <Typography className="font-medium text-blue-gray-700">
-                      Solution Manager - Creative Tim Officer
                     </Typography>
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
-                    <BuildingLibraryIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
                     <Typography className="font-medium text-blue-gray-700">
-                      University of Computer Science
+                      My Tags
                     </Typography>
                   </div>
-
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">
-                        An artist of considerable range, Jenna the name taken by
-                        Melbourne-raised, Brooklyn-based Nick Murphy writes,
-                        performs and records all of his own music, giving it a
-                        warm, intimate feel with a solid groove structure. An
-                        artist of considerable range.
                       </Typography>
                       <Button variant="text">Statistics</Button>
                       <Tabs value="html">
@@ -458,9 +461,6 @@ export function Profile() {
             </div>
           </div>
         </section>
-        <div className="bg-blue-gray-50/50">
-          <Footer />
-        </div>
       </>
     );
   }

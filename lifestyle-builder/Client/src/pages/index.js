@@ -16,3 +16,4 @@ export * from "@/pages/waitinglist";
 export * from "@/pages/watchreviews";
 export * from "@/pages/watchprofile";
 export * from "@/pages/watchsharedprogram";
+export * from "@/pages/progress";

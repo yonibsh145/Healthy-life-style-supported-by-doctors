@@ -44,9 +44,7 @@ const TABLE_HEAD = ["Name", "Length", "Day", "Description"];
 export function WatchProgram() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
     const program = JSON.parse(localStorage.getItem('watchProgram'));
-    const [open, setOpen] = useState(false);
 
-    const handleOpen = () => setOpen(!open);
 
     const [trainings, setTrainings] = useState([]);
     const [trainingName, setTrainingName] = useState('');
@@ -157,10 +155,10 @@ export function WatchProgram() {
         setOpen(!open)
     };
 
-    const handleDelete = (index) => {
-        const updatedTrainings = [...trainings];
-        updatedTrainings.splice(index, 1);
-        setTrainings(updatedTrainings);
+    const handleProfile = () => {
+        const specialistProfile = program.specialist;
+        localStorage.setItem('specialistProfile', JSON.stringify(specialistProfile));
+        window.location.href = '/watchprofile';
     };
 
     const handleSaveAll = () => {
@@ -209,7 +207,7 @@ export function WatchProgram() {
                                 </Typography>
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
-                                <Button className="bg-blue-400 mb-6" >Specialist Profile</Button>
+                                <Button className="bg-blue-400 mb-6" onClick={handleProfile}>Specialist Profile</Button>
                                 <div className="mb-4 flex flex-col gap-6 ">
                                     <label>Type: {ProgramType}</label>
                                     <label>Length: {ProgramLength}</label>

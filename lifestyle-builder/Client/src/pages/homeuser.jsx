@@ -30,6 +30,11 @@ export function HomeUser() {
   const itemsPerPage = 7;
   const totalPages = Math.ceil(pageData.length / itemsPerPage);
   const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
+  const TABLE_HEAD2 = ["Program", "Content", "Action"];
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = pageData.slice(indexOfFirstItem, indexOfLastItem);
+
 
   const [open, setOpen] = useState(false);
 
@@ -50,7 +55,8 @@ export function HomeUser() {
   };
 
   const handleWatch = (index) => {
-    const watchProgram = pageData[index];
+    const programIndex = indexOfFirstItem + index; // Adjust index based on current page
+    const watchProgram = pageData[programIndex];
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
     window.location.href = `/watchprogram/`;
   };
@@ -61,20 +67,29 @@ export function HomeUser() {
     window.location.href = '/watchreviews';
   };
 
+  const handleAnalysis = () => {
+    window.location.href = '/progess';
+  };
+  
+
   const useProgram = (index) => {
     const requestBody = {
       userId: userProfile1._id,
       programId: pageData[index]._id,
     };
 
+    console.log('check', requestBody);
     axios.put('http://localhost:3001/api/users/use-program', requestBody)
       .then(response => {
         console.log(response.data); // Handle the response data as needed
-        alert('The request is sent!\nWait for the specialist to accept your request.');
       })
       .catch(error => {
+        alert('You already has this program');
         console.error(error); // Handle any errors that occur
       });
+
+
+
   };
 
 
@@ -181,11 +196,6 @@ export function HomeUser() {
       setCurrentPage(page);
     };
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = pageData.slice(indexOfFirstItem, indexOfLastItem);
-
-    const totalPages = Math.ceil(pageData.length / itemsPerPage);
 
     const emptyRow = () => {
       const remainingRows = itemsPerPage - currentItems.length;
@@ -232,13 +242,60 @@ export function HomeUser() {
         <section className="relative bg-blue-gray-50/50 py-16 px-4">
           <div className="container mx-auto">
             <div className="relative mb-6 -mt-64 flex w-full min-w-0 flex-col break-words rounded-3xl bg-white shadow-xl shadow-gray-500/5">
-              <Typography variant="h2" color="blue" className="mb-2 flex justify-center mt-6">
-                Program List
-              </Typography>
-              <div className="px-6">
-                <div className="min-w-max table-auto text-left flex justify-center">
-                  <table className="w-1/2">
-                    <thead>
+              <div class="flex">
+                <div class="w-1/2 border-r border-gray-400">
+                  <Typography variant="h2" color="blue" className="mb-2 flex justify-center mt-4">
+                    Daily Activities
+                  </Typography>
+                  <table className="">
+                    <thead className="">
+                      <tr>
+                        {TABLE_HEAD2.map((head) => (
+                          <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal leading-none opacity-70"
+                            >
+                              {head}
+                            </Typography>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentItems.map((program, index) => (
+                        <tr key={index} className="even:bg-blue-gray-50/50">
+                          <td className="p-4 ">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {program.name}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {formatDate(program.startDate)}
+                            </Typography>
+                          </td>
+                          <td className="p-4">
+                            <Typography variant="small" color="blue" className="font-medium">
+                              <div className="mb-3 flex gap-2">
+                                <button onClick={() => handleWatch(index)}>Finish</button>
+                                <button onClick={() => useProgram(index)}>Skip</button>
+                              </div>
+                            </Typography>
+                          </td>
+                        </tr>
+                      ))}
+                      {emptyRow()}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="w-1/2 ">
+                  <Typography variant="h2" color="blue" className="mb-2 flex justify-center mt-4">
+                    Program List
+                  </Typography>
+                  <table className="border">
+                    <thead className="border-b">
                       <tr>
                         {TABLE_HEAD.map((head) => (
                           <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
@@ -285,13 +342,18 @@ export function HomeUser() {
                       {emptyRow()}
                     </tbody>
                   </table>
+                  <div className="flex justify-center mt-4">{pagination}</div>
                 </div>
               </div>
+              <hr className="my-4 border-gray-300 border-t-4" />
+            </div>
+            <div className="px-6 flex flex-row justify-center mt-6">
+              <Button className=" flex items-center gap-3" color="green" onClick={handleAnalysis}>
+                My Analytics
+              </Button>
             </div>
           </div>
-          <div className="flex justify-center mt-4">{pagination}</div>
         </section>
-
       </>
     );
   }
