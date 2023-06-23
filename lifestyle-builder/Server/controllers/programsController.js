@@ -127,6 +127,14 @@ const addReview = asyncHandler(async (req, res) => {
     program.rating = program.reviews.reduce((acc, item) => item.rating + acc, 0) / program.reviews.length;
     await program.save();
 
+    // Update the rating field in the specialist model
+    const specialist = await Specialist.findById(program.specialist);
+    if (!specialist) {
+      return res.status(404).json({ message: "Specialist not found" });
+    }
+    specialist.rating = specialist.programs.reduce((acc, item) => item.rating + acc, 0) / specialist.programs.length;
+    await specialist.save();
+
     res.status(200).json({ message: "Review added" });
   } catch (error) {
     console.error(error);
@@ -157,32 +165,56 @@ const getDailyActivities = async (req, res) => {
     // Find the user
     const user = await User.findById(userId).populate({
       path: 'programs',
-      match: { programStatus: 'Active' }, // Filter active programs only
+      match: { programStatus: 'active' },
       populate: {
-        path: 'activities',
-        match: { day: getCurrentDay() }, // Filter activities for the current day
-        populate: { path: 'previousActivity' } // Populate previousActivity field in activitySchema
-      }
-    }).exec();
+        path: 'program',
+        select: 'name dailyActivities startDate endDate',
+        populate: {
+          path: 'dailyActivities',
+          select: 'day dailyActivity',
+        },
+      },
+    });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const currentDay = getCurrentDay();
+    const currentDate = new Date();
 
-    const dailyActivities = user.programs.reduce((result, program) => {
-      if (currentDay <= program.duration) {
-        const activities = program.activities.filter(activity => activity.day === currentDay);
+    const dailyActivities = user.programs.reduce((result, programObj) => {
+      console.log('Program:', programObj.program); // Check the program object
+
+      const startDate = new Date(programObj.program.startDate);
+      const endDate = new Date(programObj.program.endDate);
+
+      console.log('StartDate:', startDate); // Check the startDate
+
+      if (currentDate >= startDate && currentDate <= endDate) {
+        const day = Math.ceil((currentDate - startDate) / (1000 * 60 * 60 * 24)); // Calculate the current day of the program
+        console.log('Day:', day); // Check the day value
+
+        const dailyActivity = programObj.program.dailyActivities.find((d) => d.day === day);
+        console.log('DailyActivity:', dailyActivity); // Check the dailyActivity object
+
+        const activities = dailyActivity ? dailyActivity.dailyActivity : [];
+
         if (activities.length > 0) {
           result.push({
-            programName: program.name,
-            activities
+            programName: programObj.program.name,
+            activities: activities.map((activity) => ({
+              name: activity.name,
+              duration: activity.duration,
+              description: activity.description,
+            })),
           });
         }
       }
+
       return result;
     }, []);
+
+    console.log('DailyActivities:', dailyActivities); // Check the final result
 
     res.status(200).json({ dailyActivities });
   } catch (error) {
@@ -191,11 +223,9 @@ const getDailyActivities = async (req, res) => {
   }
 };
 
-const getCurrentDay = () => {
 
-  const currentDay = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
-  return currentDay;
-};
+
+
 
 
 //@desc     edit program details by program id
@@ -218,9 +248,7 @@ const editProgram = asyncHandler(async (req, res) => {
   }
 });
 
-//@desc     update program details by program id
-//@route    PUT /api/programs/update-program/:id
-//@access   Public
+
 
 //@desc     Delete program by program ID
 //@route    DELETE /api/programs/delete-program
