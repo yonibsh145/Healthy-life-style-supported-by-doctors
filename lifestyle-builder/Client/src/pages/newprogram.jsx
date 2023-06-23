@@ -96,10 +96,6 @@ export function NewProgram() {
                 alert(`Training Length must be larger than Training Day`);
                 return;
             }
-            if(parseInt(trainingDay)>parseInt(trainingLength)){
-                alert(`Training Length must be larger than Training Day`);
-                return;
-            }
             const existingTraining = trainings.find(
                 (training) => training.name === trainingName
             );
@@ -162,6 +158,11 @@ export function NewProgram() {
     };
 
     const handleSaveAll = () => {
+        if(!ProgramName || !ProgramLength || !ProgramTags || !ProgramType || !ProgramDescription)
+        {
+            alert("Please fill in all fields.");
+            return;
+        }
         axios.post('http://localhost:3001/api/programs', programData)
             .then(response => {
                 // Handle success.

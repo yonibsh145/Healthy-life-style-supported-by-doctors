@@ -58,12 +58,13 @@ const authSpecialist = asyncHandler(async (req, res) => {
 //@route  GET /api/specialists/profile
 //@access Private
 const getSpecialistProfile = asyncHandler(async (req, res) => {
-  const specialistId = req.body.specialistId;
+  const specialistId = req.query.specialistId;
+  console.log(specialistId);
   const specialist = await Specialist.findById(specialistId);
   if (specialist) {
     res.json({
       _id: specialist._id,
-      name: specialist.name,
+      name: specialist.username,
       email: specialist.email,
       role: specialist.role,
     });
@@ -77,7 +78,7 @@ const getSpecialistProfile = asyncHandler(async (req, res) => {
 //@route  PUT /api/specialists/profile
 //@access Private
 const updateSpecialistProfile = asyncHandler(async (req, res) => {
-  const specialistId = req.body.specialistId;
+  //const specialistId = req.body.specialistId;
   const specialist = await Specialist.findById(req.specialistId._id);
   if (specialist) {
     specialist.name = req.body.name || specialist.name;

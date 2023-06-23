@@ -21,13 +21,14 @@ import {
 import { Footer, Navbar3 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemom, useRef, useEffect } from 'react';
-import { ArrowRightIcon, TrashIcon , BackspaceIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, TrashIcon, BackspaceIcon } from "@heroicons/react/24/outline";
 //import { Input } from "postcss";
+import axios from 'axios';
 
 
 
 export function Inbox1() {
-
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
     const [selectedChat, setSelectedChat] = useState(null);
     const [inputMessage, setInputMessage] = useState('');
     const [chatHistory, setChatHistory] = useState({});
@@ -44,7 +45,7 @@ export function Inbox1() {
 
     const handleSendMessage = () => {
         if (inputMessage.trim() !== '') {
-            const senderName = 'Shahar Almog'; // Replace with the user's name from authentication or database
+            const senderName = userProfile.username; // Replace with the user's name from authentication or database
 
             const newMessage = `${senderName}: ${inputMessage}`;
 
@@ -58,12 +59,29 @@ export function Inbox1() {
                 [selectedChat]: newMessage,
             };
 
+            axios.post('http://localhost:3001/api/users/sendMessage', {
+                params: {
+                    senderId: '6491a86bfeb0e70fb72e3665',
+                    receiverId: '6491c1e0760a2d8bebd5d81f',
+                    message: inputMessage,
+                }
+            })
+                .then(response => {
+                    // Handle success.
+                    const programData = response.data;
+                    console.log('Data', programData);
+                    window.location.href = '/libraries';
+                })
+                .catch(error => {
+                    // Handle error.
+                    console.log('Program Error:', error.response);
+                });
             setChatHistory(updatedChatHistory);
             setLastMessages(updatedLastMessages);
             setInputMessage('');
         }
     };
-    
+
     const handleDeleteChatHistory = () => {
         if (selectedChat) {
             const updatedChatHistory = { ...chatHistory };
@@ -91,9 +109,9 @@ export function Inbox1() {
 
     // Sample list of people
     const people = [
-        { id: 1, name: 'Bdika', avatar: '1' },
-        { id: 2, name: 'Bdika1', avatar: '2' },
-        { id: 3, name: 'Bdika2', avatar: '3' },
+        { id: 1, name: 'Shahar', avatar: '1' },
+        { id: 2, name: 'Yoni', avatar: '2' },
+        { id: 3, name: 'Lifestyle', avatar: '3' },
     ];
 
     const chatMessages = chatHistory[selectedChat] || [];
@@ -162,7 +180,7 @@ export function Inbox1() {
                                             {/* Render the chat messages preview */}
                                             <div className="overflow-y-auto flex-grow" ref={scrollContainerRef}>
                                                 {chatMessages.map((message, index) => {
-                                                    const isSentMessage = message.startsWith('Shahar Almog');
+                                                    const isSentMessage = message.startsWith(userProfile.username);
                                                     return (
                                                         <div
                                                             key={index}

@@ -27,6 +27,25 @@ export function SignIn() {
 
   function handleLogin(event) {
     event.preventDefault();
+    // Field validation
+    if (!email || !password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    // Email format validation using regular expression
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    //Select type
+    if (selectedValue == "") {
+      alert("Please select a user type");
+      return;
+    }
+
     console.log(userData.email)
     if (selectedValue == "User") {
       axios.post('http://localhost:3001/api/users/login', userData)
@@ -47,7 +66,7 @@ export function SignIn() {
           window.location.href = '/homeuser';
         })
         .catch(error => {
-          // Handle error.
+          alert("Invalid email or password.\nCheck the correct user type too.");
           console.log('Login Error:', error.response);
         });
     }

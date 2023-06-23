@@ -61,10 +61,10 @@ export function ReviewProgram() {
                 console.log(response.data); // Handle the response data as needed
             })
             .catch(error => {
+                alert('Program already reviewed');
                 console.error(error); // Handle any errors that occur
             });
         console.log(program._id);
-
     }
 
     return (
