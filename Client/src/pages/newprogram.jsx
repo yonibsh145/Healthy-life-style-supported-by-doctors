@@ -164,7 +164,7 @@ export function NewProgram() {
             alert("Please fill in all fields.");
             return;
         }
-        axios.post('https://lifestylebulider-api.onrender.com/api/programs', programData)
+        axios.post('http://localhost:3001/api/programs', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;

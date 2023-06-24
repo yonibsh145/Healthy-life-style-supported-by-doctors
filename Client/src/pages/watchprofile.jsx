@@ -67,7 +67,7 @@ export function WatchProfile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/profile', {
+      axios.get('http://localhost:3001/api/specialists/profile', {
         params: {
           specialistId: specialistProfile
         }
@@ -275,7 +275,7 @@ export function WatchProfile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/profile', {
+      axios.get('http://localhost:3001/api/specialists/profile', {
         params: {
           specialistId: specialistProfile
         }
@@ -292,7 +292,7 @@ export function WatchProfile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/patients', {
+      axios.get('http://localhost:3001/api/specialists/patients', {
         params: {
           specialistId: specialistProfile
         }
@@ -309,7 +309,7 @@ export function WatchProfile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/programs', {
+      axios.get('http://localhost:3001/api/specialists/programs', {
         params: {
           specialistId: specialistProfile
         }

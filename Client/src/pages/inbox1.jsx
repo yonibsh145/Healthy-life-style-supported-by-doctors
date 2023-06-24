@@ -59,7 +59,7 @@ export function Inbox1() {
                 [selectedChat]: newMessage,
             };
 
-            axios.post('https://lifestylebulider-api.onrender.com/api/users/sendMessage', {
+            axios.post('http://localhost:3001/api/users/sendMessage', {
                 params: {
                     senderId: '6491a86bfeb0e70fb72e3665',
                     receiverId: '6491c1e0760a2d8bebd5d81f',
