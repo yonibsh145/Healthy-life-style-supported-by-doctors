@@ -129,7 +129,8 @@ const addReview = asyncHandler(async (req, res) => {
     await program.save();
 
     // Update the rating field in the specialist model
-    const specialist = await Specialist.findById(program.specialist);
+    const specialist = await Specialist.findById(program.specialist).populate('programs');
+    console.log(specialist);
     if (!specialist) {
       return res.status(404).json({ message: "Specialist not found" });
     }
@@ -258,6 +259,7 @@ const editProgram = asyncHandler(async (req, res) => {
 //@access   Public
 const deleteProgram = asyncHandler(async (req, res) => {
   const programId = req.body.programId;
+  const specialistId = req.body.specialistId;
 
   try {
     // Find the program by ID
@@ -268,9 +270,30 @@ const deleteProgram = asyncHandler(async (req, res) => {
     }
 
     // Check if the requesting specialist created the program
-    if (program.specialist.toString() !== req.body.specialistId) {
+    if (program.specialist.toString() !== specialistId) {
       res.status(401).json({ message: "Unauthorized to delete this program" });
       return;
+    }
+
+    // Find the specialist by ID
+    const specialist = await Specialist.findById(specialistId);
+    if (!specialist) {
+      res.status(404).json({ message: "Specialist not found" });
+      return;
+    }
+
+    // Remove the program from the specialist's programs array
+    const programIndex = specialist.programs.findIndex(p => p.toString() === programId);
+    if (programIndex !== -1) {
+      specialist.programs.splice(programIndex, 1);
+      await specialist.save();
+    }
+
+    // Remove the program from the user's programs array
+    const users = await User.find({ 'programs.program': programId });
+    for (const user of users) {
+      user.programs = user.programs.filter(p => p.program.toString() !== programId);
+      await user.save();
     }
 
     // Delete the program
@@ -282,6 +305,7 @@ const deleteProgram = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 
 //@desc     get all program reviews
 //@route    GET /api/programs/all-programs
@@ -305,7 +329,6 @@ const getAllReviews = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server Error" });
 
   }
-  res.json(programs);
 });
 
 
