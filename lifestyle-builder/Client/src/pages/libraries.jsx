@@ -293,7 +293,7 @@ export function Libraries() {
                           </td>
                           <td className="p-4">
                             <Typography variant="small" color="blue-gray" className="font-normal">
-                              {program.rating}
+                            <Rating name="half-rating-read" value={program.rating} readOnly />
                             </Typography>
                           </td>
                           <td className="p-4">

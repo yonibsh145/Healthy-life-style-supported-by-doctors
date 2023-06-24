@@ -45,6 +45,8 @@ const authSpecialist = asyncHandler(async (req, res) => {
       username: specialist.username,
       email: specialist.email,
       role: specialist.role,
+      bio: specialist.bio,
+      tags: specialist.tags,
       token: generateToken(specialist._id),
     });
   }
@@ -67,6 +69,8 @@ const getSpecialistProfile = asyncHandler(async (req, res) => {
       name: specialist.username,
       email: specialist.email,
       role: specialist.role,
+      tags: specialist.tags,
+      bio: specialist.bio,
     });
   } else {
     res.status(404);
@@ -79,10 +83,12 @@ const getSpecialistProfile = asyncHandler(async (req, res) => {
 //@access Private
 const updateSpecialistProfile = asyncHandler(async (req, res) => {
   //const specialistId = req.body.specialistId;
-  const specialist = await Specialist.findById(req.specialistId._id);
+  const specialist = await Specialist.findById(req.body._id);
   if (specialist) {
     specialist.name = req.body.name || specialist.name;
     specialist.email = req.body.email || specialist.email;
+    specialist.bio = req.body.bio || specialist.bio;
+    specialist.tags = req.body.tags || specialist.tags;
     if (req.body.password) {
       specialist.password = req.body.password;
     }

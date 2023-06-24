@@ -10,6 +10,7 @@ import {
   CardBody,
   CardFooter,
   Input,
+  Textarea,
 } from "@material-tailwind/react";
 import {
   MapPinIcon,
@@ -30,6 +31,7 @@ export function Profile() {
 
   const [open, setOpen] = useState(false);
   const [profileData, setProfileData] = useState([]);
+  const [myData, setMyData] = useState([]);
   const [programData, setProgramData] = useState([]);
   const handleOpen = () => setOpen(!open);
   const [fullName, setFullName] = useState('');
@@ -46,6 +48,15 @@ export function Profile() {
     bio: bio,
     tags: tags,
   };
+
+  const specialistData = {
+    _id: userProfile._id,
+    username: fullName,
+    email: email,
+    password: password,
+    bio: bio,
+    tags: tags,
+  }
 
   const data = [
     {
@@ -77,6 +88,23 @@ export function Profile() {
     }, []);
 
     const fetchData = async () => {
+      axios.get('http://localhost:3001/api/specialists/profile', {
+        params: {
+          specialistId: userProfile._id
+        }
+      })
+        .then(response => {
+          // Handle success.
+          const programData = response.data;
+          console.log('Data1', programData);
+          setMyData(programData);
+          console.log('check', profileData.length)
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+
       axios.get('http://localhost:3001/api/specialists/patients', {
         params: {
           specialistId: userProfile._id
@@ -85,7 +113,7 @@ export function Profile() {
         .then(response => {
           // Handle success.
           const programData = response.data;
-          console.log('Data', programData);
+          console.log('Data1', programData);
           setProfileData(programData);
           console.log('check', profileData.length)
         })
@@ -116,12 +144,35 @@ export function Profile() {
     };
 
     const handleEdit = () => {
-      axios.put('http://localhost:3001/api/specialists/profile', userData)
+      console.log(specialistData);
+      axios.put('http://localhost:3001/api/specialists/profile', specialistData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
           console.log('User token', response.data.token);
-          window.location.href = '/sign-in';
+          axios.get('http://localhost:3001/api/specialists/profile', {
+            params: {
+              specialistId: userProfile._id
+            }
+          })
+            .then(response => {
+              // Handle success.
+              const programData = response.data;
+              console.log('Data1', programData);
+              setMyData(programData);
+              console.log('check', profileData.length)
+            })
+            .catch(error => {
+              // Handle error.
+              console.log('Program Error:', error.response);
+            });
+          setBio('');
+          setFullName('');
+          setTags('');
+          setEmail('');
+          setPassword('');
+          setBio('');
+          setOpen(!open);
         })
         .catch(error => {
           // Handle error.
@@ -184,7 +235,7 @@ export function Profile() {
                               onChange={(e) => setPassword(e.target.value)}
                             />
                             <Input label="Tags" size="lg" type="text" value={tags} onChange={(e) => setTags(e.target.value)} ></Input>
-                            <Input label="Bio" size="lg" type="text" value={bio} onChange={(e) => setBio(e.target.value)} ></Input>
+                            <Textarea label="Bio" size="lg" type="text" value={bio} onChange={(e) => setBio(e.target.value)} />
                           </div>
                         </CardBody>
                         <CardFooter className="pt-0">
@@ -237,7 +288,7 @@ export function Profile() {
                           color="blue-gray"
                           className="font-bold uppercase"
                         >
-                          89
+                          0
                         </Typography>
                         <Typography
                           variant="small"
@@ -264,11 +315,14 @@ export function Profile() {
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      My tags
+                      My tags: {myData.tags}
                     </Typography>
                   </div>
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
+                  <Typography className="font-medium text-blue-gray-700">
+                    My Bio: {myData.bio}
+                  </Typography>
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">
@@ -323,7 +377,7 @@ export function Profile() {
           // Handle error.
           console.log('Program Error:', error.response);
         });
-      }
+    }
 
     const handleEdit = () => {
       axios.put('http://localhost:3001/api/users/profile', userData)
@@ -337,12 +391,13 @@ export function Profile() {
           // Handle error.
           console.log('An error occurred:', error.response);
         });
-        setBio('');
-        setFullName('');
-        setTags('');
-        setEmail('');
-        setPassword('');
-          }
+      setBio('');
+      setFullName('');
+      setTags('');
+      setEmail('');
+      setPassword('');
+      setBio('');
+    }
 
     return (
       <>
@@ -483,9 +538,9 @@ export function Profile() {
                   </div>
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
-                <Typography className="font-medium text-blue-gray-700">
-                      Bio: {profileData.bio}
-                    </Typography>
+                  <Typography className="font-medium text-blue-gray-700">
+                    Bio: {profileData.bio}
+                  </Typography>
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">
