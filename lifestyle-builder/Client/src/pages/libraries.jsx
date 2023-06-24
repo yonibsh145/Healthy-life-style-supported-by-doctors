@@ -31,7 +31,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import { FacebookShareButton, TwitterShareButton } from 'react-share';
 
-const TABLE_HEAD = ["Name", "Duration", "Status", "Action"];
+
 
 
 export function Libraries() {
@@ -187,6 +187,7 @@ export function Libraries() {
   };
 
   if (userProfile.role == "specialist") {
+    const TABLE_HEAD = ["Name", "Duration", "Rating", "Action"];
     useEffect(() => {
       fetchData();
     }, []);
@@ -362,6 +363,7 @@ export function Libraries() {
     );
   }
   if (userProfile.role == "patient") {
+    const TABLE_HEAD = ["Name", "Duration", "Status", "Action"];
     useEffect(() => {
       fetchData();
     }, []);
@@ -436,7 +438,7 @@ export function Libraries() {
                       </tr>
                     </thead>
                     <tbody>
-                      {pageData.map((program, index) => (
+                      { pageData && (pageData.map((program, index) => (
                         <tr key={index}>
                           <td className="p-4">
                             <Typography variant="small" color="blue-gray" className="font-normal">
@@ -472,7 +474,7 @@ export function Libraries() {
                           <td>
                           </td>
                         </tr>
-                      ))}
+                      )))}
                     </tbody>
                   </table>
                 </Card>

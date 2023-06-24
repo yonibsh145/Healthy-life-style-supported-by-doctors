@@ -1,7 +1,7 @@
 import { Home, Profile, Libraries, NewProgram, AboutUs, SignIn, 
   SignUp,HomeUser, OurProducts, Inbox1, EditProgram, WatchProgram, 
   ReviewProgram, WaitingList, WatchReviews, WatchProfile, 
-  WatchSharedProgram, Progressing} from "@/pages";
+  WatchSharedProgram, Progressing, DailyActivities} from "@/pages";
 import {
   HomeIcon,
   UserCircleIcon,
@@ -120,5 +120,11 @@ export const routes = [
     path: "/progress",
     element: <Progressing />,
   },
+  {
+    icon: DocumentTextIcon,
+    name: "dailyactivities",
+    path: "/dailyactivities",
+    element: <DailyActivities />,
+  }
 ];
 export default routes;

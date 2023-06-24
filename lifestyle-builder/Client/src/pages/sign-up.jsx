@@ -79,6 +79,11 @@ export function SignUp() {
       return;
     }
 
+    if(!isChecked){
+      alert("You must agree to the terms and conditions.");
+      return;
+    }
+
     //Select type
     if (selectedValue == "User") {
       axios.post('http://localhost:3001/api/users/register', userData)
@@ -164,7 +169,7 @@ export function SignUp() {
                     &nbsp;Terms and Conditions
                   </Typography>.
                 </Typography>
-              } />
+              } onChange={handleChecked}/>
               <Dialog open={open} handler={handleOpen}>
                 <DialogHeader className="place-items-center">Terms and Conditions</DialogHeader>
                 <DialogBody divider className="h-[40rem] overflow-scroll">

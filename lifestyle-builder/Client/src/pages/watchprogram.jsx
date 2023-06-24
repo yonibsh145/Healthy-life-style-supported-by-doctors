@@ -104,6 +104,7 @@ export function WatchProgram() {
         axios.put('http://localhost:3001/api/users/use-program', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
+                window.location.href = '/homeuser';
             })
             .catch(error => {
                 console.error(error); // Handle any errors that occur

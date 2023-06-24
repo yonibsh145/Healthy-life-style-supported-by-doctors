@@ -31,7 +31,7 @@ export function HomeUser() {
   const itemsPerPage = 7;
   const totalPages = Math.ceil(pageData.length / itemsPerPage);
   const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
-  const TABLE_HEAD2 = ["Program", "Content", "Action"];
+  const TABLE_HEAD2 = ["Program", "Daily Count", "Action"];
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = pageData.slice(indexOfFirstItem, indexOfLastItem);
@@ -46,12 +46,13 @@ export function HomeUser() {
     const programIndex = indexOfFirstItem + index; // Adjust index based on current page
     const watchProgram = pageData[programIndex];
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
-    window.location.href = `/watchprogram/`;
+    window.location.href = `/watchprogram`;
   };
 
   const handleReviews = (index) => {
     const watchProgram = pageData[index];
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
+    console.log(watchProgram);
     window.location.href = '/watchreviews';
   };
 
@@ -59,11 +60,18 @@ export function HomeUser() {
     window.location.href = '/progess';
   };
 
+  const handleDaily = (index) => {
+    //const programIndex = indexOfFirstItem + index; // Adjust index based on current page
+    const watchDaily = dailyData[index];
+    localStorage.setItem('watchDaily', JSON.stringify(watchDaily));
+    window.location.href = `/dailyactivities`;
+  };
 
   const useProgram = (index) => {
+    const programIndex = indexOfFirstItem + index; // Adjust index based on current page
     const requestBody = {
       userId: userProfile1._id,
-      programId: pageData[index]._id,
+      programId: pageData[programIndex]._id,
     };
 
     console.log('check', requestBody);
@@ -263,55 +271,46 @@ export function HomeUser() {
                     Daily Activities
                   </Typography>
                   <div className="w-full flex justify-center">
-                  <table className="w-full max-w-full border-collapse">
-                    <thead>
-                      <tr>
-                        {TABLE_HEAD2.map((head) => (
-                          <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal leading-none opacity-70"
-                            >
-                              {head}
-                            </Typography>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dailyData.map((program, index) => (
-                        <tr key={index} className="even:bg-blue-gray-50/50">
-                          <td className="p-4 text-center">
-                            <Typography variant="small" color="blue-gray" className="font-normal">
-                              {program.programName}
-                            </Typography>
-                          </td>
-                          <td className="p-4 text-center">
-                            {program.activities.map((activity, index) => (
-                              <div key={index}>
-                                <Typography variant="small" color="blue-gray" className="font-normal">
-                                  {activity.name}
-                                </Typography>
-                              </div>
-                            ))}
-                          </td>
-                          <td className="p-4 flex justify-center">
-                            {program.activities.map((activity, index1) => (
-                              <div key={index}>
-                            <Typography variant="small" color="blue" className="font-medium">
-                              <div className="mb-3 flex gap-2">
-                                <button onClick={() => handleFinish(index)}>Finish</button>
-                                <button onClick={() => handleSkip(index)}>Skip</button>
-                              </div>
-                            </Typography>
-                              </div>
-                            ))}
-                          </td>
+                    <table className="w-full max-w-full border-collapse">
+                      <thead>
+                        <tr>
+                          {TABLE_HEAD2.map((head) => (
+                            <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal leading-none opacity-70"
+                              >
+                                {head}
+                              </Typography>
+                            </th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {dailyData.map((program, index) => (
+                          <tr key={index} className="even:bg-blue-gray-50/50">
+                            <td className="p-4 text-center">
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {program.programName}
+                              </Typography>
+                            </td>
+                            <td className="p-4 text-center">
+                              <Typography variant="small" color="blue-gray" className="font-normal">
+                                {program.activities.length}
+                              </Typography>
+                            </td>
+                            <td className="p-4 flex justify-center">
+                              <Typography variant="small" color="blue" className="font-medium">
+                                <div className="mb-3 flex gap-2">
+                                  <button onClick={() => handleDaily(index)}>Watch</button>
+                                </div>
+                              </Typography>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <div class="w-1/2 ">
