@@ -39,7 +39,7 @@ export function WatchReviews() {
     const handleOpen = () => setOpen(!open);
 
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-    const program = JSON.parse(localStorage.getItem('editProgram'));
+    const program = JSON.parse(localStorage.getItem('watchProgram'));
 
     const [data1, setData] = useState(null);
 
@@ -94,6 +94,7 @@ export function WatchReviews() {
     }, []);
 
     const fetchData = async () => {
+        console.log(program._id);
         axios.get('http://localhost:3001/api/programs/all-programs', {
             params: {
                 programId: program._id,
@@ -113,6 +114,7 @@ export function WatchReviews() {
             });
     };
 
+    
     const formatDate = (dateString) => {
         const options = {
             year: 'numeric',

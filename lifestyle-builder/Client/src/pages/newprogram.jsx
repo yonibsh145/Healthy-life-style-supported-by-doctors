@@ -70,16 +70,16 @@ export function NewProgram() {
 
     const handleLength = (event) => {
         const inputValue = event.target.value;
-        const integerValue = parseInt(inputValue);
+        //const integerValue = parseInt(inputValue);
 
-        setProgramLength(integerValue);
+        setProgramLength(inputValue);
     };
 
     const handleDay = (event) => {
         const inputValue = event.target.value;
-        const integerValue = parseInt(inputValue);
+        //const integerValue = parseInt(inputValue);
 
-        setTrainingDay(integerValue);
+        setTrainingDay(inputValue);
     };
 
     const handleSave = () => {
@@ -157,6 +157,7 @@ export function NewProgram() {
         setTrainings(updatedTrainings);
     };
 
+    
     const handleSaveAll = () => {
         if(!ProgramName || !ProgramLength || !ProgramTags || !ProgramType || !ProgramDescription)
         {

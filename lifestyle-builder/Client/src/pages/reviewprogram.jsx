@@ -55,10 +55,12 @@ export function ReviewProgram() {
             rating: reviewRating,
             comment: reviewDescription,
         };
+        
 
         axios.post('http://localhost:3001/api/programs/addReview', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
+                window.location.href = `/libraries`;
             })
             .catch(error => {
                 alert('Program already reviewed');
@@ -114,7 +116,6 @@ export function ReviewProgram() {
                                 </Link>
                             </div>
                         </Card>
-
                     </div>
                 </div>
             </section>

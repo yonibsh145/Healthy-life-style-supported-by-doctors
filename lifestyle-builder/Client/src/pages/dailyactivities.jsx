@@ -38,10 +38,10 @@ import { Link } from "react-router-dom";
 
 
 
-const TABLE_HEAD = ["Name", "Length", "Day", "Description"];
+const TABLE_HEAD = ["Name", "Length", "Day", "Description", "Action"];
 
 
-export function WatchProgram() {
+export function DailyActivities() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
     const program = JSON.parse(localStorage.getItem('watchProgram'));
 
@@ -66,7 +66,6 @@ export function WatchProgram() {
         kindOfProgram: ProgramType,
         description: ProgramDescription,
     };
-    
 
     useEffect(() => {
         fetchData();
@@ -209,13 +208,11 @@ export function WatchProgram() {
                                 </Typography>
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
-                                <Button className="bg-blue-400 mb-6" onClick={handleProfile}>Specialist Profile</Button>
                                 <div className="mb-4 flex flex-col gap-6 ">
                                     <label>Type: {ProgramType}</label>
                                     <label>Length: {ProgramLength}</label>
                                     <label>Description: {ProgramDescription}</label>
                                 </div>
-
                             </form>
                         </div>
                         {trainings.length > 0 && (
@@ -259,16 +256,19 @@ export function WatchProgram() {
                                                         {training.description}
                                                     </Typography>
                                                 </td>
-                                                <td>
+                                                <td className="p-4">
+                                                    <Typography variant="small" color="blue" className="font-medium">
+                                                        <div className="mb-3 flex gap-2">
+                                                            <button>Finish</button>
+                                                            <button>Skip</button>
+                                                        </div>
+                                                    </Typography>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                                 <div className="px-6 flex flex-row justify-center mt-10">
-                                    <Button className=" flex items-center gap-3 mr-10" color="green" onClick={handleUse}>
-                                        <KeyIcon strokeWidth={2} className="h-5 w-5" /> Use Program
-                                    </Button>
                                     <Link to="/homeuser">
                                         <Button className=" flex items-center gap-3 " color="blue">
                                             <KeyIcon strokeWidth={2} className="h-5 w-5" /> Back
@@ -283,4 +283,4 @@ export function WatchProgram() {
         </>
     );
 }
-export default WatchProgram;
+export default DailyActivities;
