@@ -74,7 +74,7 @@ export function HomeUser() {
     };
 
     console.log('check', requestBody);
-    axios.put('http://localhost:3001/api/users/use-program', requestBody)
+    axios.put('https://lifestylebulider-api.onrender.com/api/users/use-program', requestBody)
       .then(response => {
         console.log(response.data); // Handle the response data as needed
       })
@@ -190,14 +190,14 @@ export function HomeUser() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/programs');
+        const response = await axios.get('https://lifestylebulider-api.onrender.com/api/programs');
         const programsData = response.data;
         setPageData(programsData);
       } catch (error) {
         console.log('Programs Error:', error.response);
       }
 
-      axios.get('http://localhost:3001/api/programs/program-daily-activities', {
+      axios.get('https://lifestylebulider-api.onrender.com/api/programs/program-daily-activities', {
         params: {
           userId: userProfile1._id,
         }

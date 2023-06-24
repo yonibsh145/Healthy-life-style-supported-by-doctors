@@ -48,7 +48,7 @@ export function SignIn() {
 
     console.log(userData.email)
     if (selectedValue == "User") {
-      axios.post('http://localhost:3001/api/users/login', userData)
+      axios.post('https://lifestylebulider-api.onrender.com/api/users/login', userData)
         .then(response => {
           // Handle success.
           const userProfile = response.data;
@@ -71,7 +71,7 @@ export function SignIn() {
         });
     }
     if (selectedValue == "Specialist") {
-      axios.post('http://localhost:3001/api/specialists/login', userData)
+      axios.post('https://lifestylebulider-api.onrender.com/api/specialists/login', userData)
         .then(response => {
           // Handle success.
           const userProfile = response.data;
