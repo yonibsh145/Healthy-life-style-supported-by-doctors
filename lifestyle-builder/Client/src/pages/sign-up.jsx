@@ -72,6 +72,7 @@ export function SignUp() {
       alert("The passwords do not matches please retry again.");
       return;
     }
+    
 
     //Select type
     if (selectedValue == "") {

@@ -213,7 +213,6 @@ export function DailyActivities() {
                                     <label>Length: {ProgramLength}</label>
                                     <label>Description: {ProgramDescription}</label>
                                 </div>
-
                             </form>
                         </div>
                         {trainings.length > 0 && (

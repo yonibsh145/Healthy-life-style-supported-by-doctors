@@ -1,7 +1,7 @@
 import { Home, Profile, Libraries, NewProgram, AboutUs, SignIn, 
   SignUp,HomeUser, OurProducts, Inbox1, EditProgram, WatchProgram, 
   ReviewProgram, WaitingList, WatchReviews, WatchProfile, 
-  WatchSharedProgram, Progressing, DailyActivities} from "@/pages";
+  WatchSharedProgram, Progressing, DailyActivities } from "@/pages";
 import {
   HomeIcon,
   UserCircleIcon,

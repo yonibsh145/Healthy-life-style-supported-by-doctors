@@ -157,6 +157,7 @@ export function NewProgram() {
         setTrainings(updatedTrainings);
     };
 
+    
     const handleSaveAll = () => {
         if(!ProgramName || !ProgramLength || !ProgramTags || !ProgramType || !ProgramDescription)
         {

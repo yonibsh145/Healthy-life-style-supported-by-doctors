@@ -66,6 +66,7 @@ export function WatchProgram() {
         kindOfProgram: ProgramType,
         description: ProgramDescription,
     };
+    
 
     useEffect(() => {
         fetchData();

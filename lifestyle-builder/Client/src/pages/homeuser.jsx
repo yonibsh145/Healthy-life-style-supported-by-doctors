@@ -41,7 +41,6 @@ export function HomeUser() {
 
   const handleOpen = () => setOpen(!open);
 
-
   const handleWatch = (index) => {
     const programIndex = indexOfFirstItem + index; // Adjust index based on current page
     const watchProgram = pageData[programIndex];
