@@ -101,7 +101,7 @@ export function DailyActivities() {
         };
         console.log('here', program._id);
         console.log('check', requestBody);
-        axios.put('http://localhost:3001/api/users/use-program', requestBody)
+        axios.put('https://lifestylebulider-api.onrender.com/api/users/use-program', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
                 window.location.href = '/homeuser';
@@ -163,7 +163,7 @@ export function DailyActivities() {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/programs', programData)
+        axios.post('https://lifestylebulider-api.onrender.com/api/programs', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;

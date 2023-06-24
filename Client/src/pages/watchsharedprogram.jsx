@@ -77,7 +77,7 @@ export function WatchSharedProgram() {
         const currentURL = window.location.href;
         const parts = currentURL.split('/');
         const programID = parts[parts.length - 1];
-        axios.get('http://localhost:3001/api/programs/program', {
+        axios.get('https://lifestylebulider-api.onrender.com/api/programs/program', {
             params: {
                 programId: programID,
             }
@@ -122,7 +122,7 @@ export function WatchSharedProgram() {
         };
         console.log('here', program._id);
         console.log('check', requestBody);
-        axios.put('http://localhost:3001/api/users/use-program', requestBody)
+        axios.put('https://lifestylebulider-api.onrender.com/api/users/use-program', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
             })
@@ -183,7 +183,7 @@ export function WatchSharedProgram() {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/programs', programData)
+        axios.post('https://lifestylebulider-api.onrender.com/api/programs', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;
