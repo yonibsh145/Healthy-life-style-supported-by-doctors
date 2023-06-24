@@ -35,11 +35,16 @@ export function Profile() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [bio, setBio] = useState('');
+  const [tags, setTags] = useState('');
 
   const userData = {
+    userId: userProfile._id,
     username: fullName,
     email: email,
     password: password,
+    bio: bio,
+    tags: tags,
   };
 
   const data = [
@@ -110,7 +115,7 @@ export function Profile() {
 
     };
 
-    const handleEdit =( ) => {
+    const handleEdit = () => {
       axios.put('http://localhost:3001/api/specialists/profile', userData)
         .then(response => {
           // Handle success.
@@ -178,6 +183,8 @@ export function Profile() {
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                             />
+                            <Input label="Tags" size="lg" type="text" value={tags} onChange={(e) => setTags(e.target.value)} ></Input>
+                            <Input label="Bio" size="lg" type="text" value={bio} onChange={(e) => setBio(e.target.value)} ></Input>
                           </div>
                         </CardBody>
                         <CardFooter className="pt-0">
@@ -260,7 +267,6 @@ export function Profile() {
                       My tags
                     </Typography>
                   </div>
-
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
                   <div className="mt-2 flex flex-wrap justify-center">
@@ -297,6 +303,47 @@ export function Profile() {
 
 
   if (userProfile.role == "patient") {
+    useEffect(() => {
+      fetchData();
+    }, []);
+
+    const fetchData = async () => {
+      axios.get('http://localhost:3001/api/users/profile', {
+        params: {
+          userId: userProfile._id
+        }
+      })
+        .then(response => {
+          // Handle success.
+          const programData = response.data;
+          console.log('Data', programData);
+          setProfileData(programData);
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+      }
+
+    const handleEdit = () => {
+      axios.put('http://localhost:3001/api/users/profile', userData)
+        .then(response => {
+          // Handle success.
+          console.log('User profile', response.data.user);
+          console.log('User token', response.data.token);
+          //window.location.href = '/sign-in';
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('An error occurred:', error.response);
+        });
+        setBio('');
+        setFullName('');
+        setTags('');
+        setEmail('');
+        setPassword('');
+          }
+
     return (
       <>
         <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
@@ -341,22 +388,25 @@ export function Profile() {
                         </CardHeader>
                         <CardBody>
                           <div className="flex-col mb-3 flex gap-3">
-                            <Input label="Name" size="lg" type="text"></Input>
-                            <Input label="User Name" size="lg" type="text"></Input>
-                            <Input label="Email" size="lg" type="email"></Input>
-                          </div>
-                          <div className="flex-col mb-3 flex gap-3">
-                            <Input label="Name" size="lg" type="text"></Input>
-                            <Input label="User Name" size="lg" type="text"></Input>
-                            <Input label="Email" size="lg" type="text"></Input>
+                            <Input label="Name" size="lg" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} ></Input>
+                            <Input label="Email" size="lg" type="email" value={email} onChange={(e) => setEmail(e.target.value)}></Input>
+                            <Input
+                              type="password"
+                              label="Password"
+                              size="lg"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <Input label="Tags" size="lg" type="text" value={tags} onChange={(e) => setTags(e.target.value)} ></Input>
+                            <Input label="Bio" size="lg" type="text" value={bio} onChange={(e) => setBio(e.target.value)} ></Input>
                           </div>
                         </CardBody>
                         <CardFooter className="pt-0">
                           <div className="mb-3 flex gap-2">
-                            <Button variant="gradient" fullWidth>
-                              Add
+                            <Button variant="gradient" fullWidth onClick={handleEdit}>
+                              Change
                             </Button>
-                            <Button variant="gradient" fullWidth>
+                            <Button variant="gradient" fullWidth onClick={handleOpen}>
                               Cancel
                             </Button></div>
                         </CardFooter>
@@ -428,11 +478,14 @@ export function Profile() {
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      My Tags
+                      My Tags: {profileData.tags}
                     </Typography>
                   </div>
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
+                <Typography className="font-medium text-blue-gray-700">
+                      Bio: {profileData.bio}
+                    </Typography>
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">

@@ -26,6 +26,7 @@ const userType = "";
 export function HomeUser() {
   const userProfile1 = JSON.parse(localStorage.getItem('userProfile'));
   const [pageData, setPageData] = useState([]);
+  const [dailyData, setDailyData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   const totalPages = Math.ceil(pageData.length / itemsPerPage);
@@ -40,19 +41,6 @@ export function HomeUser() {
 
   const handleOpen = () => setOpen(!open);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/api/programs');
-      const programsData = response.data;
-      setPageData(programsData);
-    } catch (error) {
-      console.log('Programs Error:', error.response);
-    }
-  };
 
   const handleWatch = (index) => {
     const programIndex = indexOfFirstItem + index; // Adjust index based on current page
@@ -70,7 +58,7 @@ export function HomeUser() {
   const handleAnalysis = () => {
     window.location.href = '/progess';
   };
-  
+
 
   const useProgram = (index) => {
     const requestBody = {
@@ -188,14 +176,41 @@ export function HomeUser() {
     );
   }
   if (userProfile1.role === "patient") {
+
     useEffect(() => {
       fetchData();
     }, []);
 
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/programs');
+        const programsData = response.data;
+        setPageData(programsData);
+      } catch (error) {
+        console.log('Programs Error:', error.response);
+      }
+
+      axios.get('http://localhost:3001/api/programs/program-daily-activities', {
+        params: {
+          userId: userProfile1._id,
+        }
+      })
+        .then(response => {
+          // Handle success.
+          const programData = response.data.dailyActivities;
+          console.log('Dataaa', programData);
+          setDailyData(programData);
+          console.log('check', profileData.length)
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+    };
+
     const handlePageChange = (page) => {
       setCurrentPage(page);
     };
-
 
     const emptyRow = () => {
       const remainingRows = itemsPerPage - currentItems.length;
@@ -247,8 +262,9 @@ export function HomeUser() {
                   <Typography variant="h2" color="blue" className="mb-2 flex justify-center mt-4">
                     Daily Activities
                   </Typography>
-                  <table className="">
-                    <thead className="">
+                  <div className="w-full flex justify-center">
+                  <table className="w-full max-w-full border-collapse">
+                    <thead>
                       <tr>
                         {TABLE_HEAD2.map((head) => (
                           <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
@@ -264,31 +280,39 @@ export function HomeUser() {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentItems.map((program, index) => (
+                      {dailyData.map((program, index) => (
                         <tr key={index} className="even:bg-blue-gray-50/50">
-                          <td className="p-4 ">
+                          <td className="p-4 text-center">
                             <Typography variant="small" color="blue-gray" className="font-normal">
-                              {program.name}
+                              {program.programName}
                             </Typography>
                           </td>
-                          <td className="p-4">
-                            <Typography variant="small" color="blue-gray" className="font-normal">
-                              {formatDate(program.startDate)}
-                            </Typography>
+                          <td className="p-4 text-center">
+                            {program.activities.map((activity, index) => (
+                              <div key={index}>
+                                <Typography variant="small" color="blue-gray" className="font-normal">
+                                  {activity.name}
+                                </Typography>
+                              </div>
+                            ))}
                           </td>
-                          <td className="p-4">
+                          <td className="p-4 flex justify-center">
+                            {program.activities.map((activity, index1) => (
+                              <div key={index}>
                             <Typography variant="small" color="blue" className="font-medium">
                               <div className="mb-3 flex gap-2">
-                                <button onClick={() => handleWatch(index)}>Finish</button>
-                                <button onClick={() => useProgram(index)}>Skip</button>
+                                <button onClick={() => handleFinish(index)}>Finish</button>
+                                <button onClick={() => handleSkip(index)}>Skip</button>
                               </div>
                             </Typography>
+                              </div>
+                            ))}
                           </td>
                         </tr>
                       ))}
-                      {emptyRow()}
                     </tbody>
                   </table>
+                  </div>
                 </div>
                 <div class="w-1/2 ">
                   <Typography variant="h2" color="blue" className="mb-2 flex justify-center mt-4">

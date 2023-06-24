@@ -31,13 +31,11 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import { FacebookShareButton, TwitterShareButton } from 'react-share';
 
-const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
+const TABLE_HEAD = ["Name", "Duration", "Status", "Action"];
 
 
 export function Libraries() {
 
-
-  
 
   const [open, setOpen] = useState(false);
 
@@ -86,13 +84,18 @@ export function Libraries() {
   };
 
   const handleWatch = (index) => {
-    const watchProgram = pageData[index];
+    const watchProgram = pageData[index].program;
+    console.log(watchProgram);
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
     window.location.href = `/watchprogram/`;
   };
 
   const handleReview = (index) => {
-    const watchProgram = pageData[index];
+    const watchProgram = pageData[index].program;
+    if (pageData[index].programStatus == 'Pending') {
+      alert('You cannot review inactive program');
+      return;
+    }
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
     window.location.href = '/reviewprogram';
   };
@@ -101,6 +104,74 @@ export function Libraries() {
     const editProgram = pageData[index];
     localStorage.setItem('editProgram', JSON.stringify(editProgram));
     window.location.href = '/watchreviews';
+  };
+
+  const handlePause = (index) => {
+    console.log(userProfile._id);
+    console.log(pageData[index]._id);
+    axios.put('http://localhost:3001/api/users/pause-program', {
+      userId: userProfile._id,
+      programId: pageData[index]._id,
+    })
+      .then(response => {
+        // Handle success.
+        const programData = response.data;
+        console.log('Data', programData);
+        axios.get('http://localhost:3001/api/users/myPrograms', {
+          params: { userId: userProfile._id }
+        })
+          .then(response => {
+            // Handle success.
+            const programData = response.data.programs;
+            console.log('Dataaa', programData);
+            setPageData(programData);
+            console.log('check', programData.length);
+          })
+          .catch(error => {
+            // Handle error.
+            console.log('Program Error:', error.response);
+          });
+      })
+      .catch(error => {
+        // Handle error.
+        alert('You cant pause inactive program');
+        console.log('Program Error:', error.response);
+      });
+
+  };
+
+  const handleUnpause = (index) => {
+    console.log(userProfile._id);
+    console.log(pageData[index]._id);
+    axios.put('http://localhost:3001/api/users/reavtiviate-program', {
+      userId: userProfile._id,
+      programId: pageData[index]._id,
+    })
+      .then(response => {
+        // Handle success.
+        const programData = response.data;
+        console.log('Data', programData);
+        axios.get('http://localhost:3001/api/users/myPrograms', {
+          params: { userId: userProfile._id }
+        })
+          .then(response => {
+            // Handle success.
+            const programData = response.data.programs;
+            console.log('Dataaa', programData);
+            setPageData(programData);
+            console.log('check', programData.length);
+          })
+          .catch(error => {
+            // Handle error.
+            console.log('Program Error:', error.response);
+          });
+      })
+      .catch(error => {
+        // Handle error.
+        console.log('Program Error:', error.response);
+      });
+
+
   };
 
   const handleShare = (index) => {
@@ -297,11 +368,15 @@ export function Libraries() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/programs');
-        const programsData = response.data;
-        setPageData(programsData);
+        const response = await axios.get('http://localhost:3001/api/users/myPrograms', {
+          params: { userId: userProfile._id }
+        });
+        const programData = response.data.programs;
+        console.log('Dataaa', programData);
+        setPageData(programData);
+        console.log('check', programData.length);
       } catch (error) {
-        console.log('Programs Error:', error.response);
+        console.log('Program Error:', error.response);
       }
     };
 
@@ -362,28 +437,35 @@ export function Libraries() {
                     </thead>
                     <tbody>
                       {pageData.map((program, index) => (
-
                         <tr key={index}>
                           <td className="p-4">
                             <Typography variant="small" color="blue-gray" className="font-normal">
-                              {program.name}
+                              {program.program.name}
                             </Typography>
                           </td>
                           <td className="p-4">
                             <Typography variant="small" color="blue-gray" className="font-normal">
-                              {formatDate(program.startDate)}
+                              {program.program.duration}
                             </Typography>
                           </td>
                           <td className="p-4">
-                            <Typography variant="small" color="blue-gray" className="font-normal">
-                              {program.rating}
-                            </Typography>
+                            {program.programStatus == 'Active' && (<Typography variant="small" color="green" className="font-normal">
+                              {program.programStatus}
+                            </Typography>)}
+                            {program.programStatus == 'Pending' && (<Typography variant="small" color="red" className="font-normal">
+                              {program.programStatus}
+                            </Typography>)}
+                            {program.programStatus == 'Paused' && (<Typography variant="small" color="purple" className="font-normal">
+                              {program.programStatus}
+                            </Typography>)}
                           </td>
                           <td className="p-4">
                             <Typography variant="small" color="blue" className="font-medium">
                               <div className="mb-3 flex gap-2">
                                 <button onClick={() => handleWatch(index)}>Watch</button>
                                 <button onClick={() => handleReview(index)}>Review</button>
+                                {program.programStatus != 'Paused' && (<button onClick={() => handlePause(index)}>Pause</button>)}
+                                {program.programStatus == 'Paused' && (<button onClick={() => handleUnpause(index)}>Unpause</button>)}
                               </div>
                             </Typography>
                           </td>
