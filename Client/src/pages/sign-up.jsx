@@ -87,7 +87,7 @@ export function SignUp() {
 
     //Select type
     if (selectedValue == "User") {
-      axios.post('https://lifestylebulider-api.onrender.com/api/users/register', userData)
+      axios.post('http://localhost:3001/api/users/register', userData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
@@ -102,7 +102,7 @@ export function SignUp() {
 
     //Select type
     if (selectedValue == "Specialist") {
-      axios.post('https://lifestylebulider-api.onrender.com/api/specialists/register', userData)
+      axios.post('http://localhost:3001/api/specialists/register', userData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
