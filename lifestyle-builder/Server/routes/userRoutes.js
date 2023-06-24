@@ -15,6 +15,7 @@ router.route('/myPrograms').get(usersController.getUserPrograms);
 router.route('/myPrograms/program').get(usersController.getUserProgramById);
 router.route('/sendMessage').post(usersController.sendMessage);
 router.route('/messages').get(usersController.getMessages);
+router.route('/reavtiviate-program').put(usersController.unPauseProgram);
 router.route('/profile')
     .put(usersController.updateUserProfile)
     .get(usersController.getUserProfile);

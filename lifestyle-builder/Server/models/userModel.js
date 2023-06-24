@@ -57,6 +57,14 @@ const userSchema = new Schema({
     required: true,
     default: "patient",
   },
+  tags: {
+    type: String,
+    required: false,
+  },
+  bio: {
+    type: String,
+    required: false,
+  },
   programs: [{
     program: {
       type: Schema.Types.ObjectId,

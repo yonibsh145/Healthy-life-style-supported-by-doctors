@@ -93,6 +93,7 @@ const getProgramById = asyncHandler(async (req, res) => {
 //@route    POST /api/programs/addReview
 //@access   Public
 const addReview = asyncHandler(async (req, res) => {
+  console.log('here',req.body);
   const { userId, programId, rating, comment } = req.body;
   try {
     const user = await User.findById(userId);
@@ -159,13 +160,14 @@ const getProgramUrl = asyncHandler(async (req, res) => {
 //@route    GET /api/programs/program-daily-activities
 //@access   Public
 const getDailyActivities = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.query;
+  //console.log(userId);
 
   try {
     // Find the user
     const user = await User.findById(userId).populate({
       path: 'programs',
-      match: { programStatus: 'active' },
+      match: { programStatus: 'Active' },
       populate: {
         path: 'program',
         select: 'name dailyActivities startDate endDate',
@@ -183,23 +185,24 @@ const getDailyActivities = async (req, res) => {
     const currentDate = new Date();
 
     const dailyActivities = user.programs.reduce((result, programObj) => {
-      console.log('Program:', programObj.program); // Check the program object
+      //console.log('Program:', programObj.program); // Check the program object
 
       const startDate = new Date(programObj.program.startDate);
       const endDate = new Date(programObj.program.endDate);
 
-      console.log('StartDate:', startDate); // Check the startDate
+      //console.log('StartDate:', startDate); // Check the startDate
 
       if (currentDate >= startDate && currentDate <= endDate) {
         const day = Math.ceil((currentDate - startDate) / (1000 * 60 * 60 * 24)); // Calculate the current day of the program
-        console.log('Day:', day); // Check the day value
+       // console.log('Day:', day); // Check the day value
 
         const dailyActivity = programObj.program.dailyActivities.find((d) => d.day === day);
-        console.log('DailyActivity:', dailyActivity); // Check the dailyActivity object
+        //console.log('DailyActivity:', dailyActivity); // Check the dailyActivity object
 
         const activities = dailyActivity ? dailyActivity.dailyActivity : [];
 
         if (activities.length > 0) {
+          console.log(programObj.program.name);
           result.push({
             programName: programObj.program.name,
             activities: activities.map((activity) => ({
@@ -214,7 +217,7 @@ const getDailyActivities = async (req, res) => {
       return result;
     }, []);
 
-    console.log('DailyActivities:', dailyActivities); // Check the final result
+    //console.log('DailyActivities:', dailyActivities); // Check the final result
 
     res.status(200).json({ dailyActivities });
   } catch (error) {

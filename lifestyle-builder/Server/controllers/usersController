@@ -115,10 +115,9 @@ const useProgram = asyncHandler(async (req, res) => {
 //@access   Public
 const pauseProgram = asyncHandler(async (req, res) => {
     const{userId, programId} = req.body;
-  
     try {
       // Find the user
-      const user = await UserModel.findById(userId);
+      const user = await User.findById(userId);
   
       if (!user) {
         res.status(404).json({ message: 'User not found' });
@@ -154,7 +153,8 @@ const pauseProgram = asyncHandler(async (req, res) => {
 //@route    GET /api/users/profile
 //@access   Public
 const getUserProfile = asyncHandler(async (req, res) => {
-     const user = await User.findById(req.body.userId);
+     console.log(req.query);
+     const user = await User.findById(req.query.userId);
      if(user){
          res.json({
              _id: user._id,
@@ -162,7 +162,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
              username: user.username,
              email: user.email,
              medicalHistory: user.medicalHistory,
-             program: user.program
+             program: user.program,
+             bio: user.bio,
+             tags: user.tags,
          })
      }else{
          res.status(404).json({message: "User not found"});
@@ -178,7 +180,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         user.name = req.body.name || user.name;
         user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
-        user.medicalHistory = req.body.medicalHistory || user.medicalHistory;
+        user.medicalHistory = req.body.medicalHistry || user.medicalHistory;
+        user.bio = req.body.bio || user.bio;
+        user.tags = req.body.tags || user.tags;
         if(req.body.password){
             user.password = req.body.password;
         }
@@ -364,13 +368,16 @@ const getUserProgramById = asyncHandler(async (req, res) => {
 
 //desc get user programs
 //@route    GET /api/users/myPrograms
-//@access   Private
+//@access   Public
 const getUserPrograms = asyncHandler(async (req, res) => {
-  const userId = req.body.userId;
-
+  const {userId} = req.query;
+  console.log('checking', userId);
   try {
     // Find the user by their ID
-    const user = await UserModel.findById(userId).populate("programs");
+    const user = await User.findById(userId).populate({
+      path: 'programs.program',
+      select: 'name activities description duration rating',
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -381,10 +388,16 @@ const getUserPrograms = asyncHandler(async (req, res) => {
       return res.status(200).json({ message: "User has no programs" });
     }
 
-    // Get the user's programs
-    const programs = user.programs;
+    // Sort the programs by program status (Active, Paused, Pending)
+    const sortedPrograms = user.programs.sort((a, b) => {
+      const statusOrder = { Active: 0, Paused: 1, Pending: 2 };
+      return statusOrder[a.programStatus] - statusOrder[b.programStatus];
+    });
 
-    res.status(200).json({ programs });
+    // Get the user's programs
+    //const programs = user.programs;
+
+    res.status(200).json({ programs: sortedPrograms });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -416,6 +429,45 @@ const getMessages = asyncHandler(async (req, res) => {
 });
 
 
+//@desc     pause program for a user by program id
+//@route    PUT /api/users/reavtiviate-program
+//@access   Public
+const unPauseProgram = asyncHandler(async (req, res) => {
+  const{userId, programId} = req.body;
+
+  try {
+    // Find the user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    // Check if the program is already paused
+    const programIndex = user.programs.findIndex(program => program._id.toString() === programId);
+    // Check if the program is active for the user
+    if (programIndex !== -1 && user.programs[programIndex].programStatus === 'Active') {
+      res.status(400).json({ message: 'Program is active for the user' });
+      return;
+    }
+    if (programIndex !== -1 && user.programs[programIndex].programStatus === 'Pending') {
+      res.status(400).json({ message: 'Program is pendig for the user' });
+      return;
+    }
+
+    // Update the user's program status to "Paused"
+    user.programs[programIndex].programStatus = 'Active';
+    await user.save();
+
+    res.status(200).json({ message: 'Program UnPaused for the user' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+
 
 module.exports = {
   updateUserProfile, 
@@ -430,7 +482,6 @@ module.exports = {
   sendMessage,
   getUserProgramById,
   getUserPrograms,
-  getMessages
-
-
+  getMessages,
+  unPauseProgram,
 };
