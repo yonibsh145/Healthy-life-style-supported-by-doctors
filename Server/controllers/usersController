@@ -203,52 +203,90 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 //@route    PUT /api/users/updateActivityResult
 //@access   Private
 const updateActivityResult = asyncHandler(async (req, res) => {
-    const { userId,programId, activityId, feedback } = req.body
-    try {
-      // Find the user
-      
-      const user = await User.findById(userId).populate({
-        path: 'programs',
-        match: { programStatus: 'Active' },
+  const { userId, programId, activityId, feedback } = req.body;
+
+  try {
+    // Find the user
+    const user = await User.findById(userId).populate({
+      path: 'programs',
+      match: { programStatus: 'Active' },
+      populate: {
+        path: 'program',
+        select: 'activities dailyActivities',
         populate: {
-          path: 'program',
-          select: 'activities',
+          path: 'activities dailyActivities',
+          select: 'day dailyActivity',
           populate: {
-            path: 'activities',
+            path: 'dailyActivity',
+            select: 'name description',
           },
         },
-      
-      });
-      if (!user) {
-        res.status(404).json({ message: 'User not found' });
-        return;
-      }
-  
-      // Find the program in the user's programs
-     const programIndex = user.programs.findIndex(p => p.program._id.toString()=== programId);
-      if (programIndex === -1) {
-        res.status(404).json({ message: 'Program not found for the user' });
-        return;
-      }
-  
-      // Find the activity in the program's activities
-      const activityIndex = user.programs[programIndex].program.activities.findIndex(activity => activity._id.toString() === activityId);
-      if (activityIndex === -1) {
-        res.status(404).json({ message: 'Activity not found in the program' });
-        return;
-      }
-  
-      // Update the activity's result
-      user.programs[programIndex].program.activities[activityIndex].feedback = feedback;
-      user.programs[programIndex].program.activities[activityIndex].completed = true;
-      await user.save();
-  
-      res.status(200).json({ message: 'Activity result updated successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server Error' });
+      },
+    });
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
-  });
+
+    // Find the program in the user's programs
+    const programIndex = user.programs.findIndex(
+      (p) => p.program._id.toString() === programId
+    );
+    if (programIndex === -1) {
+      res.status(404).json({ message: 'Program not found for the user' });
+      return;
+    }
+
+    // Find the activity in the program's activities
+    const activityIndex = user.programs[programIndex].program.activities.findIndex(
+      (activity) => activity._id.toString() === activityId
+    );
+    if (activityIndex === -1) {
+      res.status(404).json({ message: 'Activity not found in the program' });
+      return;
+    }
+    
+    
+// Use the activityIndex as needed
+
+    
+
+    // Update the activity's result
+    const activity = user.programs[programIndex].program.activities[activityIndex];
+    const dailyActivityIndex = activity.day - 1; // Subtract 1 from the day to match the index of dailyActivities
+    const dalyActivity = user.programs[programIndex].program.dailyActivities[dailyActivityIndex].dailyActivity;
+
+    // Find the index of the activity within the dailyActivity array
+    const dayActivityIndex = dalyActivity.findIndex(activity => activity._id.toString() === activityId);
+
+    if (dayActivityIndex === -1) {
+  // Activity not found
+        res.status(404).json({ message: 'Activity not found in the daily activity' });
+        return;
+    }
+
+    activity.feedback = feedback;
+    activity.completed = true;
+
+    if (
+      dailyActivityIndex >= 0 &&
+      dailyActivityIndex < user.programs[programIndex].program.dailyActivities.length
+    ) 
+    {
+      user.programs[programIndex].program.dailyActivities[
+        dailyActivityIndex].dailyActivity[dayActivityIndex].feedback=feedback;
+        user.programs[programIndex].program.dailyActivities[
+          dailyActivityIndex].dailyActivity[dayActivityIndex].completed = true;
+    }
+    await user.save();
+    console.log('here',user.programs[programIndex].program.activities[activityIndex]);
+    console.log(user.programs[programIndex].program.dailyActivities[dailyActivityIndex].dailyActivity[dayActivityIndex]);
+    res.status(200).json({ message: 'Activity result updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 
 //desc     get my history of programs that user has done
@@ -385,7 +423,11 @@ const getUserPrograms = asyncHandler(async (req, res) => {
     // Find the user by their ID
     const user = await User.findById(userId).populate({
       path: 'programs.program',
-      select: 'name activities description duration rating',
+      select: 'name activities description duration rating specialist',
+      populate: {
+        path: 'specialist',
+        select: '_id',
+      },
     });
 
     if (!user) {

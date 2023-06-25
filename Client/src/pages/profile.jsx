@@ -306,7 +306,7 @@ export function Profile() {
                   </Typography>
                   <div className="mb-16 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      <Rating name="half-rating-read" value={(userProfile.rating)} readOnly />
+                      <Rating name="half-rating-read" value={(parseInt(myData.rating))} precision={0.5} readOnly />
                     </Typography>
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
@@ -525,7 +525,7 @@ export function Profile() {
                           color="blue-gray"
                           className="font-bold uppercase"
                         >
-                          0
+                          {profileData.numOfReviews}
                         </Typography>
                         <Typography
                           variant="small"

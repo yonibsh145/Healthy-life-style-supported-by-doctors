@@ -71,6 +71,7 @@ const getSpecialistProfile = asyncHandler(async (req, res) => {
       role: specialist.role,
       tags: specialist.tags,
       bio: specialist.bio,
+      rating: specialist.rating,
     });
   } else {
     res.status(404);

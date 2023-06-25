@@ -208,7 +208,7 @@ export function WatchProfile() {
                   </Typography>
                   <div className="mb-16 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      <Rating name="half-rating-read" value={profileData.rating} readOnly />
+                    <Rating name="half-rating-read" value={parseInt(profileData.rating)}  precision={0.5} readOnly />
                     </Typography>
                   </div>
                   <Typography className="font-medium text-blue-gray-700">
@@ -478,6 +478,7 @@ export function WatchProfile() {
           const programData = response.data;
           console.log('Data', programData);
           setProfileData(programData);
+          console.log()
           console.log('check', profileData.length)
         })
         .catch(error => {
@@ -608,7 +609,7 @@ export function WatchProfile() {
                   </Typography>
                   <div className="mb-16 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      <Rating name="half-rating-read" value={profileData.rating} readOnly />
+                      <Rating name="half-rating-read" value={parseInt(profileData.rating)}  precision={0.5} readOnly />
                     </Typography>
                   </div>
                   <Typography className="font-medium text-blue-gray-700">

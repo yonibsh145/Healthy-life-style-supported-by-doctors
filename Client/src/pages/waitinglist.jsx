@@ -73,9 +73,7 @@ export function WaitingList() {
     };
 
     const handleDeny = (index) => {
-        const editProgram = pageData[index];
-        localStorage.setItem('editProgram', JSON.stringify(editProgram));
-        window.location.href = '/editprogram';
+        alert('Dont deny a program please.');
     };
 
     const handleWatch = (index) => {
