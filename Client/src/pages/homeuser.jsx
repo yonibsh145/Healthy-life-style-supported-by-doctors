@@ -77,6 +77,7 @@ export function HomeUser() {
     axios.put('http://localhost:3001/api/users/use-program', requestBody)
       .then(response => {
         console.log(response.data); // Handle the response data as needed
+        alert('Request succeed!\nwait for the specialist to approve your request.');
       })
       .catch(error => {
         alert('You already has this program');
@@ -86,8 +87,6 @@ export function HomeUser() {
 
 
   };
-
-
 
   const formatDate = (dateString) => {
     const options = {
