@@ -80,6 +80,7 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
   const { programId } = req.query;
+  console.log(programId);
   const program = await Program.findById(programId);
   if (program) {
     res.json(program);
@@ -132,6 +133,8 @@ const addReview = asyncHandler(async (req, res) => {
     }
     specialist.rating = specialist.programs.reduce((acc, item) => item.rating + acc, 0) / specialist.programs.length;
     await specialist.save();
+
+    user.numOfReviews = +1;
 
     res.status(200).json({ message: "Review added" });
   } catch (error) {
@@ -312,6 +315,7 @@ const getAllReviews = asyncHandler(async (req, res) => {
       path: 'reviews.user',
       select: 'username', // Populate 'name' and 'email' fields of the user document
     });
+
     if(!program){
       res.status(404).json({ message: "Program not found" });
       return;

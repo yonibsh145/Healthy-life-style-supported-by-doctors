@@ -159,9 +159,11 @@ const getUserProfile = asyncHandler(async (req, res) => {
              username: user.username,
              email: user.email,
              medicalHistory: user.medicalHistory,
-             program: user.program,
+             programs: user.programs,
              bio: user.bio,
              tags: user.tags,
+             numOfReviews: user.numOfReviews,
+
          })
      }else{
          res.status(404).json({message: "User not found"});
@@ -201,33 +203,44 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 //@route    PUT /api/users/updateActivityResult
 //@access   Private
 const updateActivityResult = asyncHandler(async (req, res) => {
-    const { userId,programId, activityId, result } = req.body;
-  
+    const { userId,programId, activityId, feedback } = req.body
     try {
       // Find the user
-      const user = await User.findById(userId);
-  
+      
+      const user = await User.findById(userId).populate({
+        path: 'programs',
+        match: { programStatus: 'Active' },
+        populate: {
+          path: 'program',
+          select: 'activities',
+          populate: {
+            path: 'activities',
+          },
+        },
+      
+      });
       if (!user) {
         res.status(404).json({ message: 'User not found' });
         return;
       }
   
       // Find the program in the user's programs
-      const programIndex = user.programs.findIndex(program => program._id.toString() === programId);
+     const programIndex = user.programs.findIndex(p => p.program._id.toString()=== programId);
       if (programIndex === -1) {
         res.status(404).json({ message: 'Program not found for the user' });
         return;
       }
   
       // Find the activity in the program's activities
-      const activityIndex = user.programs[programIndex].activities.findIndex(activity => activity._id.toString() === activityId);
+      const activityIndex = user.programs[programIndex].program.activities.findIndex(activity => activity._id.toString() === activityId);
       if (activityIndex === -1) {
         res.status(404).json({ message: 'Activity not found in the program' });
         return;
       }
   
       // Update the activity's result
-      user.programs[programIndex].activities[activityIndex].result = result;
+      user.programs[programIndex].program.activities[activityIndex].feedback = feedback;
+      user.programs[programIndex].program.activities[activityIndex].completed = true;
       await user.save();
   
       res.status(200).json({ message: 'Activity result updated successfully' });
@@ -342,7 +355,7 @@ const getUserProgramById = asyncHandler(async (req, res) => {
   
   try {
     // Find the user by ID
-    const user = await UserModel.findById(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

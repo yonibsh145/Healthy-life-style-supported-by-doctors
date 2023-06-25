@@ -81,6 +81,11 @@ const userSchema = new Schema({
     required: true,
     default: 0,
   },
+  numOfReviews: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
