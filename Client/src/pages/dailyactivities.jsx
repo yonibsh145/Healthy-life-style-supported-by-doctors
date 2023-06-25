@@ -74,7 +74,8 @@ export function DailyActivities() {
     }, []);
 
     const fetchData = async () => {
-        setProgramName(program.name);
+        console.log(program);
+        setProgramName(program.programName);
         setProgramType(program.kindOfProgram);
         setProgramDescription(program.description);
         setProgramLength(program.duration);
@@ -120,8 +121,12 @@ export function DailyActivities() {
         setOpen(!open)
     };
 
+    const handleFinish = (index) => {
+        setAction(trainings[index].name);
+        setOpen(!open);
+    }
+
     const handleOpen = (index) => {
-        setAction(training[index]._id);
         setOpen(!open);
     }
 
@@ -202,7 +207,7 @@ export function DailyActivities() {
                                                 <td className="p-4">
                                                     <Typography variant="small" color="blue" className="font-medium">
                                                         <div className="mb-3 flex gap-2">
-                                                            <button onClick={handleOpen}>Finish</button>
+                                                        <button onClick={() => handleFinish(index)}>Finish</button>
                                                             <button>Skip</button>
                                                         </div>
                                                     </Typography>
@@ -214,7 +219,7 @@ export function DailyActivities() {
                                 <Dialog
                                     size="xs"
                                     open={open}
-                                    handler={handleOpen}
+                                    handler={handleFinish}
                                     className="bg-transparent shadow-none">
                                     <Card className="mx-auto w-full max-w-[24rem]">
                                         <CardHeader

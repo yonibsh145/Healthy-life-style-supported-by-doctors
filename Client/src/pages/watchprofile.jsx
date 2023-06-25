@@ -40,25 +40,23 @@ export function WatchProfile() {
     {
       label: "Programs",
       value: "html",
-      desc: `It really matters and then like it really doesn't matter.
-        What matters is the people who are sparked by it. And the people 
-        who are like offended by it, it doesn't matter.`,
+      desc: `In this section of the stats you can see the number of users that using the specialist programs.\n
+      The counts of programs created by the specialist: ${usersData.length}`,
     },
     {
       label: "Reviews",
       value: "react",
-      desc: `Because it's about motivating the doers. Because I'm here
-        to follow my dreams and inspire other people to follow their dreams, too.`,
+      desc: `In this section of the stats you can see the number of reviews that the user posses.\n
+      The counts of reviews created by the specialist: ${programData.length}`,
     },
     {
       label: "Ratings",
       value: "vue",
       desc: `We're not always in the position that we want to be at.
-        We're constantly growing. We're constantly making mistakes. We're
-        constantly trying to express ourselves and actualize our dreams.`,
+      We're constantly growing. We're constantly making mistakes. We're
+      constantly trying to express ourselves and actualize our dreams.`,
     },
   ];
-
 
   if (userProfile.role == "specialist") {
 
@@ -300,7 +298,7 @@ export function WatchProfile() {
         .then(response => {
           // Handle success.
           const programData = response.data;
-          console.log('Data', programData);
+          console.log('Dataa', programData);
           setUsersData(programData);
           console.log('check', profileData.length)
         })
@@ -397,7 +395,7 @@ export function WatchProfile() {
                           color="blue-gray"
                           className="font-bold uppercase"
                         >
-                          89
+                          0
                         </Typography>
                         <Typography
                           variant="small"
@@ -415,32 +413,18 @@ export function WatchProfile() {
                   </Typography>
                   <div className="mb-16 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                      <Rating name="half-rating-read" value={profileData.rating} readOnly />
                     </Typography>
                   </div>
-                  <div className="mb-2 flex items-center justify-center gap-2">
-                    <BriefcaseIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
-                    <Typography className="font-medium text-blue-gray-700">
-                      Solution Manager - Creative Tim Officer
-                    </Typography>
-                  </div>
-                  <div className="mb-2 flex items-center justify-center gap-2">
-                    <BuildingLibraryIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
-                    <Typography className="font-medium text-blue-gray-700">
-                      University of Computer Science
-                    </Typography>
-                  </div>
-
+                  <Typography className="font-medium text-blue-gray-700">
+                    Tags: {profileData.tags};
+                  </Typography>
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">
-                        An artist of considerable range, Jenna the name taken by
-                        Melbourne-raised, Brooklyn-based Nick Murphy writes,
-                        performs and records all of his own music, giving it a
-                        warm, intimate feel with a solid groove structure. An
-                        artist of considerable range.
+                        Bio:{profileData.bio};
                       </Typography>
                       <Button variant="text">Statistics</Button>
                       <Tabs value="html">

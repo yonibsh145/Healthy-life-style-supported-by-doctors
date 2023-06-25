@@ -559,7 +559,6 @@ export function Profile() {
                   </Typography>
                   <div className="mb-16 flex items-center justify-center gap-2">
                     <Typography className="font-medium text-blue-gray-700">
-                      <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
                     </Typography>
                   </div>
                   <div className="mb-2 flex items-center justify-center gap-2">
