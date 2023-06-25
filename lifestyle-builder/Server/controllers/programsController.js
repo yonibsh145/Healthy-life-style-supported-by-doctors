@@ -80,7 +80,6 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
   const { programId } = req.query;
-  console.log(programId);
   const program = await Program.findById(programId);
   if (program) {
     res.json(program);
@@ -93,7 +92,6 @@ const getProgramById = asyncHandler(async (req, res) => {
 //@route    POST /api/programs/addReview
 //@access   Public
 const addReview = asyncHandler(async (req, res) => {
-  console.log('here',req.body);
   const { userId, programId, rating, comment } = req.body;
   try {
     const user = await User.findById(userId);
@@ -107,7 +105,6 @@ const addReview = asyncHandler(async (req, res) => {
     }
 
     const program = await Program.findById(programId).populate('reviews.user');
-    console.log(program.reviews)
     if (!program) {
       return res.status(404).json({ message: "Program not found" });
     }
@@ -161,8 +158,6 @@ const getProgramUrl = asyncHandler(async (req, res) => {
 //@access   Public
 const getDailyActivities = async (req, res) => {
   const { userId } = req.query;
-  //console.log(userId);
-
   try {
     // Find the user
     const user = await User.findById(userId).populate({
@@ -202,7 +197,6 @@ const getDailyActivities = async (req, res) => {
         const activities = dailyActivity ? dailyActivity.dailyActivity : [];
 
         if (activities.length > 0) {
-          console.log(programObj.program.name);
           result.push({
             programName: programObj.program.name,
             activities: activities.map((activity) => ({
@@ -288,13 +282,11 @@ const deleteProgram = asyncHandler(async (req, res) => {
 //@access   Public
 const getAllReviews = asyncHandler(async (req, res) => {
   const {programId} = req.query;
-  console.log(programId);
   try{
     const program = await Program.findById(programId).populate({
       path: 'reviews.user',
       select: 'username', // Populate 'name' and 'email' fields of the user document
     });
-    console.log(program);
     if(!program){
       res.status(404).json({ message: "Program not found" });
       return;

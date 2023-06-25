@@ -58,8 +58,6 @@ const authUser = asyncHandler(async (req, res) => {
 const useProgram = asyncHandler(async (req, res) => {
   // Obtain the necessary data from the request body
   const { userId, programId } = req.body;
-  console.log('here',userId);
-  console.log('here2',programId);
   try {
     // Check if the user and program exist
     const user = await User.findById(userId).populate('programs');
@@ -153,7 +151,6 @@ const pauseProgram = asyncHandler(async (req, res) => {
 //@route    GET /api/users/profile
 //@access   Public
 const getUserProfile = asyncHandler(async (req, res) => {
-     console.log(req.query);
      const user = await User.findById(req.query.userId);
      if(user){
          res.json({
@@ -371,7 +368,6 @@ const getUserProgramById = asyncHandler(async (req, res) => {
 //@access   Public
 const getUserPrograms = asyncHandler(async (req, res) => {
   const {userId} = req.query;
-  console.log('checking', userId);
   try {
     // Find the user by their ID
     const user = await User.findById(userId).populate({

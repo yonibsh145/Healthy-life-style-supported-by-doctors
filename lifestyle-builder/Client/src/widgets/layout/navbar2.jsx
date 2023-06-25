@@ -24,7 +24,7 @@ export function Navbar2() {
                 color="blue-gray"
                 className="p-1 font-normal"
             >
-                <a href="ourproducts" className="flex items-center">
+                <a href="/ourproducts" className="flex items-center">
                     Products
                 </a>
             </Typography>
@@ -34,7 +34,7 @@ export function Navbar2() {
                 color="blue-gray"
                 className="p-1 font-normal"
             >
-                <a href="aboutus" className="flex items-center">
+                <a href="/aboutus" className="flex items-center">
                     About
                 </a>
             </Typography>

@@ -61,7 +61,6 @@ const authSpecialist = asyncHandler(async (req, res) => {
 //@access Private
 const getSpecialistProfile = asyncHandler(async (req, res) => {
   const specialistId = req.query.specialistId;
-  console.log(specialistId);
   const specialist = await Specialist.findById(specialistId);
   if (specialist) {
     res.json({
@@ -113,8 +112,6 @@ const updateSpecialistProfile = asyncHandler(async (req, res) => {
 
 const updateRequest = asyncHandler(async (req, res) => {
   const { specialistId, userId, programId, action } = req.body;
-  console.log('hh',specialistId);
-
   try {
     const specialist = await Specialist.findById(specialistId);
     const user = await User.findById(userId).populate('programs');
@@ -265,8 +262,6 @@ const getSpecialistPatients = async (req, res) => {
 const getSpecialistRequests = asyncHandler(async (req, res) => {
   try {
     const { specialistId } = req.query;
-    console.log(specialistId);
-
     const specialist = await Specialist.findById(specialistId).populate({
       path: 'requests.user',
       select: 'username email _id', // Populate 'name' and 'email' fields of the user document
@@ -295,7 +290,6 @@ const getSpecialistRequests = asyncHandler(async (req, res) => {
 //@access Public
 const getSpecialistPrograms = asyncHandler(async (req, res) => {
   const {specialistId} = req.query; // Use req.query to access the query parameter
-  console.log(specialistId);
   try {
     const specialist = await Specialist.findById(specialistId).populate('programs')
 
