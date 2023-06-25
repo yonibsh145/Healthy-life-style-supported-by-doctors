@@ -87,7 +87,7 @@ export function Libraries() {
     const watchProgram = pageData[index].program;
     console.log(watchProgram);
     localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
-    window.location.href = `/watchprogram/`;
+    window.location.href = `/watchprogram`;
   };
 
   const handleReview = (index) => {

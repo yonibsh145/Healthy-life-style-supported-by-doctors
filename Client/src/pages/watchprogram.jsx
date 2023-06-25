@@ -151,7 +151,7 @@ export function WatchProgram() {
     };
 
     const handleProfile = () => {
-        const specialistProfile = program.specialist;
+        const specialistProfile = program.specialist._id;
         localStorage.setItem('specialistProfile', JSON.stringify(specialistProfile));
         window.location.href = '/watchprofile';
     };
