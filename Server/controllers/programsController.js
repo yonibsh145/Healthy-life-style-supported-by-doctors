@@ -201,10 +201,12 @@ const getDailyActivities = async (req, res) => {
         if (activities.length > 0) {
           result.push({
             programName: programObj.program.name,
+            _id: programObj.program._id,
             activities: activities.map((activity) => ({
               name: activity.name,
               duration: activity.duration,
               description: activity.description,
+              _id: activity._id,
             })),
           });
         }

@@ -35,9 +35,15 @@ export function HomeUser() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = pageData.slice(indexOfFirstItem, indexOfLastItem);
+  const [actionFeedback, setActionFeedback] = useState('');
+  const [action, setAction] = useState('');
+  const [programId, setProgramId] = useState('');
+  const [description, setDescription] = useState('');
+
 
 
   const [open, setOpen] = useState(false);
+  const [open2,setOpen2] =  useState(false);
 
   const handleOpen = () => setOpen(!open);
 
@@ -251,6 +257,58 @@ export function HomeUser() {
       );
     }
 
+    const handleSend = () => {
+      console.log(dailyData[programId]);
+      axios.put('http://localhost:3001/api/users/updateActivityResult', {
+        userId: userProfile1._id,
+        programId: dailyData[programId]._id,
+        activityId: action._id,
+        feedback: actionFeedback,
+      })
+        .then(response => {
+          console.log(response.data); // Handle the response data as needed
+          alert('Activity is finished!');
+        })
+        .catch(error => {
+          //alert('You already has this program');
+          console.error(error); // Handle any errors that occur
+        });
+      setActionFeedback('');
+      setOpen(!open)
+    };
+
+
+    const handleFinish = (index1, activityIndex) => {
+      setProgramId(index1);
+      if (activityIndex == null) {
+        setAction(dailyData[index1].activities[0]);
+      }
+      else {
+        setAction(dailyData[index1].activities[activityIndex + 1]);
+      }
+      setOpen(!open);
+    }
+
+    const handleDescription = (index1, activityIndex) => {
+      if (activityIndex == null) {
+        setDescription(dailyData[index1].activities[0].description);
+      }
+      else {
+        setDescription(dailyData[index1].activities[activityIndex + 1].description);
+      }
+      setOpen2(!open2);
+    }
+
+    const handleOpen = (index) => {
+      setActionFeedback('');
+      setOpen(!open);
+    }
+
+    const handleOpen2 = (index) => {
+      setOpen2(!open2);
+    }
+
+
     return (
       <>
         <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
@@ -296,7 +354,7 @@ export function HomeUser() {
                               </td>
                               <td rowSpan={program.activities.length} className="p-4 text-center">
                                 <Typography variant="small" color="blue" className="font-medium">
-                                  <button onClick={() => handleDaily(index1)}>Watch Program</button>
+                                  <button onClick={() => handleDaily(index1)}>Watch</button>
                                 </Typography>
                               </td>
                               <td className="p-4 text-center">
@@ -309,6 +367,7 @@ export function HomeUser() {
                                   <div className="mb-3 flex gap-2">
                                     <button onClick={() => handleFinish(index1)}>Finish</button>
                                     <button onClick={() => handleSkip(index1)}>Skip</button>
+                                    <button onClick={() => handleDescription(index1)}>Desc</button>
                                   </div>
                                 </Typography>
                               </td>
@@ -323,8 +382,9 @@ export function HomeUser() {
                                 <td className="p-4 flex justify-center">
                                   <Typography variant="small" color="blue" className="font-medium">
                                     <div className="mb-3 flex gap-2">
-                                      <button onClick={() => handleFinish(activityIndex)}>Finish</button>
+                                      <button onClick={() => handleFinish(index1, activityIndex)}>Finish</button>
                                       <button onClick={() => handleSkip(activityIndex)}>Skip</button>
+                                      <button onClick={() => handleDescription(index1, activityIndex)}>Desc</button>
                                     </div>
                                   </Typography>
                                 </td>
@@ -334,6 +394,60 @@ export function HomeUser() {
                         ))}
                       </tbody>
                     </table>
+                    <Dialog
+                      size="xs"
+                      open={open}
+                      handler={handleFinish}
+                      className="bg-transparent shadow-none">
+                      <Card className="mx-auto w-full max-w-[24rem]">
+                        <CardHeader
+                          variant="gradient"
+                          color="blue"
+                          className="mb-4 grid h-28 place-items-center">
+                          <Typography variant="h3" color="white">
+                            Action Feedback
+                          </Typography>
+                        </CardHeader>
+                        <CardBody className="flex flex-col gap-4">
+                          <Textarea label="Short Description" value={actionFeedback} onChange={(e) => setActionFeedback(e.target.value)} />
+                        </CardBody>
+                        <CardFooter className="pt-0">
+                          <div className="mb-3 flex gap-2">
+                            <Button variant="gradient" onClick={handleSend} fullWidth>
+                              Send
+                            </Button>
+                            <Button variant="gradient" onClick={handleOpen} fullWidth>
+                              Cancel
+                            </Button></div>
+                        </CardFooter>
+                      </Card>
+                    </Dialog>
+                    <Dialog
+                      size="xs"
+                      open={open2}
+                      handler={handleDescription}
+                      className="bg-transparent shadow-none">
+                      <Card className="mx-auto w-full max-w-[24rem]">
+                        <CardHeader
+                          variant="gradient"
+                          color="blue"
+                          className="mb-4 grid h-28 place-items-center">
+                          <Typography variant="h3" color="white">
+                            Action Description
+                          </Typography>
+                        </CardHeader>
+                        <CardBody className="flex flex-col gap-4">
+                          <Textarea label="Short Description" value={description} />
+                        </CardBody>
+                        <CardFooter className="pt-0">
+                          <div className="mb-3 flex gap-2">
+                            <Button variant="gradient" onClick={handleOpen2} fullWidth>
+                              Close
+                            </Button>
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    </Dialog>
                   </div>
                 </div>
                 <div class="w-1/2 ">
