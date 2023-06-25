@@ -287,8 +287,8 @@ export function HomeUser() {
                         </tr>
                       </thead>
                       <tbody>
-                        {dailyData.map((program, index) => (
-                          <tr key={index} className="even:bg-blue-gray-50/50">
+                        {dailyData.map((program, index1) => (
+                          <tr key={index1} className="even:bg-blue-gray-50/50">
                             <td className="p-4 text-center">
                               <Typography variant="small" color="blue-gray" className="font-normal">
                                 {program.programName}
@@ -302,7 +302,7 @@ export function HomeUser() {
                             <td className="p-4 flex justify-center">
                               <Typography variant="small" color="blue" className="font-medium">
                                 <div className="mb-3 flex gap-2">
-                                  <button onClick={() => handleDaily(index)}>Watch</button>
+                                  <button onClick={() => handleDaily(index1)}>Watch</button>
                                 </div>
                               </Typography>
                             </td>
