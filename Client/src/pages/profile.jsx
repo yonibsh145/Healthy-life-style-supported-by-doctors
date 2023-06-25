@@ -75,9 +75,8 @@ export function Profile() {
     {
       label: "Ratings",
       value: "vue",
-      desc: `We're not always in the position that we want to be at.
-      We're constantly growing. We're constantly making mistakes. We're
-      constantly trying to express ourselves and actualize our dreams.`,
+      desc: `In this section of the stats you can see the number of chats that the user posses.\n
+      The counts of chat you poses is: ${programData.length}`,
     },
   ];
 

@@ -14,35 +14,39 @@ import { PageTitle, Footer, Navbar2 } from "@/widgets/layout";
 import { FeatureCard, TeamCard } from "@/widgets/cards";
 import { featuresData, teamData, contactData } from "@/data";
 
-const TABLE_HEAD = ["Name", "Job", "Employed", ""];
+const myString = `Welcome to Lifestyle Builder!\n
+your go-to app for transforming your lifestyle and achieving your personal goals!\n
+Our app is designed to connect specialists with regular users, 
+enabling the creation of personalized programs to enhance and improve your daily routines.\n 
+Whether you're looking to boost your fitness, nutrition, mental well-being, or overall lifestyle habits, Lifestyle Builder is here to guide you every step of the way.\n
+At Lifestyle Builder, we understand that each person has unique needs and aspirations when it comes to improving their lifestyle.\n
+That's why we've created a platform that empowers specialists to design tailor-made programs that align with your specific goals.\n
+Our aim is to facilitate a seamless experience for both specialists and regular users, fostering a collaborative environment where expertise and motivation converge.\n\n`;
 
-const TABLE_ROWS = [
-  {
-    name: "John Michael",
-    job: "Manager",
-    date: "23/04/18",
-  },
-  {
-    name: "Alexa Liras",
-    job: "Developer",
-    date: "23/04/18",
-  },
-  {
-    name: "Laurent Perrier",
-    job: "Executive",
-    date: "19/09/17",
-  },
-  {
-    name: "Michael Levi",
-    job: "Developer",
-    date: "24/12/08",
-  },
-  {
-    name: "Richard Gran",
-    job: "Manager",
-    date: "04/10/21",
-  },
-];
+
+const myString1 = `For Regular Users:
+Our app allows regular users like you to benefit from the expertise and knowledge of specialists in various lifestyle fields\n
+You can browse through a wide range of programs offered by specialists and select the ones that resonate with your objectives.\n
+Whether you're looking to enhance your fitness level, adopt healthier eating habits, manage stress, or develop a positive mindset,
+Lifestyle Builder provides you with the tools and guidance to achieve your goals.\n
+After completing a program, you have the opportunity to provide valuable feedback by reviewing and rating it.\n
+Your input not only helps us ensure the quality of our programs but also allows specialists to refine their offerings based on user experiences.\n
+We believe in the power of community and aim to create a supportive ecosystem where regular users can share their achievements,
+challenges, and insights with others on a similar journey.\n\n`;
+
+const myString2= `For Specialists:
+Lifestyle Builder provides a platform for specialists to showcase their expertise and help regular users create positive lifestyle changes.\n
+As a specialist, you can create your own programs, incorporating your knowledge and experience to address the unique needs of your clients.\n
+Our app enables you to interact directly with users, understand their requirements, and provide personalized guidance and support throughout their journey.\n
+We value the contributions of our specialists and strive to foster an environment that promotes growth and recognition.\n 
+By receiving feedback and ratings from users, you can continuously refine and enhance your programs,
+establishing yourself as a trusted authority in your field. Furthermore, Lifestyle Builder offers a platform for specialists to connect with like-minded professionals,
+collaborate on projects, and share insights and best practices.\n
+Join Lifestyle Builder today and embark on a transformative journey towards a healthier, more fulfilling lifestyle.\n
+Together, we can build a community that embraces personal growth, supports one another, and celebrates the achievements of every individual.\n
+Let Lifestyle Builder be your companion in realizing your aspirations and creating lasting positive change in your life.\n\n`;
+
+const myString3 = `Start your journey with Lifestyle Builder now and unlock your full potential!`;
 
 export function AboutUs() {
   return (
@@ -72,103 +76,20 @@ export function AboutUs() {
           </div>
         </div>
       </div>
-      <section className="-mt-32 bg-gray-50 px-4 pb-20 pt-4">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featuresData.map(({ color, title, icon, description }) => (
-              <FeatureCard
-                key={title}
-                color={color}
-                title={title}
-                icon={React.createElement(icon, {
-                  className: "w-5 h-5 text-white",
-                })}
-                description={description}
-              />
-            ))}
-          </div>
-        </div>
-        <section className="px-4 pt-20 pb-48">
-          <Card className="overflow-scroll h-full w-full">
-            <table className="w-full min-w-max table-auto text-left">
-              <thead>
-                <tr>
-                  {TABLE_HEAD.map((head) => (
-                    <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none opacity-70"
-                      >
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {TABLE_ROWS.map(({ name, job, date }, index) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
-                  const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
-                  return (
-                    <tr key={name}>
-                      <td className={classes}>
-                        <Typography variant="small" color="blue-gray" className="font-normal">
-                          {name}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography variant="small" color="blue-gray" className="font-normal">
-                          {job}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography variant="small" color="blue-gray" className="font-normal">
-                          {date}
-                        </Typography>
-                      </td>
-                      <td className={classes}>
-                        <Typography as="a" href="#" variant="small" color="blue" className="font-medium">
-                          Edit
-                        </Typography>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </Card>
-        </section>
-      </section>
       <section className="px-4 pt-20 pb-48">
         <div className="container mx-auto">
-          <PageTitle heading="Meet the trainers">
-            Here you can see a bit of our trainers.
-            Each trainer create his own programs.
-            Desire to be a trainer?
-            Desire to use a program?
-            SignUp now!
+          <PageTitle heading="About us">
+            {myString}
           </PageTitle>
-          <div className="mt-24 grid grid-cols-1 gap-12 gap-x-24 md:grid-cols-2 xl:grid-cols-4">
-            {teamData.map(({ img, name, position, socials }) => (
-              <TeamCard
-                key={name}
-                img={img}
-                name={name}
-                position={position}
-                socials={
-                  <div className="flex items-center gap-2">
-                    {socials.map(({ color, name }) => (
-                      <IconButton key={name} color={color} variant="text">
-                        <i className={`fa-brands text-lg fa-${name}`} />
-                      </IconButton>
-                    ))}
-                  </div>
-                }
-              />
-            ))}
-          </div>
+          <PageTitle >
+            {myString1}
+          </PageTitle>
+          <PageTitle>
+            {myString2}
+          </PageTitle>
+          <PageTitle>
+            {myString3}
+          </PageTitle>
         </div>
       </section>
 

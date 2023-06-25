@@ -101,8 +101,8 @@ export function Libraries() {
   };
 
   const handleReviews = (index) => {
-    const editProgram = pageData[index];
-    localStorage.setItem('editProgram', JSON.stringify(editProgram));
+    const watchProgram = pageData[index];
+    localStorage.setItem('watchProgram', JSON.stringify(watchProgram));
     window.location.href = '/watchreviews';
   };
 
@@ -178,7 +178,7 @@ export function Libraries() {
   const handleShare = (index) => {
     setOpen(!open);
     console.log(pageData[index]._id);
-    const shareUrl = `http://localhost:3001/watchsharedprogram/${pageData[index]._id}`;
+    const shareUrl = `http://localhost:5173/watchsharedprogram/${pageData[index]._id}`;
     setSharedLink(shareUrl);
     console.log(shareUrl);
   };
@@ -186,6 +186,9 @@ export function Libraries() {
   const loadPrograms = () => {
     console.log('check', pageData);
   };
+
+
+
 
   if (userProfile.role == "specialist") {
     const TABLE_HEAD = ["Name", "Duration", "Rating", "Action"];
