@@ -84,16 +84,20 @@ export function NewProgram() {
 
     const handleSave = () => {
         if (trainingName && trainingLength && trainingDescription && trainingDay) {
-            if(isNaN(trainingLength)){
+            if (isNaN(trainingLength)) {
                 alert(`Training Length must be a number`);
                 return;
             }
-            if(isNaN(trainingDay)){
+            if (isNaN(trainingDay)) {
                 alert(`Training Day Length must be a number`);
                 return;
             }
-            if(parseInt(trainingDay)>parseInt(trainingLength)){
+            if (parseInt(trainingDay) > parseInt(trainingLength)) {
                 alert(`Training Length must be larger than Training Day`);
+                return;
+            }
+            if (parseInt(trainingDay) > 90 || parseInt(trainingLength) > 90) {
+                alert(`Maximum length of the program is 90 days.`);
                 return;
             }
             const existingTraining = trainings.find(
@@ -108,7 +112,7 @@ export function NewProgram() {
                     day: trainingDay,
                     description: trainingDescription,
                 };
-                if (existingTraining && updatedTrainings[editIndex].name!==tempName) {
+                if (existingTraining && updatedTrainings[editIndex].name !== tempName) {
                     alert(`A training with the name "${trainingName}" already exists.`);
                     return;
                 }
@@ -157,24 +161,29 @@ export function NewProgram() {
         setTrainings(updatedTrainings);
     };
 
-    
+
     const handleSaveAll = () => {
-        if(!ProgramName || !ProgramLength || !ProgramTags || !ProgramType || !ProgramDescription)
-        {
+        if (!ProgramName || !ProgramLength || !ProgramTags || !ProgramType || !ProgramDescription) {
             alert("Please fill in all fields.");
             return;
         }
-        axios.post('http://localhost:3001/api/programs', programData)
-            .then(response => {
-                // Handle success.
-                const programData = response.data;
-                console.log('Data', programData);
-                window.location.href = '/libraries';
-            })
-            .catch(error => {
-                // Handle error.
-                console.log('Program Error:', error.response);
-            });
+
+        if (parseInt(ProgramLength)>90)
+        {
+            alert(`Maximum length of the program is 90 days.`);
+            return;
+        }
+            axios.post('http://localhost:3001/api/programs', programData)
+                .then(response => {
+                    // Handle success.
+                    const programData = response.data;
+                    console.log('Data', programData);
+                    window.location.href = '/libraries';
+                })
+                .catch(error => {
+                    // Handle error.
+                    console.log('Program Error:', error.response);
+                });
     };
 
     const handleSelectChange = (event) => {
