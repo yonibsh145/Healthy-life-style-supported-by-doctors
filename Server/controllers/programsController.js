@@ -80,7 +80,6 @@ const getAllPrograms = asyncHandler(async (req, res) => {
 //@access   Public
 const getProgramById = asyncHandler(async (req, res) => {
   const { programId } = req.query;
-  console.log(programId);
   const program = await Program.findById(programId);
   if (program) {
     res.json(program);
@@ -133,8 +132,9 @@ const addReview = asyncHandler(async (req, res) => {
     }
     specialist.rating = specialist.programs.reduce((acc, item) => item.rating + acc, 0) / specialist.programs.length;
     await specialist.save();
-
-    user.numOfReviews = +1;
+    
+    user.numOfReviews +=1;
+    await user.save();
 
     res.status(200).json({ message: "Review added" });
   } catch (error) {
@@ -174,6 +174,9 @@ const getDailyActivities = async (req, res) => {
         populate: {
           path: 'dailyActivities',
           select: 'day dailyActivity',
+          populate: {
+            path: 'dailyActivity',
+          },
         },
       },
     });
@@ -210,16 +213,16 @@ const getDailyActivities = async (req, res) => {
               duration: activity.duration,
               description: activity.description,
               _id: activity._id,
+              feedback: activity.feedback,
             })),
           });
         }
       }
-
       return result;
     }, []);
 
     //console.log('DailyActivities:', dailyActivities); // Check the final result
-
+    console.log(dailyActivities);
     res.status(200).json({ dailyActivities });
   } catch (error) {
     console.error(error);
@@ -317,7 +320,6 @@ const getAllReviews = asyncHandler(async (req, res) => {
       path: 'reviews.user',
       select: 'username', // Populate 'name' and 'email' fields of the user document
     });
-
     if(!program){
       res.status(404).json({ message: "Program not found" });
       return;
