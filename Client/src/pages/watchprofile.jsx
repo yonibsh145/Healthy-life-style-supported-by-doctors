@@ -16,7 +16,7 @@ import {
   BriefcaseIcon,
   BuildingLibraryIcon,
 } from "@heroicons/react/24/solid";
-import { Footer, Navbar3 } from "@/widgets/layout";
+import { Footer, Navbar3, Navbar2 } from "@/widgets/layout";
 import { Rating } from '@mui/material';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import axios from 'axios';
@@ -58,6 +58,201 @@ export function WatchProfile() {
     },
   ];
 
+  if(!userProfile){
+    useEffect(() => {
+      fetchData();
+    }, []);
+
+    const fetchData = async () => {
+      axios.get('http://localhost:3001/api/specialists/profile', {
+        params: {
+          specialistId: specialistProfile
+        }
+      })
+        .then(response => {
+          // Handle success.
+          const programData = response.data;
+          console.log('Data', programData);
+          setProfileData(programData);
+          console.log('check', profileData.length)
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+
+      axios.get('http://localhost:3001/api/specialists/patients', {
+        params: {
+          specialistId: specialistProfile
+        }
+      })
+        .then(response => {
+          // Handle success.
+          const programData = response.data;
+          console.log('Dataa', programData);
+          setUsersData(programData);
+          console.log('check', profileData.length)
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+
+      axios.get('http://localhost:3001/api/specialists/programs', {
+        params: {
+          specialistId: specialistProfile
+        }
+      })
+        .then(response => {
+          const programData = response.data.programs;
+          console.log('Data', programData);
+          setProgramData(programData);
+          console.log('check2', programData);
+
+
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('Program Error:', error.response);
+        });
+
+    };
+
+    const handleSignup = () => {
+      window.location.href = '/sign-up';
+  };
+
+
+    return (
+      <>
+        <div className="container absolute left-2/4 z-10 mx-auto -translate-x-2/4 p-4">
+          <Navbar2 />
+        </div>
+        <section className="relative block h-[50vh]">
+          <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
+          <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
+        </section>
+        <section className="relative bg-blue-gray-50/50 py-16 px-4">
+          <div className="container mx-auto">
+            <div className="relative mb-6 -mt-64 flex w-full min-w-0 flex-col break-words rounded-3xl bg-white shadow-xl shadow-gray-500/5">
+              <div className="px-6">
+                <div className="flex flex-wrap justify-center">
+                  <div className="flex w-full justify-center px-4 lg:order-2 lg:w-3/12">
+                    <div className="relative">
+                      <div className="-mt-20 w-40">
+                        <Avatar
+                          src={`https://source.unsplash.com/random/150x150?person=${profileData._id}`}
+                          alt="Profile picture"
+                          variant="circular"
+                          className="h-full w-full shadow-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-10 flex w-full justify-center px-4 lg:order-3 lg:mt-0 lg:w-4/12 lg:justify-end lg:self-center">
+                    <Button className="bg-blue-400" onClick={handleSignup}>Register</Button>
+                  </div>
+                  <div className="w-full px-4 lg:order-1 lg:w-4/12">
+                    <div className="flex justify-center py-4 pt-8 lg:pt-4">
+                      <div className="mr-4 p-3 text-center">
+                        <Typography
+                          variant="lead"
+                          color="blue-gray"
+                          className="font-bold uppercase"
+                        >
+                          {usersData.length}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          className="font-normal text-blue-gray-500"
+                        >
+                          Users
+                        </Typography>
+                      </div>
+                      <div className="mr-4 p-3 text-center">
+                        <Typography
+                          variant="lead"
+                          color="blue-gray"
+                          className="font-bold uppercase"
+                        >
+                          {programData.length}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          className="font-normal text-blue-gray-500"
+                        >
+                          Programs
+                        </Typography>
+                      </div>
+                      <div className="p-3 text-center lg:mr-4">
+                        <Typography
+                          variant="lead"
+                          color="blue-gray"
+                          className="font-bold uppercase"
+                        >
+                          0
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          className="font-normal text-blue-gray-500"
+                        >
+                          Reviews
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="my-8 text-center">
+                  <Typography variant="h2" color="blue-gray" className="mb-2">
+                    {profileData.name}
+                  </Typography>
+                  <div className="mb-16 flex items-center justify-center gap-2">
+                    <Typography className="font-medium text-blue-gray-700">
+                      <Rating name="half-rating-read" value={profileData.rating} readOnly />
+                    </Typography>
+                  </div>
+                  <Typography className="font-medium text-blue-gray-700">
+                    Tags: {profileData.tags}
+                  </Typography>
+                </div>
+                <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
+                  <div className="mt-2 flex flex-wrap justify-center">
+                    <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
+                      <Typography className="mb-8 font-normal text-blue-gray-500">
+                        Bio:{profileData.bio}
+                      </Typography>
+                      <Button variant="text">Statistics</Button>
+                      <Tabs value="html">
+                        <TabsHeader>
+                          {data.map(({ label, value }) => (
+                            <Tab key={value} value={value}>
+                              {label}
+                            </Tab>
+                          ))}
+                        </TabsHeader>
+                        <TabsBody>
+                          {data.map(({ value, desc }) => (
+                            <TabPanel key={value} value={value}>
+                              {desc}
+                            </TabPanel>
+                          ))}
+                        </TabsBody>
+                      </Tabs>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div className="bg-blue-gray-50/50">
+          <Footer />
+        </div>
+      </>
+    );
+
+  }
+  else{
   if (userProfile.role == "specialist") {
 
     useEffect(() => {
@@ -417,14 +612,14 @@ export function WatchProfile() {
                     </Typography>
                   </div>
                   <Typography className="font-medium text-blue-gray-700">
-                    Tags: {profileData.tags};
+                    Tags: {profileData.tags}
                   </Typography>
                 </div>
                 <div className="mb-10 border-t border-blue-gray-50 py-6 text-center">
                   <div className="mt-2 flex flex-wrap justify-center">
                     <div className="flex w-full flex-col items-center px-4 lg:w-9/12">
                       <Typography className="mb-8 font-normal text-blue-gray-500">
-                        Bio:{profileData.bio};
+                        Bio:{profileData.bio}
                       </Typography>
                       <Button variant="text">Statistics</Button>
                       <Tabs value="html">
@@ -456,6 +651,7 @@ export function WatchProfile() {
       </>
     );
   }
+}
 
 }
 

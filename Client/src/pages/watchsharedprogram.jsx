@@ -59,6 +59,7 @@ export function WatchSharedProgram() {
     const [ProgramDescription, setProgramDescription] = useState('');
     const [ProgramType, setProgramType] = useState('');
     const [editIndex, setEditIndex] = useState(-1);
+    const [specialist, setSpecialist] = useState('');
 
     /*const programData = {
         name: ProgramName,
@@ -91,6 +92,7 @@ export function WatchSharedProgram() {
                 setProgramDescription(programData.description);
                 setProgramLength(programData.duration);
                 setTrainings(programData.activities);
+                setSpecialist(program.specialist);
 
             })
             .catch(error => {
@@ -100,18 +102,10 @@ export function WatchSharedProgram() {
 
     };
 
-    const handleLength = (event) => {
-        const inputValue = event.target.value;
-        const integerValue = parseInt(inputValue);
-
-        setProgramLength(integerValue);
-    };
-
-    const handleDay = (event) => {
-        const inputValue = event.target.value;
-        const integerValue = parseInt(inputValue);
-
-        setTrainingDay(integerValue);
+    const handleProfile = () => {
+        const specialistProfile = program.specialist;
+        localStorage.setItem('specialistProfile', JSON.stringify(specialistProfile));
+        window.location.href = '/watchprofile';
     };
 
 
@@ -131,76 +125,6 @@ export function WatchSharedProgram() {
             });
         console.log(program._id);
     }
-
-    const handleSave = () => {
-        if (trainingName && trainingLength && trainingDescription && trainingDay) {
-            const existingTraining = trainings.find(
-                (training) => training.name === trainingName
-            );
-            if (existingTraining) {
-                alert(`A training with the name "${trainingName}" already exists.`);
-                return;
-            }
-            if (editIndex !== -1) {
-                const updatedTrainings = [...trainings];
-                updatedTrainings[editIndex] = {
-                    name: trainingName,
-                    duration: trainingLength,
-                    day: trainingDay,
-                    description: trainingDescription,
-                };
-                setTrainings(updatedTrainings);
-                setEditIndex(-1);
-            } else {
-                const newTraining = { name: trainingName, duration: trainingLength, day: trainingDay, description: trainingDescription };
-                setTrainings([...trainings, newTraining]);
-            }
-            setTrainingName('');
-            setTrainingLength('');
-            setTrainingDay('');
-            setTrainingDescription('');
-            setOpen(!open)
-        }
-        else {
-            alert(`Fill all the fields.`);
-        }
-    };
-
-    const handleEdit = (index) => {
-        const trainingToEdit = trainings[index];
-        setTrainingName(trainingToEdit.name);
-        setTrainingLength(trainingToEdit.length);
-        setTrainingDay(trainingToEdit.day);
-        setTrainingDescription(trainingToEdit.description);
-        setEditIndex(index);
-        setOpen(!open)
-    };
-
-    const handleDelete = (index) => {
-        const updatedTrainings = [...trainings];
-        updatedTrainings.splice(index, 1);
-        setTrainings(updatedTrainings);
-    };
-
-    const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/programs', programData)
-            .then(response => {
-                // Handle success.
-                const programData = response.data;
-                console.log('Data', programData);
-                window.location.href = '/libraries';
-            })
-            .catch(error => {
-                // Handle error.
-                console.log('Program Error:', error.response);
-            });
-    };
-
-    const handleSelectChange = (event) => {
-        const selectedOption = event.target.value;
-        setProgramType(selectedOption.toString());
-    };
-
 
 
     return (
@@ -233,7 +157,7 @@ export function WatchSharedProgram() {
                                 </Typography>
                             </div>
                             <form className="mt-8 mb-2 flex flex-col items-center">
-                                <Button className="bg-blue-400 mb-6" >Specialist Profile</Button>
+                            <Button className="bg-blue-400 mb-6" onClick={handleProfile}>Specialist Profile</Button>
                                 <div className="mb-4 flex flex-col gap-6 ">
                                     <label>Type: {ProgramType}</label>
                                     <label>Length: {ProgramLength}</label>
@@ -295,6 +219,14 @@ export function WatchSharedProgram() {
                                             <KeyIcon strokeWidth={2} className="h-5 w-5" /> Use Program
                                         </Button>)
                                     }
+                                                                        {
+                                        !userProfile && (<Link to="/sign-up">
+                                            <Button className=" flex items-center gap-3 mr-10 " color="green">
+                                                <KeyIcon strokeWidth={2} className="h-5 w-5" /> Register
+                                            </Button>
+                                        </Link>)
+                                    }
+                                    
                                     {
                                         userProfile && (<Link to="/homeuser">
                                             <Button className=" flex items-center gap-3 " color="blue">

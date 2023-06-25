@@ -31,7 +31,7 @@ export function HomeUser() {
   const itemsPerPage = 7;
   const totalPages = Math.ceil(pageData.length / itemsPerPage);
   const TABLE_HEAD = ["Name", "Start", "Rating", "Action"];
-  const TABLE_HEAD2 = ["Program", "Daily Count", "Action"];
+  const TABLE_HEAD2 = ["Program", "Watch Program", "Activity", "Action"];
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = pageData.slice(indexOfFirstItem, indexOfLastItem);
@@ -287,25 +287,50 @@ export function HomeUser() {
                       </thead>
                       <tbody>
                         {dailyData.map((program, index1) => (
-                          <tr key={index1} className="even:bg-blue-gray-50/50">
-                            <td className="p-4 text-center">
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {program.programName}
-                              </Typography>
-                            </td>
-                            <td className="p-4 text-center">
-                              <Typography variant="small" color="blue-gray" className="font-normal">
-                                {program.activities.length}
-                              </Typography>
-                            </td>
-                            <td className="p-4 flex justify-center">
-                              <Typography variant="small" color="blue" className="font-medium">
-                                <div className="mb-3 flex gap-2">
-                                  <button onClick={() => handleDaily(index1)}>Watch</button>
-                                </div>
-                              </Typography>
-                            </td>
-                          </tr>
+                          <React.Fragment key={index1}>
+                            <tr className="even:bg-blue-gray-50/50 border-b-4 border-gray-300">
+                              <td rowSpan={program.activities.length} className="p-4 text-center">
+                                <Typography variant="small" color="blue-gray" className="font-normal">
+                                  {program.programName}
+                                </Typography>
+                              </td>
+                              <td rowSpan={program.activities.length} className="p-4 text-center">
+                                <Typography variant="small" color="blue" className="font-medium">
+                                  <button onClick={() => handleDaily(index1)}>Watch Program</button>
+                                </Typography>
+                              </td>
+                              <td className="p-4 text-center">
+                                <Typography variant="small" color="blue-gray" className="font-normal">
+                                  {program.activities[0].name}
+                                </Typography>
+                              </td>
+                              <td className="p-4 flex justify-center">
+                                <Typography variant="small" color="blue" className="font-medium">
+                                  <div className="mb-3 flex gap-2">
+                                    <button onClick={() => handleFinish(index1)}>Finish</button>
+                                    <button onClick={() => handleSkip(index1)}>Skip</button>
+                                  </div>
+                                </Typography>
+                              </td>
+                            </tr>
+                            {program.activities.slice(1).map((activity, activityIndex) => (
+                              <tr key={activityIndex} className="even:bg-blue-gray-50/50 border-b-4 border-gray-300">
+                                <td className="p-4 text-center">
+                                  <Typography variant="small" color="blue-gray" className="font-normal">
+                                    {activity.name}
+                                  </Typography>
+                                </td>
+                                <td className="p-4 flex justify-center">
+                                  <Typography variant="small" color="blue" className="font-medium">
+                                    <div className="mb-3 flex gap-2">
+                                      <button onClick={() => handleFinish(activityIndex)}>Finish</button>
+                                      <button onClick={() => handleSkip(activityIndex)}>Skip</button>
+                                    </div>
+                                  </Typography>
+                                </td>
+                              </tr>
+                            ))}
+                          </React.Fragment>
                         ))}
                       </tbody>
                     </table>
