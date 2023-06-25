@@ -43,8 +43,8 @@ const TABLE_HEAD = ["Name", "Length", "Day", "Description", "Action"];
 
 export function DailyActivities() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-    const program = JSON.parse(localStorage.getItem('watchProgram'));
-
+    const program = JSON.parse(localStorage.getItem('watchDaily'));
+    const [open, setOpen] = useState(false);
 
     const [trainings, setTrainings] = useState([]);
     const [trainingName, setTrainingName] = useState('');
@@ -57,6 +57,8 @@ export function DailyActivities() {
     const [ProgramDescription, setProgramDescription] = useState('');
     const [ProgramType, setProgramType] = useState('');
     const [editIndex, setEditIndex] = useState(-1);
+    const[actionFeedback, setActionFeedback] = useState('');
+    const[action, setAction]=useState('');
 
     const programData = {
         name: ProgramName,
@@ -112,75 +114,16 @@ export function DailyActivities() {
         console.log(program._id);
     }
 
-    const handleSave = () => {
-        if (trainingName && trainingLength && trainingDescription && trainingDay) {
-            const existingTraining = trainings.find(
-                (training) => training.name === trainingName
-            );
-            if (existingTraining) {
-                alert(`A training with the name "${trainingName}" already exists.`);
-                return;
-            }
-            if (editIndex !== -1) {
-                const updatedTrainings = [...trainings];
-                updatedTrainings[editIndex] = {
-                    name: trainingName,
-                    duration: trainingLength,
-                    day: trainingDay,
-                    description: trainingDescription,
-                };
-                setTrainings(updatedTrainings);
-                setEditIndex(-1);
-            } else {
-                const newTraining = { name: trainingName, duration: trainingLength, day: trainingDay, description: trainingDescription };
-                setTrainings([...trainings, newTraining]);
-            }
-            setTrainingName('');
-            setTrainingLength('');
-            setTrainingDay('');
-            setTrainingDescription('');
-            setOpen(!open)
-        }
-        else {
-            alert(`Fill all the fields.`);
-        }
-    };
 
-    const handleEdit = (index) => {
-        const trainingToEdit = trainings[index];
-        setTrainingName(trainingToEdit.name);
-        setTrainingLength(trainingToEdit.length);
-        setTrainingDay(trainingToEdit.day);
-        setTrainingDescription(trainingToEdit.description);
-        setEditIndex(index);
+    const handleSend = () => {
+        setActionFeedback('');
         setOpen(!open)
     };
 
-    const handleProfile = () => {
-        const specialistProfile = program.specialist;
-        localStorage.setItem('specialistProfile', JSON.stringify(specialistProfile));
-        window.location.href = '/watchprofile';
-    };
-
-    const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/programs', programData)
-            .then(response => {
-                // Handle success.
-                const programData = response.data;
-                console.log('Data', programData);
-                window.location.href = '/libraries';
-            })
-            .catch(error => {
-                // Handle error.
-                console.log('Program Error:', error.response);
-            });
-    };
-
-    const handleSelectChange = (event) => {
-        const selectedOption = event.target.value;
-        setProgramType(selectedOption.toString());
-    };
-
+    const handleOpen = (index) => {
+        setAction(training[index]._id);
+        setOpen(!open);
+    }
 
 
     return (
@@ -259,7 +202,7 @@ export function DailyActivities() {
                                                 <td className="p-4">
                                                     <Typography variant="small" color="blue" className="font-medium">
                                                         <div className="mb-3 flex gap-2">
-                                                            <button>Finish</button>
+                                                            <button onClick={handleOpen}>Finish</button>
                                                             <button>Skip</button>
                                                         </div>
                                                     </Typography>
@@ -268,6 +211,34 @@ export function DailyActivities() {
                                         ))}
                                     </tbody>
                                 </table>
+                                <Dialog
+                                    size="xs"
+                                    open={open}
+                                    handler={handleOpen}
+                                    className="bg-transparent shadow-none">
+                                    <Card className="mx-auto w-full max-w-[24rem]">
+                                        <CardHeader
+                                            variant="gradient"
+                                            color="blue"
+                                            className="mb-4 grid h-28 place-items-center">
+                                            <Typography variant="h3" color="white">
+                                                Action Feedback
+                                            </Typography>
+                                        </CardHeader>
+                                        <CardBody className="flex flex-col gap-4">
+                                            <Textarea label="Short Description" value={actionFeedback} onChange={(e) => setActionFeedback(e.target.value)} />
+                                        </CardBody>
+                                        <CardFooter className="pt-0">
+                                            <div className="mb-3 flex gap-2">
+                                                <Button variant="gradient" onClick={handleSend} fullWidth>
+                                                    Send
+                                                </Button>
+                                                <Button variant="gradient" onClick={handleOpen} fullWidth>
+                                                    Cancel
+                                                </Button></div>
+                                        </CardFooter>
+                                    </Card>
+                                </Dialog>
                                 <div className="px-6 flex flex-row justify-center mt-10">
                                     <Link to="/homeuser">
                                         <Button className=" flex items-center gap-3 " color="blue">

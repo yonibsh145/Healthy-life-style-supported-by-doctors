@@ -39,6 +39,7 @@ export function Profile() {
   const [password, setPassword] = useState('');
   const [bio, setBio] = useState('');
   const [tags, setTags] = useState('');
+  const[pageData,setPageData]=useState('');
 
   const userData = {
     userId: userProfile._id,
@@ -88,7 +89,7 @@ export function Profile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/profile', {
+      axios.get('http://localhost:3001/api/specialists/profile', {
         params: {
           specialistId: userProfile._id
         }
@@ -105,7 +106,7 @@ export function Profile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/patients', {
+      axios.get('http://localhost:3001/api/specialists/patients', {
         params: {
           specialistId: userProfile._id
         }
@@ -122,7 +123,7 @@ export function Profile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/programs', {
+      axios.get('http://localhost:3001/api/specialists/programs', {
         params: {
           specialistId: userProfile._id
         }
@@ -145,12 +146,12 @@ export function Profile() {
 
     const handleEdit = () => {
       console.log(specialistData);
-      axios.put('https://lifestylebulider-api.onrender.com/api/specialists/profile', specialistData)
+      axios.put('http://localhost:3001/api/specialists/profile', specialistData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
           console.log('User token', response.data.token);
-          axios.get('https://lifestylebulider-api.onrender.com/api/specialists/profile', {
+          axios.get('http://localhost:3001/api/specialists/profile', {
             params: {
               specialistId: userProfile._id
             }
@@ -362,7 +363,7 @@ export function Profile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('https://lifestylebulider-api.onrender.com/api/users/profile', {
+      axios.get('http://localhost:3001/api/users/profile', {
         params: {
           userId: userProfile._id
         }
@@ -377,15 +378,48 @@ export function Profile() {
           // Handle error.
           console.log('Program Error:', error.response);
         });
+
+        try {
+          const response = await axios.get('http://localhost:3001/api/users/myPrograms', {
+            params: { userId: userProfile._id }
+          });
+          const programData = response.data.programs;
+          console.log('Dataaa', programData);
+          setPageData(programData);
+          console.log('check', programData.length);
+        } catch (error) {
+          console.log('Program Error:', error.response);
+        }
+
     }
 
+
+
+
+
+
     const handleEdit = () => {
-      axios.put('https://lifestylebulider-api.onrender.com/api/users/profile', userData)
+      axios.put('http://localhost:3001/api/users/profile', userData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
           console.log('User token', response.data.token);
           //window.location.href = '/sign-in';
+          axios.get('http://localhost:3001/api/users/profile', {
+            params: {
+              userId: userProfile._id
+            }
+          })
+            .then(response => {
+              // Handle success.
+              const programData = response.data;
+              console.log('Data', programData);
+              setProfileData(programData);
+            })
+            .catch(error => {
+              // Handle error.
+              console.log('Program Error:', error.response);
+            });
         })
         .catch(error => {
           // Handle error.
@@ -397,6 +431,7 @@ export function Profile() {
       setEmail('');
       setPassword('');
       setBio('');
+      setOpen(!open);
     }
 
     return (
@@ -453,7 +488,7 @@ export function Profile() {
                               onChange={(e) => setPassword(e.target.value)}
                             />
                             <Input label="Tags" size="lg" type="text" value={tags} onChange={(e) => setTags(e.target.value)} ></Input>
-                            <Input label="Bio" size="lg" type="text" value={bio} onChange={(e) => setBio(e.target.value)} ></Input>
+                            <Textarea label="Bio" size="lg" type="text" value={bio} onChange={(e) => setBio(e.target.value)} />
                           </div>
                         </CardBody>
                         <CardFooter className="pt-0">
@@ -476,13 +511,13 @@ export function Profile() {
                           color="blue-gray"
                           className="font-bold uppercase"
                         >
-                          22
+                          {pageData.length}
                         </Typography>
                         <Typography
                           variant="small"
                           className="font-normal text-blue-gray-500"
                         >
-                          Friends
+                          Programs
                         </Typography>
                       </div>
                       <div className="mr-4 p-3 text-center">
@@ -491,13 +526,13 @@ export function Profile() {
                           color="blue-gray"
                           className="font-bold uppercase"
                         >
-                          10
+                          0
                         </Typography>
                         <Typography
                           variant="small"
                           className="font-normal text-blue-gray-500"
                         >
-                          Photos
+                          Reviews
                         </Typography>
                       </div>
                       <div className="p-3 text-center lg:mr-4">
@@ -506,13 +541,13 @@ export function Profile() {
                           color="blue-gray"
                           className="font-bold uppercase"
                         >
-                          89
+                          0
                         </Typography>
                         <Typography
                           variant="small"
                           className="font-normal text-blue-gray-500"
                         >
-                          Comments
+                          Chats
                         </Typography>
                       </div>
                     </div>
