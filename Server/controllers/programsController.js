@@ -174,9 +174,6 @@ const getDailyActivities = async (req, res) => {
         populate: {
           path: 'dailyActivities',
           select: 'day dailyActivity',
-          populate: {
-            path: 'dailyActivity',
-          },
         },
       },
     });
@@ -208,12 +205,12 @@ const getDailyActivities = async (req, res) => {
           result.push({
             programName: programObj.program.name,
             _id: programObj.program._id,
+            programStatus: programObj.programStatus,
             activities: activities.map((activity) => ({
               name: activity.name,
               duration: activity.duration,
               description: activity.description,
               _id: activity._id,
-              feedback: activity.feedback,
             })),
           });
         }
@@ -222,7 +219,6 @@ const getDailyActivities = async (req, res) => {
     }, []);
 
     //console.log('DailyActivities:', dailyActivities); // Check the final result
-    console.log(dailyActivities);
     res.status(200).json({ dailyActivities });
   } catch (error) {
     console.error(error);

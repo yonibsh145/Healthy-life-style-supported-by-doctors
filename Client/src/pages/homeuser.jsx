@@ -43,7 +43,7 @@ export function HomeUser() {
 
 
   const [open, setOpen] = useState(false);
-  const [open2,setOpen2] =  useState(false);
+  const [open2, setOpen2] = useState(false);
 
   const handleOpen = () => setOpen(!open);
 
@@ -346,7 +346,7 @@ export function HomeUser() {
                       <tbody>
                         {dailyData.map((program, index1) => (
                           <React.Fragment key={index1}>
-                            <tr className="even:bg-blue-gray-50/50 border-b-4 border-gray-300">
+                            {program.programStatus === "Active" && (<tr className="even:bg-blue-gray-50/50 border-b-4 border-gray-300">
                               <td rowSpan={program.activities.length} className="p-4 text-center">
                                 <Typography variant="small" color="blue-gray" className="font-normal">
                                   {program.programName}
@@ -371,22 +371,23 @@ export function HomeUser() {
                                   </div>
                                 </Typography>
                               </td>
-                            </tr>
+                            </tr>)}
                             {program.activities.slice(1).map((activity, activityIndex) => (
                               <tr key={activityIndex} className="even:bg-blue-gray-50/50 border-b-4 border-gray-300">
-                                <td className="p-4 text-center">
+                                {program.programStatus === "Active" && (<td className="p-4 text-center">
                                   <Typography variant="small" color="blue-gray" className="font-normal">
                                     {activity.name}
                                   </Typography>
                                 </td>
+                                )}
                                 <td className="p-4 flex justify-center">
-                                  <Typography variant="small" color="blue" className="font-medium">
+                                  {program.programStatus === "Active" && (<Typography variant="small" color="blue" className="font-medium">
                                     <div className="mb-3 flex gap-2">
                                       <button onClick={() => handleFinish(index1, activityIndex)}>Finish</button>
                                       <button onClick={() => handleSkip(activityIndex)}>Skip</button>
                                       <button onClick={() => handleDescription(index1, activityIndex)}>Desc</button>
                                     </div>
-                                  </Typography>
+                                  </Typography>)}
                                 </td>
                               </tr>
                             ))}
