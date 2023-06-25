@@ -89,7 +89,7 @@ export function Profile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('http://localhost:3001/api/specialists/profile', {
+      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/profile', {
         params: {
           specialistId: userProfile._id
         }
@@ -106,7 +106,7 @@ export function Profile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('http://localhost:3001/api/specialists/patients', {
+      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/patients', {
         params: {
           specialistId: userProfile._id
         }
@@ -123,7 +123,7 @@ export function Profile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('http://localhost:3001/api/specialists/programs', {
+      axios.get('https://lifestylebulider-api.onrender.com/api/specialists/programs', {
         params: {
           specialistId: userProfile._id
         }
@@ -146,12 +146,12 @@ export function Profile() {
 
     const handleEdit = () => {
       console.log(specialistData);
-      axios.put('http://localhost:3001/api/specialists/profile', specialistData)
+      axios.put('https://lifestylebulider-api.onrender.com/api/specialists/profile', specialistData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
           console.log('User token', response.data.token);
-          axios.get('http://localhost:3001/api/specialists/profile', {
+          axios.get('https://lifestylebulider-api.onrender.com/api/specialists/profile', {
             params: {
               specialistId: userProfile._id
             }
@@ -363,7 +363,7 @@ export function Profile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('http://localhost:3001/api/users/profile', {
+      axios.get('https://lifestylebulider-api.onrender.com/api/users/profile', {
         params: {
           userId: userProfile._id
         }
@@ -399,7 +399,7 @@ export function Profile() {
 
 
     const handleEdit = () => {
-      axios.put('http://localhost:3001/api/users/profile', userData)
+      axios.put('https://lifestylebulider-api.onrender.com/api/users/profile', userData)
         .then(response => {
           // Handle success.
           console.log('User profile', response.data.user);
