@@ -22,7 +22,7 @@ app.use(express.json());
 app.use("/",express.static(path.join(__dirname, "../public")));
 
 app.use(cors({
-    origin: ['http://localhost:5173',"https://lifestylebulider.onrender.com"], // Replace with the appropriate origin URL
+    origin: ['https://lifestylebuilder.onrender.com', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the allowed HTTP methods
     allowedHeaders: ['Content-Type'], // Specify the allowed request headers
   }));

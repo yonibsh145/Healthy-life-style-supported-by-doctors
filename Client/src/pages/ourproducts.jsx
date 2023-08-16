@@ -42,7 +42,7 @@ export function OurProducts() {
 
   const fetchData = async () => {
     console.log('check');
-    axios.get('http://localhost:3001/api/programs')
+    axios.get('https://life-style-builder-api.onrender.com/api/programs')
       .then(response => {
         // Handle success.
         const programsData = response.data;
@@ -58,7 +58,7 @@ export function OurProducts() {
 
   const handleWhat = () => {
     console.log('check');
-    axios.get('http://localhost:3001/api/programs')
+    axios.get('https://life-style-builder-api.onrender.com/api/programs')
       .then(response => {
         // Handle success.
         const programsData = response.data;

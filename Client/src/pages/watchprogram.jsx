@@ -94,7 +94,7 @@ export function WatchProgram() {
         };
         console.log('here', program._id);
         console.log('check', requestBody);
-        axios.put('http://localhost:3001/api/users/use-program', requestBody)
+        axios.put('https://life-style-builder-api.onrender.com/api/users/use-program', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
                 window.location.href = '/homeuser';
@@ -157,7 +157,7 @@ export function WatchProgram() {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://localhost:3001/api/programs', programData)
+        axios.post('https://life-style-builder-api.onrender.com/api/programs', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;
