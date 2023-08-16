@@ -178,7 +178,7 @@ export function Libraries() {
   const handleShare = (index) => {
     setOpen(!open);
     console.log(pageData[index]._id);
-    const shareUrl = `http://localhost:5173/watchsharedprogram/${pageData[index]._id}`;
+    const shareUrl = `https://lifestylebuilder.onrender.com/watchsharedprogram/${pageData[index]._id}`;
     setSharedLink(shareUrl);
     console.log(shareUrl);
   };
