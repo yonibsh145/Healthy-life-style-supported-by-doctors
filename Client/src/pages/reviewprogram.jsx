@@ -57,7 +57,7 @@ export function ReviewProgram() {
         };
         
 
-        axios.post('http://localhost:3001/api/programs/addReview', requestBody)
+        axios.post('https://life-style-builder-api.onrender.com/api/programs/addReview', requestBody)
             .then(response => {
                 console.log(response.data); // Handle the response data as needed
                 window.location.href = `/libraries`;

@@ -175,7 +175,7 @@ export function EditProgram() {
     };
 
     const handleSaveAll = () => {
-        axios.put('http://localhost:3001/api/programs/edit-program', programData)
+        axios.put('https://life-style-builder-api.onrender.com/api/programs/edit-program', programData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;

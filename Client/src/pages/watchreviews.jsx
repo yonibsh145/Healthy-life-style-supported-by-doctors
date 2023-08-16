@@ -47,7 +47,7 @@ export function WatchReviews() {
 
     const handleAccept = (index) => {
         console.log('hello', pageData[index]._id);
-        axios.delete('http://localhost:3001/api/programs/delete-program', {
+        axios.delete('https://life-style-builder-api.onrender.com/api/programs/delete-program', {
             data: {
                 programId: pageData[index]._id, // Replace programId with the actual program ID you want to delete
                 specialistId: userProfile._id // Replace specialistId with the actual specialist ID
@@ -95,7 +95,7 @@ export function WatchReviews() {
 
     const fetchData = async () => {
         console.log(program._id);
-        axios.get('http://localhost:3001/api/programs/all-programs', {
+        axios.get('https://life-style-builder-api.onrender.com/api/programs/all-programs', {
             params: {
                 programId: program._id,
             }

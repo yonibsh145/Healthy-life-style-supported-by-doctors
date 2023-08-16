@@ -55,7 +55,7 @@ export function WaitingList() {
             action: "accept",
           }
         console.log('hello', pageData[index]._id);
-        axios.put('http://localhost:3001/api/specialists/updaterequest', requestData)
+        axios.put('https://life-style-builder-api.onrender.com/api/specialists/updaterequest', requestData)
             .then(response => {
                 // Handle success.
                 const programData = response.data;
@@ -102,7 +102,7 @@ export function WaitingList() {
 
     const fetchData = async () => {
         console.log(userProfile._id);
-        axios.get('http://localhost:3001/api/specialists/requests', {
+        axios.get('https://life-style-builder-api.onrender.com/api/specialists/requests', {
             params: {
                 specialistId: userProfile._id
             }

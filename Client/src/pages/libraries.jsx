@@ -54,7 +54,7 @@ export function Libraries() {
 
   const handleDelete = (index) => {
     console.log('hello', pageData[index]._id);
-    axios.delete('http://localhost:3001/api/programs/delete-program', {
+    axios.delete('https://life-style-builder-api.onrender.com/api/programs/delete-program', {
       data: {
         programId: pageData[index]._id, // Replace programId with the actual program ID you want to delete
         specialistId: userProfile._id // Replace specialistId with the actual specialist ID
@@ -109,7 +109,7 @@ export function Libraries() {
   const handlePause = (index) => {
     console.log(userProfile._id);
     console.log(pageData[index]._id);
-    axios.put('http://localhost:3001/api/users/pause-program', {
+    axios.put('https://life-style-builder-api.onrender.com/api/users/pause-program', {
       userId: userProfile._id,
       programId: pageData[index]._id,
     })
@@ -117,7 +117,7 @@ export function Libraries() {
         // Handle success.
         const programData = response.data;
         console.log('Data', programData);
-        axios.get('http://localhost:3001/api/users/myPrograms', {
+        axios.get('https://life-style-builder-api.onrender.com/api/users/myPrograms', {
           params: { userId: userProfile._id }
         })
           .then(response => {
@@ -143,7 +143,7 @@ export function Libraries() {
   const handleUnpause = (index) => {
     console.log(userProfile._id);
     console.log(pageData[index]._id);
-    axios.put('http://localhost:3001/api/users/reavtiviate-program', {
+    axios.put('https://life-style-builder-api.onrender.com/api/users/reavtiviate-program', {
       userId: userProfile._id,
       programId: pageData[index]._id,
     })
@@ -151,7 +151,7 @@ export function Libraries() {
         // Handle success.
         const programData = response.data;
         console.log('Data', programData);
-        axios.get('http://localhost:3001/api/users/myPrograms', {
+        axios.get('https://life-style-builder-api.onrender.com/api/users/myPrograms', {
           params: { userId: userProfile._id }
         })
           .then(response => {
@@ -198,7 +198,7 @@ export function Libraries() {
 
     const fetchData = async () => {
       console.log(userProfile._id);
-      axios.get('http://localhost:3001/api/specialists/programs', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/programs', {
         params: {
           specialistId: userProfile._id
         }
@@ -374,7 +374,7 @@ export function Libraries() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/users/myPrograms', {
+        const response = await axios.get('https://life-style-builder-api.onrender.com/api/users/myPrograms', {
           params: { userId: userProfile._id }
         });
         const programData = response.data.programs;

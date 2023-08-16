@@ -64,7 +64,7 @@ export function WatchProfile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('http://localhost:3001/api/specialists/profile', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/profile', {
         params: {
           specialistId: specialistProfile
         }
@@ -81,7 +81,7 @@ export function WatchProfile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('http://localhost:3001/api/specialists/patients', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/patients', {
         params: {
           specialistId: specialistProfile
         }
@@ -98,7 +98,7 @@ export function WatchProfile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('http://localhost:3001/api/specialists/programs', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/programs', {
         params: {
           specialistId: specialistProfile
         }
@@ -260,7 +260,7 @@ export function WatchProfile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('http://localhost:3001/api/specialists/profile', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/profile', {
         params: {
           specialistId: specialistProfile
         }
@@ -468,7 +468,7 @@ export function WatchProfile() {
     }, []);
 
     const fetchData = async () => {
-      axios.get('http://localhost:3001/api/specialists/profile', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/profile', {
         params: {
           specialistId: specialistProfile
         }
@@ -485,7 +485,7 @@ export function WatchProfile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('http://localhost:3001/api/specialists/patients', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/patients', {
         params: {
           specialistId: specialistProfile
         }
@@ -502,7 +502,7 @@ export function WatchProfile() {
           console.log('Program Error:', error.response);
         });
 
-      axios.get('http://localhost:3001/api/specialists/programs', {
+      axios.get('https://life-style-builder-api.onrender.com/api/specialists/programs', {
         params: {
           specialistId: specialistProfile
         }

@@ -173,7 +173,7 @@ export function NewProgram() {
             alert(`Maximum length of the program is 90 days.`);
             return;
         }
-            axios.post('http://localhost:3001/api/programs', programData)
+            axios.post('https://life-style-builder-api.onrender.com/api/programs', programData)
                 .then(response => {
                     // Handle success.
                     const programData = response.data;
